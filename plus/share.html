@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>分享</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html, body { position: relative; height: 100%; background: transparent; }
+		.mui-bar-nav~.mui-content { position: absolute; left: 0; width: 100%; top: 0px; bottom: 44px; }
+		#app { position: absolute; z-index: 1; width: 100%; height: 100%; overflow: hidden; border-radius: .2rem .2rem 0 0; background: #fff; opacity: 1; }
+		.mui-bar-nav .mui-icon { padding-top: 13px; color: #fff; }
+		
+		.share_box{width: 100%; background: #fff;}
+		.share_box img{ width: 1.21rem; height: 1.21rem;}
+		.share_box h3{ padding: 0.2rem 0; font-size: 0.34rem; font-weight: 700;}
+		.share_box .slogan{ margin-bottom: 0.2rem; padding: 0.2rem; border-top:1px solid #eee; border-bottom:1px solid #eee; color: #999; font-size: 0.28rem; font-weight: 700;}
+		.share_item div{ margin: 0 0 0.2rem 0;}
+		
+		.share_show{ bottom: 0;}
+	    </style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="share_box">
+				<h3 class=" mui-text-center">分享到</h3>
+				<!--<div class="slogan">分享有奖</div>-->
+				<div class="mui-row mui-text-center margin_t20 share_item">
+					<div onclick="shareHref(1);" class="mui-col-xs-4">
+						<img src="../img/share_01.png" />
+						<div>微信</div>
+					</div>
+					<div onclick="shareHref(0);" class="mui-col-xs-4">
+						<img src="../img/share_02.png" />
+						<div>朋友圈</div>
+					</div>
+					<div onclick="shareHref(3);" class="mui-col-xs-4">
+						<img src="../img/share_04.png" />
+						<div>微博</div>
+					</div>
+					<div onclick="shareHref(2);" class="mui-col-xs-4">
+						<img src="../img/share_03.png" />
+						<div>QQ</div>
+					</div>
+					<!--<div onclick="shareHref(4);" class="mui-col-xs-4">
+		    			<img src="../img/share_05.png"/>
+		    			<div>腾讯微博</div>
+		    		</div>-->
+					<div onclick="shareHref(2);" class="mui-col-xs-4">
+						<img src="../img/share_06.png" />
+						<div>QQ空间</div>
+					</div>
+					<!--<div class="mui-col-xs-4 js_qrcode">
+		    			<img src="../img/share_07.png"/>
+		    			<div>二维码</div>
+		    		</div>-->
+				</div>
+			</div>
+			<input id="sharehref" style="display: none;" class="sharehref" type="url" v-bind:value="share_url" />
+			<input id="sharehrefTitle" style="display: none;" class="sharehref" type="text" value="魔考大师-随时随地满足你等做题欲望!" />
+			<input id="sharehrefDes" style="display: none;" class="sharehref" type="text" v-bind:value="title" />
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					share_url: '',
+					title: '',
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				//		     	self.addEventListener("hide", function(e) {
+				//		     		var detailsPage = plus.webview.getWebviewById('product_detail');
+				//						detailsPage.evalJS("hideMask()")
+				//		     	})
+			})
+
+			//监听自定义事件，获取详情
+			document.addEventListener('updataShare', function(event) {
+				vm.share_url = event.detail.share_url;
+				vm.title = event.detail.title;
+			});
+
+			var shares = null;
+			var Intent = null,
+				File = null,
+				Uri = null,
+				main = null;
+			// H5 plus事件处理
+			function plusReady() {
+				updateSerivces();
+				if (plus.os.name == "Android") {
+					main = plus.android.runtimeMainActivity();
+					Intent = plus.android.importClass("android.content.Intent");
+					File = plus.android.importClass("java.io.File");
+					Uri = plus.android.importClass("android.net.Uri");
+				}
+			}
+			if (window.plus) {
+				plusReady();
+			} else {
+				document.addEventListener("plusready", plusReady, false);
+			}
+
+			/**
+			 * 
+			 * 更新分享服务
+			 */
+			function updateSerivces() {
+				plus.share.getServices(function(s) {
+					shares = {};
+					for (var i in s) {
+						var t = s[i];
+						shares[t.id] = t;
+					}
+
+				}, function(e) {
+					alert("获取分享服务列表失败：" + e.message);
+				});
+			}
+
+
+
+			/**
+			 * 分享操作
+			 * @param {JSON} sb 分享操作对象s.s为分享通道对象(plus.share.ShareService)
+			 * @param {Boolean} bh 是否分享链接
+			 */
+			function shareAction(sb, bh) {
+				//alert(JSON.stringify(sb))
+				if (!sb || !sb.s) {
+					mui.toast("无效的分享服务！");
+					return;
+				}
+
+				var msg = {
+					content: sharehrefDes.value,
+					extra: {
+						scene: sb.x
+					}
+				};
+				if (bh) {
+					msg.href = sharehref.value;
+					if (sharehrefTitle && sharehrefTitle.value != "") {
+						msg.title = sharehrefTitle.value;
+					}
+					if (sharehrefDes && sharehrefDes.value != "") {
+						msg.content = sharehrefDes.value;
+					}
+					msg.thumbs = ["_www/img/icon_logo.png"];
+					msg.pictures = ["_www/img/icon_logo.png"];
+				} else {
+					if (pic && pic.realUrl) {
+						msg.pictures = [pic.realUrl];
+					}
+				}
+				// 发送分享
+				if (sb.s.authenticated) {
+					//              alert("---已授权---");
+					shareMessage(msg, sb.s);
+				} else {
+					//              alert("---未授权---");
+					sb.s.authorize(function() {
+						shareMessage(msg, sb.s);
+					}, function(e) {
+						mui.toast("认证授权失败");
+						//                      alert("认证授权失败："+e.code+" - "+e.message );
+					});
+				}
+			}
+			/**
+			 * 发送分享消息
+			 * @param {JSON} msg
+			 * @param {plus.share.ShareService} s
+			 */
+			function shareMessage(msg, s) {
+
+				//alert(JSON.stringify(msg));
+				s.send(msg, function() {
+					mui.toast("分享到\"" + s.description + "\"成功！ ");
+
+				}, function(e) {
+					mui.toast("分享到\"" + s.description + "\"失败 ");
+					//              alert( "分享到\""+s.description+"\"失败: "+JSON.stringify(e) );
+
+				});
+			}
+			// 分析链接
+			function shareHref(index) {
+
+				var shareBts = [];
+				// 更新分享列表
+				var ss = shares['weixin'];
+				ss && ss.nativeClient && (shareBts.push({
+						title: '微信朋友圈',
+						s: ss,
+						x: 'WXSceneTimeline'
+					}),
+					shareBts.push({
+						title: '微信好友',
+						s: ss,
+						x: 'WXSceneSession'
+					}));
+				ss = shares['qq'];
+				ss && ss.nativeClient && shareBts.push({
+					title: 'QQ',
+					s: ss
+				});
+				ss = shares['sinaweibo'];
+				ss && shareBts.push({
+					title: '新浪微博',
+					s: ss
+				});
+				ss = shares['tencentweibo'];
+				ss && shareBts.push({
+					title: '腾讯微博',
+					s: ss
+				});
+
+				shareBts.length > 0 ? shareAction(shareBts[index], true) : plus.nativeUI.alert('当前环境无法支持分享链接操作!');
+			}
+		</script>
+	</body>
+
+</html>

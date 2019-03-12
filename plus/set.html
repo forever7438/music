@@ -1,0 +1,399 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的设置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.del_recharge{ color: #FFA200; text-decoration: underline; font-size: .28rem;}
+			
+			.mui-input-row.mui-input-range{ padding: 0 20px 0 15px;}
+			
+			.range_box{ padding: 15px 0; background: #fff;}
+			.range_d{ position: relative;}
+			.mui-input-row label{ padding: 11px 0; width: 30%;}
+			.mui-input-range label~input[type=range]{ width: 70%;}
+			/*.range_box h3{ margin: 0; padding: 0 15px; font-size: .34rem; color: #333;}*/
+			.mui-input-range input[type=range]{ background: -webkit-linear-gradient(#ffa200, #ffa200) no-repeat #ececec; background-size: 15% 100%;}
+			/* .mui-input-range .mui-tooltip{ display: none;} */
+			
+			.mui-input-range input[type='range']::-webkit-slider-thumb{ background-color: #FFF; border:1px solid #ececec; width: 24px; height: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<span>消息推送</span>
+					<div id="message_push" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.message_push == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+			<ul class="mui-table-view margin_t40">
+				<li class="mui-table-view-cell">
+					<span>自动移除错题</span>
+					<div id="wrong" class="mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.remove_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+			<div class="margin_t20 mui-text-center">
+				<a id="del_recharge" class="del_recharge">一键删除所有做题记录</a>
+			</div>
+			<ul class="mui-table-view margin_t40">
+				<li class="mui-table-view-cell">
+					<span>界面动画开关</span>
+					<div id="animation" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.animation == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<!-- <li class="mui-table-view-cell">
+					<span>全屏切换开关</span>
+					<div class="mui-switch mui-switch-blue mui-switch-mini">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li> -->
+				<li class="mui-table-view-cell">
+					<span>声音提示开关</span>
+					<div id="sound_hints" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.sound_hints == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<span>自动切题开关</span>
+					<div id="switch_question" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.switch_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="background" class="mui-navigate-right">
+						<span class="mui-pull-right" style="padding-right: 20px;">{{somedata.background_text}}</span>
+						背景颜色调节
+					</a>
+				</li>
+			</ul>
+			<div class="mui-row margin_t40 range_box">
+				<div class="mui-input-row mui-input-range margin_t20 range_d">
+					<label>字体大小</label>
+					<input id="range" type="range" min="12" max="30" v-bind:value="somedata.font_size">
+				</div>
+				<div class="mui-row mui-pull-right" style="width:70%; padding: 0 20px 0 10px;">
+					<div class="mui-col-xs-4 mui-text-left">小</div>
+					<div class="mui-col-xs-4 mui-text-center">中</div>
+					<div class="mui-col-xs-4 mui-text-right">大</div>
+				</div>
+			</div>
+			<ul class="mui-table-view margin_t40">
+				<li class="mui-table-view-cell">
+					<span>题目记忆</span>
+					<div id="remember" class="mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.memory_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/range.js"></script>
+		<script type="text/javascript">
+			var remember,setFont;
+			var change = function($input) {
+				/*rangeinput change事件*/
+				clearTimeout(setFont)
+				setFont = setTimeout(function(){
+					setData('font_size',$input.value);
+					// console.log($input.value);
+				},1000)
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: ''
+				},
+				mounted: function() {
+					
+				},
+				updated: function() {
+					// console.log($('#range').val())
+					$('#range').css( 'background-size', ($('#range').val() - 12)*6.25 + '% 100%' );
+				}
+			});
+
+			$('#range').RangeSlider({
+				min: 12,
+				max: 28,
+				step: 1,
+				callback: change
+			});
+
+			mui.init({
+				swipeBack: true
+			});
+
+			var wrongLayer = null;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				});
+				
+				getData();
+
+				//背景设置
+				mui('body').on('tap', '#background', function() {
+					mui.openWindow({
+						url: 'background.html',
+						id: 'background.html',
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close',
+							titleNView: { //详情页原生导航配置
+								backgroundColor: '#FFFFFF', //导航栏背景色
+								titleText: '背景颜色', //导航栏标题
+								titleColor: '#333333', //文字颜色
+								autoBackButton: true, //自动绘制返回箭头
+								splitLine: { //底部分割线
+									color: '#f2f2f2'
+								}
+							},
+							bounce: 'vertical'
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+				})
+
+				//删除所有错题
+				mui('body').on('tap', '#del_recharge', function() {
+					mui.openWindow({
+						url: 'delete_all.html',
+						id: 'delete_all.html',
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close',
+							titleNView: { //详情页原生导航配置
+								backgroundColor: '#FFFFFF', //导航栏背景色
+								titleText: '删除做题记录', //导航栏标题
+								titleColor: '#333333', //文字颜色
+								autoBackButton: true, //自动绘制返回箭头
+								splitLine: { //底部分割线
+									color: '#f2f2f2'
+								}
+							},
+							bounce: 'vertical'
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+				})
+
+				//预加载记忆设置
+				remember = mui.preload({
+					url: 'remember.html',
+					id: 'remember.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '35%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				self.addEventListener('maskClick', function() {
+					self.setStyle({
+						mask: 'none'
+					});
+					remember.hide('slide-out-bottom');
+					mui("#remember").switch().toggle();
+				}, false);
+				
+				// 消息推送
+				document.getElementById("message_push").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('message_push',1);
+					} else {
+						//console.log("关闭");  
+						setData('message_push',0);
+					}
+				})
+				
+				// 界面动画
+				document.getElementById("animation").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('animation',1);
+					} else {
+						//console.log("关闭");  
+						setData('animation',0);
+					}
+				})
+				
+				// 声音开关
+				document.getElementById("sound_hints").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('sound_hints',1);
+					} else {
+						//console.log("关闭");  
+						setData('sound_hints',0);
+					}
+				})
+				
+				// 自动切题
+				document.getElementById("switch_question").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('switch_question',1);
+					} else {
+						//console.log("关闭");  
+						setData('switch_question',0);
+					}
+				})
+					
+				// 题目记忆
+				document.getElementById("remember").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启了题目记忆");
+						self.setStyle({
+							mask: 'rgba(0,0,0,0.5)'
+						});
+						remember.show("slide-in-bottom", 300);
+					} else {
+						//console.log("关闭了题目记忆");  
+					}
+				})
+				
+				// 自动移除错题
+				document.getElementById("wrong").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						if (wrongLayer) { // 避免快速多次点击创建多个窗口
+							return;
+						}
+						wrongLayer = plus.webview.create("set_wrong.html", "set_wrong.html", {
+							width: '80%',
+							height: '180px',
+							background: 'rgba(0,0,0,.5)',
+							margin: "auto",
+							scrollIndicator: 'none',
+							scalable: false,
+							popGesture: 'none'
+						});
+						wrongLayer.addEventListener("loaded", function() {
+							wrongLayer.show('fade-in', 100);
+							wrongLayer = null;
+						}, false);
+						return
+					} else {
+						setData('remove_question',0)
+					}
+				})
+
+			})
+			
+			// 关闭错题设置
+			function closeWrong(){
+				mui('#wrong').switch().toggle();
+			}
+
+			function hideLayer() {
+				plus.webview.currentWebview().setStyle({
+					mask: 'none'
+				});
+				if (remember.isVisible()) {
+					remember.hide('slide-out-bottom');
+				}
+			}
+			
+			// 更改背景颜色显示
+			function changeBg(text){
+				vm.somedata.background_text = text
+			}
+			
+			// 设置信息
+			function setData(key,value) {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data[key] = value;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_focus', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							// vm.somedata = data.info
+						} else {
+// 							setTimeout(function(){
+// 								mui('#'+key).switch().toggle();
+// 							},500)
+							mui.toast(data.msg);
+							return false;
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 获取设置信息
+			function getData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_focus', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

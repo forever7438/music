@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="../css/cropper.min.css" />
+		<link rel="stylesheet" href="../css/mui.min.css" />
+		<style>
+			#redo{
+					position: fixed;
+					bottom: 20px;
+					left :20px;
+					font-size: 30px;
+					color: #FFFFFF;
+			}
+			#undo{
+					position: fixed;
+					bottom: 20px;
+					right :20px;
+					font-size: 30px;
+					color: #FFFFFF;
+			}
+			html{
+					background: #000000;
+			}
+			.holdcenter{
+					background-color: #000;
+					order:auto;
+					flex: 0 1 auto;
+					-webkit-flex: 0 1 auto;
+					align-self: auto;
+					overflow: hidden;
+					border-top:1px solid #333;
+					border-bottom:1px solid #333;
+					height: 580px;
+			}
+			.holdcenter img{
+				/* height: auto!important; */
+			}
+			.outer-box{
+					display: flex;
+					display: -webkit-flex;
+					/*height: 100%;*/
+					/*border: 1px solid #000000;*/
+					background-color: #000000;
+					flex-direction: row;
+					flex-flow: row wrap;
+					-webkit-flex-flow: row wrap;
+					/*justify-content: flex-start;*/
+				 justify-content: center;
+				 align-items: center;
+			}
+	</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-transparent">
+			<!--<h1 id="patientId" class="mui-title">截取头像</h1>-->
+			<a class="mui-action-back mui-icon mui-icon-back mui-pull-left" style="font-size: 2rem;color: #FFFFFF;"></a>
+			<a id="save" class="mui-icon mui-icon-checkmarkempty mui-pull-right" style="font-size: 3rem;color: #FFFFFF;"></a>
+		</header>
+		<div style="" class="outer-box mui-fullscreen">
+			<div style="" class="holdcenter">
+				<img style="width: 100%;" id="image">
+			</div>
+			<a id="redo" class=" mui-pull-left"><span class="mui-icon mui-icon-redo"></span></a>
+			<a id="undo" class=" mui-pull-right"><span class="mui-icon mui-icon-undo"></span></a>
+		</div>
+		<script type="text/javascript" src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/app.js"></script>
+		<script type="text/javascript" src="../js/jquery.js"></script>
+		<script type="text/javascript" src="../js/cropper.min.js"></script>
+		<script>
+			/**
+			 * 本功能灵感来源于 crooper.js。github地址请看js文件
+			 * 利用cropper.js进行图片剪裁。支持旋转。
+			 * 可以直接获取剪裁后的base64。
+			 * 也可以利用cropper的方法，可以获取一系列参数，借用5+API，
+			 * 可以直接保存本地图片，效率非常高。
+			 * 有对cropper.js熟悉的可以进一步研究修改，提供更多可用功能
+			 * 理论上完全兼容android和ios系统。
+			 */
+			mui.init({
+				hardwareAccelerated: true,
+			});
+
+			var $image = $('#image'); //获取图片元素image
+			var cropper = null;
+			var resImg = null; //剪切后图片base64编码资源
+
+			//初始化控件的方法
+			function initCropper() {
+				$image.cropper({
+					aspectRatio: 1 / 1,
+					viewMode: 1,
+					dragMode: 'move',
+					rotatable: true, //是否允许旋转
+					minCropBoxWidth: 0,
+					minCropBoxHeight: 0,
+					minCanvasWidth: 0,
+					minCanvasHeight: 0,
+					minContainerWidth: 200,
+					minContainerHeight: 200,
+					cropBoxResizable: false, //是否允许 调整 剪裁框 的大小
+					crop: function(event) {
+					}
+				});
+				cropper = $image.data('cropper');
+			} // initCropper  end
+
+
+
+			//保存按钮监听
+			document.getElementById("save").addEventListener("tap", function() {
+				//传入true，获取base64字串，不传或者传入false保存本地文件，获取保存路径。
+				getImg(true);
+			});
+			//右旋转按钮监听
+			document.getElementById("redo").addEventListener("tap", function() {
+				cropper.rotate(90);
+				//这里的旋转角度90数据可自行定义，比方说：15,30,45。支持每次旋转1度
+				//但是考虑到5+api的旋转只支持90一个单位，所以设定每次旋转90度。
+				//有兴趣可以去cropper的范列网站https://fengyuanchen.github.io/cropperjs/自己定义旋转角度试试。
+				//但是227行的5+api旋转参数如何对应需要动脑筋。90度旋转对用户来说应该足够了。
+			});
+			//左旋转按钮监听
+			document.getElementById("undo").addEventListener("tap", function() {
+				cropper.rotate(-90);
+			});
+
+
+
+			//在选择或者拍摄完成后打开此裁剪页面并把图片路径传递到此页面
+			mui.plusReady(function() {
+				// imgSrc是webview的扩展参数传过来的图片路径,用io方法转换成本地绝对路径
+				image.src = plus.io.convertLocalFileSystemURL(plus.webview.currentWebview().imgSrc);
+				// image.src = "../img/guide_1.png";
+				// console.log(JSON.stringify(image))
+
+				initCropper(); //初始化cropper控件
+			}); //plusReady  end
+
+			/**
+			 * 获取图片的方法
+			 * @param {Boolean} flag
+			 */
+			function getImg(flag) {
+				//如果flag传入true,生成base64资源   
+
+				if (flag) {
+					resImg = cropper.getCroppedCanvas({
+						width: 300,
+						height: 300
+					}).toDataURL();
+					//纯cropper.js的功能
+					//resImg 就是base64字符串，可以返回给需要的页面或者上传
+					upAvatar(resImg)
+					// console.log(resImg);
+					//like is “data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAFkCAYAAACadgZ0AAAgAElEQVR4XtS9”
+				} else {
+					//否则生成本地图片
+					//cropper提供的方法，可以获取剪裁范围内的图片的信息，这一个方法就够了。下面的其他方法仅供参考
+					var cropeddata = cropper.getData();
+					//console.log(JSON.stringify(cropeddata));
+					/* 像这样
+					 * {"x":793.6,        /左边距，像素，单位px
+					 * "y":297.59999999999997,    //上边距
+					 *   "width":2380.7999999999997,       //选中的部分图片的宽度，px,Number
+					 *   "height":2380.7999999999997,  //选中部分图片的高度，px,Number
+					 *   "rotate":0,                       //旋转度数,Number
+					 *   "scaleX":1,                       //x轴缩放比例Number
+					 *   "scaleY":1}                       //y轴缩放比例Number
+					 */
+
+					//原始图片信息
+					var sourceImgDate = cropper.getImageData();
+					console.log(JSON.stringify(sourceImgDate));
+					/* 像这样
+					 * {"naturalWidth":3968,      //原始图片宽度，px，像素
+					    "naturalHeight":2976,     //原始图片高度,px
+					    "aspectRatio":1.3333333333333333, //纵横比，高宽比
+					    "width":360,                      //在页面上的显示尺寸
+					    "height":270,
+					    "left":0,
+					    "top":0}
+					 */
+
+					//获取容器（img元素）的信息
+					var containerData = cropper.getContainerData();
+					//console.log(JSON.stringify(containerData));
+					/*  像这样
+					 * {"width":360,"height":276}
+					 */
+
+
+					//剪裁框的信息
+					var cropData = cropper.getCropBoxData();
+					//console.log(JSON.stringify(cropData));
+					/*  像这样
+					 * {"left":72,"top":30,
+					 *  "width":216,
+					 * "height":216}
+					 */
+
+					//获取canvers的信息
+					var canversData = cropper.getCanvasData();
+					//console.log(JSON.stringify(canversData));
+					/*  像这样
+					 * {"left":0,"top":3,
+					 * "width":360,
+					 * "height":270,
+					 * "naturalWidth":3968,
+					 * "naturalHeight":2976}
+					 */
+
+					//接下来使用H5+的图片压缩压缩转换API来完成剪裁和压缩
+					//http://www.html5plus.org/doc/zh_cn/zip.html
+					//准备工作
+					//JSON对象，图片裁剪区域的参数
+					//注意：4个属性我们都已经通过cropper的getData()方法直接获取到了值，是不是很简单呢
+					//直接组织数据吧
+					var ClipImageOptions = {
+						top: cropeddata.y, //(String 类型 )图片裁剪区域与原图片上边界的偏移距离
+						//支持像素值（如"10px"）、百分比（如"10%"）；默认值为"0px"。 注意：如果top值超出原图片高度，则图片裁剪失败。
+
+						left: cropeddata.x, //(Stirng 类型 )图片裁剪区域与原图片左边界的偏移距离
+						//支持像素值（如"10px"）、百分比（如"10%"）；默认值为"0px"。 注意：如果left值超出原图片宽度，则图片裁剪失败。
+
+						width: cropeddata.width, //(String 类型 )图片裁剪区域的宽度
+						//支持像素值（如"100px"）、百分比（如"50%"）、自动计算（如"auto"，即从left位置到图片右边界的宽度）；默认值为"auto"。 注意：如果left值加width值超出原图片宽度，则使用"auto"值进行裁剪。
+
+						height: cropeddata.height //(String 类型 )图片裁剪区域的高度
+						//支持像素值（如"100px"）、百分比（如"50%"）、自动计算（如"auto"，即从top位置到图片下边界的高度）；默认值为"auto"。 注意：如果top值加height值超出原图片高度，则使用"auto"值进行裁剪。
+					}
+
+					//处理旋转角度，因为5+api不接受负值
+					var rotate = 0; //默认值
+					if (cropeddata.rotate >= 0) {
+						rotate = cropeddata.rotate;
+					} else {
+						switch (cropeddata.rotate) {
+							case -90:
+								rotate = 270;
+								break;
+							case -180:
+								rotate = 180;
+								break;
+							case -270:
+								rotate = 90;
+								break;
+							default:
+								rotate = 0;
+						}
+					}
+
+					//获取图片格式                
+					var format = image.src.substring(image.src.lastIndexOf(".") + 1);
+					//console.log(format);
+					//根据日期生成图片名称
+					var d = new Date();
+					var picName = d.getFullYear() + "" + (d.getMonth() + 1) + "" + d.getDate() + "" + d.getHours() + "" + d.getMinutes() +
+						"" + d.getSeconds();
+					var fullname = picName + "." + format;
+					console.log(fullname); //完整图片名称
+
+					//JSON对象，配置图片压缩转换的参数
+					var imgOption = {
+						src: image.src, //原始图片路径
+						dst: "../doc/" + fullname, //(String 类型 )压缩转换目标图片的路径,这里保存到 私有目录doc
+						//如“/sdcard/Android/data/io.dcloud.HBuilder/.HBuilder/apps/HBuilder/doc”。
+						overwrite: true, //覆盖生成新文件
+						format: '', //(String 类型 )压缩转换后的图片格式,支持"jpg"、"png",如果未指定则使用源图片的格式。
+						quality: 50, //(Number 类型 )压缩图片的质量,可以自己调整
+						//取值范围为1-100，1表示使用最低的图片质量（转换后的图片文件最小）、100表示使用最高的图片质量（转换后的图片文件最大）； 默认值为50。
+						width: 'auto', //(String 类型 )缩放图片的宽度
+						//支持像素值（如"100px"）、百分比（如"50%"）、自动计算（如"auto"，即根据height与源图高的缩放比例计算，若未设置height则使用源图高度）； 默认值为"auto"。 注意：若设置了width属性值不合法（如"0px"），则不对图片进行缩放操作。
+
+						height: 'auto', //(String 类型 )缩放图片的高度
+						//支持像素值（如"100px"）、百分比（如"50%"）、自动计算（如"auto"，即根据width与源图宽的缩放比例计算，若未设置width则使用源图高度）； 默认值为"auto"。 注意：若设置了height属性值不合法（如"0px"），则不对图片进行缩放操作。
+
+						rotate: rotate, //(Number 类型 )旋转图片的角度
+						//支持值：90-表示旋转90度；180-表示旋转180度；270-表示旋转270度。 注意：若设置rotate属性值不合法，则不对图片进行旋转操作。
+						clip: ClipImageOptions //(ClipImageOptions 类型(json对象) )裁剪图片的区域
+						//值参考ClipImageOptions定义，若设置clip属性值不合法，则不对图片进行裁剪操作。
+					}
+
+					//开始剪裁
+					plus.zip.compressImage(
+						imgOption, //JSON对象，配置图片压缩转换的参数
+						function() {
+							//console.log(imgOption.dst);                       
+							//console.log("压缩成功");
+							mui.toast("图片已保存到：" + imgOption.dst, {
+								duration: "long"
+							});
+							//如果想要绝对路径
+							// var path = plus.io.(imgOption.dst);
+							console.log(path);
+							//后续处理
+							//将imgOption.dst或者path传递给父页面，用来显示或者上传后台，请自行决定
+							mui.fire(plus.webview.currentWebview().opener(), "avarat", {
+								img: imgOption.dst
+							});
+							mui.back();
+						},
+						function(error) {
+							console.log("压缩失败");
+						}
+					);
+
+
+					//如果不是存到doc目录，而是其他比较复杂的目录，比如根目录
+					//用下面的方法。替换plus.io.PRIVATE_DOC就可以
+					/*plus.io.requestFileSystem(plus.io.PRIVATE_DOC,function(fs){
+					    var filepath = fs.root.fullPath;
+					    //console.log(fs.root.fullPath);
+					    var directEntery = fs.root;
+					    //创建目录，其实这一段并不是必须的，
+					    //plus.zip.compressImage自己会创建文件夹
+					    //相对目录你可以在上面imgOption.dst里面直接写上相对路径"../doc"+fullname
+					    directEntery.getDirectory(
+					            filepath,
+					            {create:true,exclusive:false},
+					            function(direnter){
+					                //如果文件夹已经存在，也会进入这里，所以就不用toast显示了
+					                //mui.toast("创建doc文件夹成功");
+					            },function(e){
+					                mui.toast("创建文件夹失败："+e.message);
+					                mui.back();
+					            }
+					    );
+
+					    //把目标路径更新到json对象
+					    imgOption.dst = filepath+fullname;
+					    //开始压缩图片
+					    plus.zip.compressImage(imgOption,
+					        function(){                                                                         
+					            //console.log(imgOption.dst);                       
+					            //console.log("压缩成功");
+					            mui.toast("图片已保存到："+imgOption.dst,{duration:long});
+					            //将imgOption.dst传递给父页面，用来显示或者上传后台
+					        },function(error){                      
+					            console.log("压缩失败");
+
+					    });
+					}); */
+
+				}
+
+				//最后退出剪裁页面
+				//              mui.back();
+			}
+
+			//获取数据
+			function upAvatar(img) {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.headimg = img
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/set/update_head_img', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							var memPage = plus.webview.getWebviewById('./plus/member.html')
+							memPage.evalJS('getData()');
+							
+							var infoPage = plus.webview.getWebviewById('member_info.html')
+							infoPage.evalJS('getData()');
+							
+							mui.toast(data.msg)
+							mui.back()
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

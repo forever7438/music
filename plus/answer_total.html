@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>答题统计</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html,body{ background: #ffffff}
+			.mui-content{ background: #ffffff}
+			.title{ position: relative; font-weight: 700; line-height: 60px; font-size: 20px; color: #333;}
+			.title .mui-icon{ position: absolute; right: 0; top: 0; color: #ccc; font-size:45px; font-weight: 700;}
+			.title .mui-icon:active{ color: #008BF7;}
+
+			.mui-btn{ padding: 8px 0px; font-size: 14px; transition: background .3s;}
+			
+			.total_box{ padding: 0 20px;}
+			.total_box .total{ font-size: 32px; color: #fe8864;}
+			.total_box .time{ font-size: 14px; color: #fe8864;}
+			.total_box .total_num span{ font-size: 14px; color: #fe8864;}
+			.total_box .total_num{ color: #999; font-size: 12px;}
+			.total_box .total_num .mui-col-xs-3{ padding: 5px 0;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="title mui-text-center">
+				<span>试题得分</span>
+				<a @tap="hideLayer()" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+			</div>
+			<div class="total_box mui-text-center">
+				<div class="total">
+					<b>{{all_score}}分</b>
+				</div>
+				<div class="time margin_t20">用时：{{my_times}}</div>
+				<div class="total_num mui-row margin_t30">
+					<div class="mui-col-xs-3">
+						<span>{{a_num}}</span>
+						<div>答题总数</div>
+					</div>
+					<div class="mui-col-xs-3">
+						<span>{{r_num}}</span>
+						<div>答对题数</div>
+					</div>
+					<div class="mui-col-xs-3">
+						<span>{{e_num}}</span>
+						<div>答错题数</div>
+					</div>
+					<div class="mui-col-xs-3">
+						<span>{{h_num}}</span>
+						<div>半对题数</div>
+					</div>
+					<div class="mui-col-xs-3">
+						<span>{{n_num}}</span>
+						<div>未做总数</div>
+					</div>
+					<div class="mui-col-xs-3">
+						<span>{{rate}}</span>
+						<div>正确率</div>
+					</div>
+				</div>
+				<div class="mui-text-center margin_t40">
+					<button @tap="viewRecord()" class="mui-btn mui-btn-block mui-btn-primary">查看答题记录</button>
+					<template v-if="type == 0">
+					<button @tap="upSub()" class="mui-btn mui-btn-block mui-btn-primary mui-btn-outlined">返回上一级知识点</button>
+					<button @tap="nextSub()" class="mui-btn mui-btn-block mui-btn-primary mui-btn-outlined">进入下一级知识点</button>
+					</template>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					// 考试没有上下一级
+					type:0,
+					
+					code: '',
+					tips: '',
+					
+					all_score: 0, //总得分
+					times: 0, //累计时间 s
+					my_times: '00:00:00', // s转 时间格式
+					a_num: 0, // 已做题数
+					r_num: 0, //正确数
+					e_num: 0, //错误数
+					h_num: 0, //半对数
+					n_num: 0, //未答数
+					rate: '0%', //正确率
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				vm.all_score = self.all_score
+				vm.my_times = self.my_times
+				vm.a_num =self.a_num
+				vm.r_num = self.r_num
+				vm.e_num = self.e_num
+				vm.h_num = self.h_num
+				vm.n_num = self.n_num
+				vm.rate = self.rate
+				vm.type = self.type
+				console.log('type:'+self.type)
+			})
+
+			
+			
+			// 隐藏
+			function hideLayer(){
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("hideMask()")
+			}
+			
+			function viewRecord(){
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("viewRecord()")
+				homePage.evalJS("hideMask()")
+			}
+			
+			function upSub(){
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("upSub()")
+				homePage.evalJS("hideMask()")
+			}
+			
+			function nextSub(){
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("nextSub()")
+				homePage.evalJS("hideMask()")
+			}
+		</script>
+	</body>
+
+</html>

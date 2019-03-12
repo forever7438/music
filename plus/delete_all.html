@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>删除所有</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			h3.title{ padding: 10px 15px; font-size: .3rem;}
+			.del_list { margin-top: 0!important;}
+			.del_list li{ padding: 8px 0;}
+			.del_list .mui-checkbox input[type=checkbox], .mui-radio input[type=radio]{ top: 6px;}
+			.del_list .mui-checkbox input[type=checkbox]:before, .del_list .mui-radio input[type=radio]:before{ font-size: 24px;}
+			
+			.password_input { padding:6px 0; background:#fff; border: 1px solid #f2f2f2}
+			.password_input input{ margin:0; border:none!important; border-radius: 0!important;}
+			.password_input span{ top: 16px!important;}
+			
+			.mui-btn-danger{ background: #fe8864; border-color: #fe8864;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<form class="js_form">
+			<ul class="mui-table-view del_list">
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>做题记录({{somedata.learn_topics_del}})</label>
+						<input name="ids" type="checkbox" value="1">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>错题({{somedata.error_topics_del}})</label>
+						<input name="ids" type="checkbox" value="2">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>收藏({{somedata.favorite_num_del}})</label>
+						<input name="ids" type="checkbox" value="3">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>笔记({{somedata.note_num_del}})</label>
+						<input name="ids" type="checkbox" value="4">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>纠错({{somedata.correct_num_del}})</label>
+						<input name="ids" type="checkbox" value="5">
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-input-row mui-checkbox">
+						<label>讨论({{somedata.discuss_num_del}})</label>
+						<input name="ids" type="checkbox" value="6">
+					</div>
+				</li>
+			</ul>
+			</form>
+			<h3 class="title margin_t30">验证身份</h3>
+			<div class="mui-input-row password_input">
+				<input type="password" class="mui-input-clear" placeholder="输入登录密码" v-model="password">
+			</div>
+			<div class="btn-content">
+				<button class="mui-btn mui-btn-block mui-btn-danger" data-loading-text="删除中">删除</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					password:''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+					
+				}
+			});
+			
+			mui.plusReady(function(){
+				getData()
+			})
+
+			mui(document.body).on('tap', '.mui-btn', function(e) {
+				
+				if(vm.password == ''){
+					mui.toast('请输入密码')
+					return false;
+				}
+				
+				var _this = this;
+				mui(_this).button('loading');
+				
+				var form = $('.js_form').serializeArray();
+				var arr = []
+				var data = {}
+				for (var i of form) {
+					arr.push(i.value)
+				}
+				
+				var state = app.getState();
+				data.user_key = state.user_key;
+				data.type_ids = arr;
+				data.password = vm.password
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/del_log_operation', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						mui.toast(data.msg)
+						mui(_this).button('reset');
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							$('input[name=ids]').prop('checked',false)
+							getData();
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			});
+
+			// 获取信息
+			function getData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/del_log_page', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

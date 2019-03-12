@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>做题记录</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/wrong.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.slider_nav{ background: #fff; border-bottom: 1px solid #f2f2f2;}
+			.mui-segmented-control.mui-scroll-wrapper .mui-scroll{ width: 100%;}
+			.mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0; width: 50%;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item{ color: #999999; font-size: .28rem;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active{ position: relative; color: #333; font-size: .28rem; font-weight: 700;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active:before{ content: ''; position: absolute; left: 50%; bottom: 0; width: .4rem; height: 2px; margin-left: -.2rem; background: #008BF7;}
+			
+			.screen{ position: relative; line-height: 38px;}
+			.screen:before{ content: ''; position: absolute; left: 0; top: 50%; margin-top: -10px; height: 20px; width: 1px; background: #ddd;}
+			.screen span{ display: inline-block; vertical-align: middle; font-size: 18px; color: #444;}
+			.screen:active,.screen:active span{ color: #008BF7;}
+			
+			.del-box{ position: fixed; bottom: 0; left: 0; right: 0; height: 50px; line-height: 50px;}
+			.del-box button{ padding: 0; margin: 0; border:1px solid #008BF7; border-radius: 0; line-height: 50px; font-size: .3rem; font-weight: 700;}
+			.del-box .btn-del{ border:1px solid #fff; border-top: 1px solid #f2f2f2; color: #fe8864;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">做题记录</h1>
+		</header>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div class="mui-row slider_nav">
+					<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div class="mui-scroll">
+							<a class="mui-control-item mui-active" href="#item1mobile" data-wid="problem-1.html">
+								练习记录
+							</a><a class="mui-control-item" href="#item2mobile" data-wid="problem-2.html">
+								考试记录
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--<div class="del-box">
+			<div class="mui-row" v-show="is_active == 0">
+				<div class="mui-col-xs-6">
+					<button class="mui-btn mui-btn-block btn-del">删除</button>
+				</div>
+				<div class="mui-col-xs-6">
+					<button class="mui-btn mui-btn-block mui-btn-primary">查看排行榜</button>
+				</div>
+			</div>
+			<div class="mui-row"v-show="is_active == 1">
+				<div class="mui-col-xs-5">
+					<button class="mui-btn mui-btn-block btn-del" style="color: #333;">取消</button>
+				</div>
+				<div class="mui-col-xs-7">
+					<button class="mui-btn mui-btn-block mui-btn-primary">确定</button>
+				</div>
+			</div>
+		</div>-->
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mokaoGroup.js"></script>
+		<script>
+			mui.init();
+			
+			mui.plusReady(function() {
+				var currentId=plus.webview.currentWebview().id;
+				var group = new webviewGroup(currentId, {
+					items: [{
+						id: "problem-1.html",
+						url: "problem-1.html",
+						extras: {}
+					}, {
+						id: "problem-2.html",
+						url: "problem-2.html",
+						extras: {}
+					}],
+					onChange: function(obj) {
+						var c = document.querySelector(".mui-control-item.mui-active");
+						if(c) {
+							c.classList.remove("mui-active");
+						}
+						document.querySelector(".mui-scroll .mui-control-item:nth-child(" + (parseInt(obj.index) + 1) + ")").classList.add("mui-active");
+					}
+				});
+				mui(".mui-scroll").on("tap", ".mui-control-item", function(e) {
+					var wid = this.getAttribute("data-wid");
+					group.switchTab(wid);
+				});
+
+			});
+			
+			
+//			mui.back = function() {
+//				var _self = plus.webview.currentWebview();
+//				_self.close("auto");
+//			}
+		</script>
+	</body>
+
+</html>

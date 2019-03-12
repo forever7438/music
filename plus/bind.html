@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>绑定</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/login.css" rel="stylesheet" />
+		<style>
+			.code_box{ position: relative;}
+			.code_box a{ position: absolute; right: 15px; top: 0; line-height: 35px; color: #ffa200; font-size: .3rem;}
+			
+			.argee{ padding: 0 .6rem;}
+			.argee a{ color: #FFA200;}
+			/*公用checkbox样式*/
+	.shop_check{ position: relative; top: 0.04rem; display: inline-block; margin:0; margin-right: 0.2rem; width: 0.32rem; height: 0.32rem; }
+	.shop_check input{ position: absolute; left: -9999rem }
+	.shop_check i{ position: relative; display: inline-block; width: 0.32rem; height: 0.32rem; }
+	.shop_check i:before{ content: ""; position: absolute; display: inline-block; width: 0.32rem; height: 0.32rem; border:1px solid #ddd;}
+
+	.shop_check input:checked + i:before{ background: #008bf7; border-color: #008bf7 }
+	.shop_check input:checked + i:after{ content: ""; position: absolute; top:50%; left: 50%; transform: rotate(-45deg); margin-top: -0.08rem; margin-left:-.07rem; width: 0.18rem; height: 0.1rem; border-left:1px solid #fff; border-bottom:1px solid #fff; }
+
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">绑定账号</h1>
+		</header>
+		<div class="mui-content">
+			<div class="login_box">
+				<form id='login-form' class="login_content">
+					<div class="login_input mui-input-row">
+						<span class="login_icon mui-icon-extra icon-shouji mui-pull-left">
+						</span>
+						<div><input id='account' type="tel" maxlength="50" class="mui-input-clear mui-input" autocapitalize="off"
+							 placeholder="请输入手机号码" value=""></div>
+					</div>
+					<div class="login_input mui-input-row margin_t40 code_box">
+						<span class="login_icon mui-icon-extra icon-dentifyingcode mui-pull-left">
+						</span>
+						<div><input id='code' type="number" pattern="[0-9]*" maxlength="6" class="mui-input" autocapitalize="off" placeholder="短信验证码" value=""></div>
+						<a id="sendBtn">获取验证码</a>
+					</div>
+				</form>
+			</div>
+			<div class="login_btn">
+				<button id='reg' class="mui-btn mui-btn-block mui-btn-primary">绑定</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mui.enterfocus.js"></script>
+		<script src="../js/app.js"></script>
+		<script>
+			(function($, doc) {
+				$.init();
+				$.plusReady(function() {
+					
+					var self = plus.webview.currentWebview();
+					self.addEventListener('hide',function(){
+						document.activeElement.blur()
+					})
+					
+					var toMain = function() {
+						var selfWv = plus.webview.currentWebview();
+						var loginWv = plus.webview.getWebviewById('login');
+						var bindWv = plus.webview.getWebviewById('bind_tips.html');
+						
+						var old_back = mui.back;
+						mui.back = function() {
+							// 执行相应的事件
+							// console.log(selfWv.type)
+							if(loginWv){
+								loginWv.close();
+							}
+							if(bindWv){
+								bindWv.close();
+							}
+							var mainPage = plus.webview.getLaunchWebview();
+							mui.fire(mainPage, 'mainShow', {
+								id: selfWv.type
+							});
+							// 执行关闭
+							old_back();
+						};
+					
+						mui.back();
+					};
+					
+					var settings = app.getSettings();
+					var regButton = doc.getElementById('reg');
+					var accountBox = doc.getElementById('account');
+					var codeBox = doc.getElementById('code');
+					
+					regButton.addEventListener('tap', function(event) {
+						
+						// 第三方登录注册
+						var regInfo = {
+							mobile: accountBox.value,
+							code: codeBox.value,
+							open_id : self.open_id,
+							open_type : self.open_type
+						};
+						console.log(JSON.stringify(regInfo))
+						// 绑定账号
+						mui.ajax(server + 'Api/V1/Login/bind', {
+							data: regInfo,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'post', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data))
+								if (data.status == 1) {
+									app.createState(data.info.nickname, data.info.realname, data.info.user_key, data.info.mobile, data.info.member_id, data.info.subject_pid, data.info.subject_id, data.info.subject_title, function() {
+										toMain();
+									});
+								} else {
+									mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								//		            	console.log(JSON.stringify(xhr.responseText))
+								//异常处理；
+								mui.toast('网络异常');
+							}
+						});
+						
+// 						app.reg(regInfo, function(err) {
+// 							if (err) {
+// 								plus.nativeUI.toast(err);
+// 								return;
+// 							}
+// 							plus.nativeUI.toast('注册成功，立即登录');
+// 							mui.back()
+// 						});
+					});
+				});
+			}(mui, document));
+
+
+			var sendBtn = document.getElementById('sendBtn');
+			var accountBox = document.getElementById('account');
+
+			//发送验证码
+			sendBtn.addEventListener('tap', function() {
+				senmobile(60);
+			})
+			var issend = true;
+
+			function senmobile(t) {
+				if (issend) {
+					//验证电话号码手机号码 
+					if (accountBox.value != "") {
+						var p1 = /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;
+						var me = false;
+						if (p1.test(accountBox.value)) me = true
+						if (!me) {
+							accountBox.value = '';
+							mui.toast('请输入正确的手机号码');
+							// mobile.focus();
+							return false;
+						}
+						issend = false;
+						var data = {}
+						data.account = accountBox.value;
+						data.type = 2;
+						mui.ajax(server + 'Api/V1/Register/get_mobile_code_app', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data))
+								if (data.status == 1) {
+									var time = setInterval(function() {
+										set_time(t);
+										if (t <= 0) {
+											clearInterval(time);
+										}
+										t--;
+									}, 1000);
+									mui.toast(data.msg)
+								} else {
+									issend = true;
+									mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								//console.log(JSON.stringify(xhr.responseText))
+								//异常处理；
+								mui.toast('网络异常');
+							}
+						});
+					} else {
+						mui.toast('手机号码不能为空！');
+						return false;
+					}
+				}
+			}
+
+			function set_time(countdown) {
+				//var get_code=document.getElementById('js_get_code'); 
+				if (countdown == 0) {
+					sendBtn.innerHTML = "重新发送";
+					issend = true;
+				} else {
+					sendBtn.innerHTML = countdown + " 秒后重发";
+				}
+			}
+		</script>
+	</body>
+
+</html>

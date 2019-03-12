@@ -1,0 +1,1392 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-scroll-wrapper{ background: #fff;}
+			.answer_box{ padding-bottom: 60px; background: #fff;}
+			.answer_title{ margin: 0 .3rem; height: 1rem; line-height: 1rem; border-bottom: 1px solid #f2f2f2; font-weight: bold; font-size: 0.28rem;}
+			.answer_content{ padding: .3rem;}
+			
+			.answer_tab{ padding: .3rem; min-height: 6rem;}
+			
+			.operate_box{ position: fixed; z-index:99; height: 50px; line-height: 50px; left: 0; bottom: 0; width: 100%; background: #fff; border-top:1px solid #f2f2f2}
+			.operate_box span{ position: relative; top: 2px;}
+			.operate_box a{ font-weight: 700;}
+			
+			.practice{ border-top:1px solid #f2f2f2}
+			.practice .mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0 10px; font-size: .28rem; color: #999;}
+			.practice .mui-control-item.mui-active{ position: relative; color: #333!important; font-weight: 700;}
+			.practice .mui-control-item.mui-active:before{ content: ''; position: absolute; bottom: 0; left: 50%; width: .4rem; margin-left: -.2rem; height: 2px; background: #008bf7;}
+			.practice.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item{ border-top-color: #f2f2f2; border-bottom-color: #fff;}
+			.practice .mui-table-view:before,.mui-table-view:after,.mui-table-view-cell:after{background-color:#f2f2f2}
+			
+			.practice li{ font-size: .24rem; color: #999;}
+			.practice .title{ font-size: .3rem; color: #333;}
+			.practice .right{ display: block; margin-bottom: 2px; color: #ffa200; font-size: .3rem;}
+			.practice .people{ display: block; margin-bottom: 2px; color: #fe8864; font-size: .3rem;}
+			.practice .loding_txt{ color: #008bf7;}
+			
+			.mui-control-content {
+				background-color: white;
+				min-height:300px;
+			}
+			.mui-control-content .mui-loading {
+				margin: 100px 0;
+			}
+
+			/*练习模式*/
+			.ques_div{ position: relative; }
+			.ques_div .op_btn{ width: 40px; height: 26px; margin-left: 20px; cursor: pointer; text-align: right; line-height: 20px; position: relative;}
+			.ques_div .op_btn:hover .arr{ transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+			.ques_div .op_down{ display: none; position: absolute; right: 0px; top: 26px; width: 150px; box-shadow: 0 3px 5px rgba(0,0,0,0.05); background: #fff; z-index: 20}
+			.ques_div .op_down a{ display: block; line-height: 34px; padding:0 10px; color: #333; text-align: left;}
+			.ques_div .op_down a img{ width: 20px; height: 20px; float: left; margin-top: 7px; margin-right: 10px;}
+			.ques_div .op_down a img.img1{ display: none }
+			.ques_div .op_down a img.img2{ display: block }
+			.ques_div .op_down a:hover{ background: #008bf7; color: #fff }
+			.ques_div .op_btn:hover .op_down{ display: block; }
+			.ques_div .op_down a:hover img.img1{ display: block }
+			.ques_div .op_down a:hover img.img2{ display: none }
+			.ques_div .t{ overflow: hidden; font-size: 14px; }
+			.ques_div .t p{ display: inline; color: #333}
+
+			/*单选*/
+			.ch_ques{ padding-top: 10px; }
+			.ch_ques .c_item{ line-height: 36px; color: #333; display: block; font-size: 14px; }
+			.ch_ques .c_item .radio_d{ position: relative; width: 20px; height: 20px; text-align: center; font-size: 14px; font-weight: normal; color: #999; line-height: 18px; border-radius: 50%; border: 1px solid #999; float: left; margin-right: 10px; margin-top: 8px;}
+			
+			.ch_ques .c_item.select{ color: #008bf7 }
+			.ch_ques .c_item.select .radio_d{ border-color:#008bf7; color:#fff; background: #008bf7 }
+			
+
+			.ch_ques .c_item.error{ color: #ff4f4f }
+			.ch_ques .c_item.error .radio_d{ border-color:#ff4f4f; color:#fff; background: #ff4f4f }
+
+			.ch_ques .c_item.success{ color: #00a245 }
+			.ch_ques .c_item.success .radio_d{ border-color:#00a245;color:#fff; background: #00a245}
+			/*多选*/
+			.chs_ques .c_item .radio_d{ border-radius: 2px; }
+			/*.chs_ques .c_item .radio_d{ border: none; border-radius: 0; background: url(../img/sele3.png); }
+			.chs_ques .c_item.select .radio_d{ border-radius: 0; background: url(../img/sele4.png); }
+			.chs_ques .c_item.error .radio_d{ border-radius: 0; background: url(../img/sele2.png); }
+			.chs_ques .c_item.success .radio_d{ border-radius: 0; background: url(../img/sele1.png); }*/
+
+			.ques_div .video_btn{ position: absolute; right: 0px; bottom: 20px; color:#333;}
+			.ques_div .video_btn img{ position: relative; top: -1px; margin-right: 5px; }
+			.q_btns .my_btn.normal_btn{ padding: 0 20px; margin-right: 10px; }
+
+			body .answer_d .status_img{ position: relative; top: 0px; margin-left: 5px; width: 0.44rem!important; }
+			.answer_d .i_box{ line-height: 24px; }
+			.it .box{ width: 25%; float: left; text-align: center; }
+			.it .box .tt{ display: inline-block; }
+			.it .box img{ margin-left: 10px; }
+			.change_btns .btns img{ position: relative; top: -1px; margin: 0 5px; }
+			.change_btns .btns:hover{ color: #008bf7  }
+			.ques_d_right{ width:262px; float: right; min-height: 100px; margin-left: 20px;  }
+			.ques_d_left{ overflow: hidden; padding-bottom: 60px;}
+
+			.ques_d_right .set_box_div .box{ width: auto; float: none; padding: 0 5px; font-size: 12px; }
+			.ques_card{ padding: 0 15px; }
+			.ques_card .tt{ line-height: 36px; }
+			.ques_card .i_box{ display: block; width: 30px; height: 30px; float: left; margin-right: 4px; border: 1px solid #dddddd; margin-bottom: 4px; text-align: center; line-height:28px; font-size: 12px; color: #333}
+			.ques_card .i_box.status1{ border-color:#00a245; color: #00a245}
+			.ques_card .i_box.status3{ border-color:#ff4f4f; color: #ff4f4f}
+			.ques_card .i_box.status2{ border-color:#1dcdff; color: #1dcdff}
+			.ques_card .i_box.status4{ border-color:#ffa200; color: #ffa200}
+
+			.color_info{ padding: 20px 15px }
+			.color_info .item_b{ width: 25%; float: left; line-height: 20px; font-size: 12px;}
+			.color_info .item_b .c{ width: 20px; height: 20px; }
+			.color_info .item_b .c.c1{ background:#00a245  }
+			.color_info .item_b .c.c2{ background:#ff4f4f  }
+			.color_info .item_b .c.c3{ background:#1dcdff  }
+			.color_info .item_b .c.c4{ background:#fff; border: 1px solid #ddd  }
+			.color_info .item_b .c.c5{ background:#ffa200  }
+			.color_info .item_b .t{ text-align: center; }
+
+			.s_input_s{border:1px solid #ddd; height: 28px!important; border-radius: 4px; width:60px!important; padding: 0!important; margin-right: 5px; padding-left: 5px!important; }
+
+			.answer_d .text{ overflow: hidden; }
+
+			.paper_re{ padding: 0 40px; padding-top: 20px; }
+			.paper_re .bo{ width: 16.66%; float: left; line-height: 24px;}
+
+			.change_btns{position: fixed;
+			    left: 220px;
+			    right: 300px;
+			    bottom: 50px;}
+
+
+			 .title_btns a{ color: #333; font-size: 0.28rem; font-weight: normal; }
+			.title_btns a span{ font-size: 0.36rem; margin-right: 5px; }
+			.title_btns a span.active{ color:#FE8864  }
+
+			.margin_l20{ margin-left: 0.2rem; }
+			.pad_t20{ padding-top: 0.2rem }
+			.pad_b20{ padding-bottom: 0.2rem;}
+			.margin_b20{ margin-bottom: 0.2rem;}
+			.pad_r20{ padding-right: 0.2rem;}
+			.pad_t10{ padding-top: 0.1rem;}
+			.pad_tb20{ padding-top: 0.2rem; padding-bottom: 0.2rem;}
+
+			.pad_tb30{ padding-top: 0.3rem; padding-bottom: 0.3rem; }
+			.pad_lr30{ padding-left: 0.3rem; padding-right: 0.3rem; }
+			
+			.blank_textarea{height: 140px; padding: 5px; border-color: #DEDEDE; background: #F8F8F8; color:#333; font-size: 14px;}
+			
+			body .color_yellow{ color: #ffa200 }
+			body .color_yellow2{ color: #fcff00 }
+			body .color_yellow3{ color: #fe8864 }
+			body .color_blue{color: #008BF7;}
+			body .color_green{ color:#00a245 }
+			body .color_999{ color: #999;}
+
+			body .wd_confirm{ background: #fe8864; height: 28px; padding: 0; border-color:#fe8864  }
+
+			body .tk_input{ border: none; border-bottom:1px solid #ddd;  border-radius: 0; padding: 0; font-size: 14px; }
+
+		</style>
+	</head>
+
+	<body>
+		<!--下拉刷新容器-->
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll" v-cloak>
+					<div v-if="is_none == 1">
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无题目~</div>
+							<button class="mui-action-back mui-btn mui-btn-primary margin_t40">返回</button>
+						</div>
+					</div>
+					<div class="answer_box" v-if="list.length>0">
+						<div class="answer_title mui-clearfix">
+							<div class="mui-pull-right title_btns">
+								<a href="javascript:;" v-if="list[now_index].video!='' && is_end"><span class="mui-icon mui-icon-videocam"></span>视频解析</a>
+								<span class="color_yellow" v-if="!is_end">{{my_times}}</span>
+								<a href="javascript:;" v-on:tap="show_card" class="margin_l20"><span class="mui-icon mui-icon-settings"></span>答题卡</a>
+								<a href="javascript:;" class="margin_l20" v-on:tap="love_this(now_index)"><span class="mui-icon mui-icon-star"
+									 v-bind:class="list[now_index].is_love==1?'active':''"></span></a>
+							</div>
+							{{type_title[parseInt(list[now_index].type)]}}<span style="padding: 5px "></span>{{now_index+1}}/{{list.length}}
+						</div>
+						<div class="answer_content">
+							<div class="ques_div clearfix">
+								<!-- 场景题 -->
+								<template v-if="list[now_index].is_cj">
+									<div class="t pad_b20 margin_b20" style="border-bottom: 1px solid #eee" v-html="list[now_index].cj_content"></div>
+									<div class="pad_t10 color_blue pad_b20">{{type_title[parseInt(list[now_index].type)]}}</div>
+								</template>
+								<!-- 场景题 -->
+								<!-- 单选 或判断 -->
+								<template v-if="list[now_index].type=='0' || list[now_index].type=='2'">
+									<div class="clearfix">
+										<div class="t">{{now_index+1}}、<span v-html="list[now_index].ques"></span>({{list[now_index].ques_score}}分)</div>
+									</div>
+
+									<div class="clearfix pad_tb10 ch_ques" v-if="is_end">
+										<template v-for="(item,index) in list[now_index].choices">
+											<a href="javascript:;" class="c_item clearfix" v-bind:class="list[now_index].is_answer?list[now_index].my_answer==index?list[now_index].is_right=='1'?'success':'error':item.is_answer?'success':'':''">
+												<div class="radio_d">{{w_arr[index]}}</div>
+												{{item.title}}
+											</a>
+										</template>
+									</div>
+									<div class="clearfix pad_tb10 ch_ques" v-if="!is_end">
+										<template v-for="(item,index) in list[now_index].choices">
+											<a href="javascript:;" class="c_item clearfix" v-bind:class="list[now_index].my_answer==index?'select':''"
+											 v-on:tap="d_sele(index)">
+												<div class="radio_d">{{w_arr[index]}}</div>
+												{{item.title}}
+											</a>
+										</template>
+									</div>
+
+								</template>
+								<!-- 单选 或判断-->
+
+								<!-- 多选 -->
+								<template v-if="list[now_index].type=='1'">
+									<div class="clearfix">
+										<div class="t">{{now_index+1}}、<span v-html="list[now_index].ques"></span>({{list[now_index].ques_score}}分)</div>
+									</div>
+									<div class="clearfix pad_tb10 ch_ques chs_ques">
+										<template v-for="(item,index) in list[now_index].choices" v-if="!is_end">
+											<a href="javascript:;" class="c_item clearfix" v-bind:class="is_in_arr(index,list[now_index].my_answer)?'select':''"
+											 v-on:tap="ds_sele(index)">
+												<div class="radio_d">{{w_arr[index]}}</div>
+												{{item.title}}
+											</a>
+										</template>
+
+										<template v-for="(item,index) in list[now_index].choices" v-if="is_end">
+											<a href="javascript:;" class="c_item clearfix" v-bind:class="is_in_arr(index,list[now_index].answers)?'success':is_in_arr(index,list[now_index].my_answer)?'error':''">
+												<div class="radio_d">{{w_arr[index]}}</div>
+												{{item.title}}
+											</a>
+										</template>
+									</div>
+
+								</template>
+								<!-- 多选 -->
+
+								<!-- 填空 -->
+								<template v-if="list[now_index].type=='3'">
+									<div class="clearfix">
+										<div class="t">{{now_index+1}}、<span v-html="list[now_index].ques"></span>({{list[now_index].ques_score}}分)</div>
+										<div class="input_box margin_t10 js_blank_val">
+											<div class="input_rr"><input class="tk_input" type="text" v-bind:disabled="is_end?true:false" v-model="list[now_index].my_answer"
+												 v-on:keyup="sub_blank" placeholder="请在此输入答案"></div>
+										</div>
+									</div>
+								</template>
+								<!-- 填空 -->
+
+
+								<!-- 简答 -->
+								<template v-if="list[now_index].type=='4'">
+									<div class="clearfix">
+										<div class="t">{{now_index+1}}、<span v-html="list[now_index].ques"></span>({{list[now_index].ques_score}}分)</div>
+										<div class="input_box input_box_dark margin_t10">
+											<div class="input_rr">
+												<textarea class="js_blank_textarea blank_textarea" v-bind:disabled="list[now_index].is_answer?true:false"
+												 v-model="list[now_index].my_answer" v-bind:disabled="list[now_index].is_answer?true:false"></textarea>
+											</div>
+										</div>
+									</div>
+									<div class="mui-text-center">
+										<button v-on:tap="sub_jianda" v-if="!list[now_index].is_answer" class="mui-btn mui-btn-blue">提交</button>
+									</div>
+								</template>
+								<!-- 简答 -->
+							</div>
+						</div>
+						<!--底部切换-->
+
+						<template v-if="list[now_index].is_answer">
+
+							<!-- 考虑简答需要先看解析 -->
+							<template v-if="!is_end && list[now_index].type=='4'">
+								<div class="answer_d clearfix pad_lr30 pad_tb30">
+									<div class="text">
+										<!-- 问答-->
+										<template v-if="list[now_index].type=='4'">
+											<div class="pad_b10">
+												<span class="pad_r20 color_blue">参考答案：<span v-html="list[now_index].answer"></span>
+											</div>
+											<div class="" v-if="!is_view_aues">
+												<span class="pad_r20"><span class="color_yellow">您的答案：</span><span v-html="list[now_index].my_answer"></span></span>
+											</div>
+										</template>
+										<!-- 问答 -->
+									</div>
+									<div class="pad_t10 i_box color_999">参考解析：<span v-html="list[now_index].analysis"></span></div>
+									<div class="pad_t10 i_box color_yellow3 clearfix">
+										<template v-if="!is_view_aues">
+											本题得分：
+											<template v-if="list[now_index].type!='4' || list[now_index].type=='4' && list[now_index].is_right!=null">{{list[now_index].my_score}}</template>
+											<template v-if="list[now_index].type=='4' && list[now_index].is_answer && list[now_index].is_right==null"><input
+												 type="text" class="s_input_s" data-type="number" v-bind:data-max="list[now_index].ques_score"><button
+												 v-on:tap="real_answer" class="mui-btn mui-btn-blue btn_yellow3 wd_confirm" style="min-width: 46px;">确定</button></template>
+										</template>
+									</div>
+								</div>
+							</template>
+							<div id="slider" class="mui-slider practice" v-if="is_end">
+								<!--<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">-->
+								<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted"
+								 style="overflow: hidden;">
+									<div class="mui-scroll" style=" position: absolute; width: auto;">
+										<a class="mui-control-item mui-active" href="#item1mobile">
+											答案
+										</a>
+										<a class="mui-control-item" href="#item2mobile">
+											讨论
+										</a>
+										<a class="mui-control-item" href="#item3mobile">
+											笔记
+										</a>
+										<a class="mui-control-item" href="#item4mobile">
+											纠错
+										</a>
+										<a class="mui-control-item" href="#item5mobile">
+											悬赏求助
+										</a>
+									</div>
+								</div>
+								<div class="mui-slider-group">
+									<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+										<div class="answer_tab">
+
+											<div class="answer_d clearfix">
+												<img v-bind:src="'../img/status'+list[now_index].is_right+'.png'" class="mui-pull-right status_img" v-if="!is_view_aues && list[now_index].is_right!=null"
+												 alt="">
+												<div class="text">
+													<!-- 单选-->
+													<template v-if="list[now_index].type=='0'">
+														<template v-if="list[now_index].is_right=='1'"><span class="pad_r20 color_green">回答正确：{{w_arr[fun_right(list[now_index].choices)[0]]}}</span></template>
+														<template v-else>
+															<span class="pad_r20 color_blue">正确答案：{{w_arr[fun_right(list[now_index].choices)[0]]}}</span>
+															<span class="pad_r20 color_yellow">您的答案：{{w_arr[list[now_index].my_answer]}}</span>
+														</template>
+													</template>
+													<!-- 单选 -->
+
+
+													<!-- 判断-->
+													<template v-if="list[now_index].type=='2'">
+														<template v-if="list[now_index].is_right=='1'"><span class="pad_r20 color_green">回答正确：{{list[now_index].choices[fun_right(list[now_index].choices)[0]].title}}</span></template>
+														<template v-else>
+															<span class="pad_r20 color_blue">正确答案：{{list[now_index].choices[fun_right(list[now_index].choices)[0]].title}}</span>
+															<span class="pad_r20 color_yellow">您的答案：{{list[now_index].my_answer==null?'':list[now_index].choices[list[now_index].my_answer].title}}</span>
+														</template>
+													</template>
+													<!-- 判断 -->
+
+													<!-- 多选 -->
+													<template v-if="list[now_index].type=='1'">
+														<template v-if="list[now_index].is_right=='1'"><span class="pad_r20 color_green">回答正确：
+																<template v-for="(item,index) in list[now_index].answers">{{w_arr[item]}}</template>
+															</span></template>
+														<template v-else>
+															<span class="pad_r20 color_blue">正确答案：<template v-for="(item,index) in list[now_index].answers">{{w_arr[item]}}</template></span>
+															<span class="pad_r20 color_yellow">您的答案：<template v-for="(item,index) in list[now_index].my_answer">{{w_arr[item]}}</template></span>
+														</template>
+													</template>
+													<!-- 多选 -->
+
+													<!-- 填空-->
+													<template v-if="list[now_index].type=='3'">
+														<template v-if="list[now_index].is_right=='1'"><span class="pad_r20 color_green">回答正确：{{list[now_index].answer}}</span></template>
+														<template v-else>
+															<span class="pad_r20 color_blue">正确答案：{{list[now_index].answer}}</span>
+															<span class="pad_r20 color_yellow">您的答案：{{list[now_index].my_answer}}</span>
+														</template>
+													</template>
+													<!-- 填空 -->
+
+													<!-- 问答-->
+													<template v-if="list[now_index].type=='4'">
+														<div class="pad_b10">
+															<span class="pad_r20 color_blue">参考答案：<span v-html="list[now_index].answer"></span>
+														</div>
+														<div class="" v-if="!is_view_aues">
+															<span class="pad_r20"><span class="color_yellow">您的答案：</span><span v-html="list[now_index].my_answer"></span></span>
+														</div>
+													</template>
+													<!-- 问答 -->
+
+
+												</div>
+												<div class="pad_t10 i_box" v-if="list[now_index].type!='4' && !is_view_aues">统计：本题您做了{{parseInt(list[now_index].i_have_m)}}次，正确率{{(parseInt(list[now_index].i_have_r)*100/parseInt(list[now_index].i_have_m)).toFixed(1)}}%，全站共{{parseInt(list[now_index].all_m)}}人做答，正确率{{(parseInt(list[now_index].all_r)*100/parseInt(list[now_index].all_m)).toFixed(1)}}%</div>
+												<div class="pad_t10 i_box color_999">参考解析：<span v-html="list[now_index].analysis"></span></div>
+												<div class="pad_t10 i_box color_yellow3 clearfix">
+													<a href="javascript:;" v-if="list[now_index].note==''" v-on:tap="edit_note" class="color_blue mui-pull-right"><span
+														 class="mui-icon mui-icon-compose"></span>添加笔记/解析</a>
+													<template v-if="!is_view_aues">
+														本题得分：
+														<template v-if="list[now_index].type!='4' || list[now_index].type=='4' && list[now_index].is_right!=null">{{list[now_index].my_score}}</template>
+														<template v-if="list[now_index].type=='4' && list[now_index].is_answer && list[now_index].is_right==null"><input
+															 type="text" class="s_input_s" data-type="number" v-bind:data-max="list[now_index].ques_score"><button
+															 v-on:tap="real_answer" class="mui-btn mui-btn-blue btn_yellow3 wd_confirm" style="min-width: 46px;">确定</button></template>
+													</template>
+												</div>
+											</div>
+											<template v-if="list[now_index].note!='' || list[now_index].is_edit_note">
+												<div class="clearfix pad_tb20">
+													<a href="javascript:;" v-if="list[now_index].note!=''" v-on:tap="edit_note" class="mui-pull-right color_blue"><span
+														 class="mui-icon mui-icon-compose"></span>修改</a>
+													笔记内容
+												</div>
+												<div class="border_box">
+													<div class="input_box input_box_dark">
+														<div class="input_rr">
+															<textarea class="js_note_content blank_textarea" v-bind:disabled="list[now_index].is_edit_note?false:true"
+															 placeholder="请输入笔记内容" v-model="list[now_index].note" maxlength="500"></textarea>
+														</div>
+														<div class="mui-text-center pad_t10" v-if="list[now_index].is_edit_note || list[now_index].note==''"><button
+															 v-on:tap="sub_note(list[now_index].id)" class="mui-btn mui-btn-blue">提交</button></div>
+													</div>
+												</div>
+											</template>
+
+										</div>
+									</div>
+									<div id="item2mobile" class="mui-slider-item mui-control-content">
+										<ul class="mui-table-view">
+											<div class="mui-loading">
+												<div class="mui-spinner">
+												</div>
+											</div>
+										</ul>
+									</div>
+									<div id="item3mobile" class="mui-slider-item mui-control-content">
+										<ul class="mui-table-view">
+											<div class="mui-loading">
+												<div class="mui-spinner">
+												</div>
+											</div>
+										</ul>
+									</div>
+									<div id="item4mobile" class="mui-slider-item mui-control-content">
+										<ul class="mui-table-view">
+											<div class="mui-loading">
+												<div class="mui-spinner">
+												</div>
+											</div>
+										</ul>
+									</div>
+									<div id="item5mobile" class="mui-slider-item mui-control-content">
+										<ul class="mui-table-view">
+											<div class="mui-loading">
+												<div class="mui-spinner">
+												</div>
+											</div>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</template>
+
+						<!--底部切换结束-->
+					</div>
+				</div>
+			</div>
+			<div class="operate_box" v-cloak v-if="list.length>0">
+				<div class="mui-row mui-text-center">
+					<div class="mui-col-xs-3">
+						<a href="javascript:;" v-on:tap="prev"><span class="mui-icon mui-icon-arrowleft"></span>上一题</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a href="javascript:;" v-on:tap="sub_answers">交卷</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a>更多</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a href="javascript:;" v-on:tap="next">下一题<span class="mui-icon mui-icon-arrowright"></span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				// 				pullRefresh: {
+				// 					container: "#pullrefresh",
+				// 					up: {
+				// 						contentrefresh: '正在加载...',
+				// 						contentnomore: '没有更多数据了~',
+				// 						callback: pullupRefresh
+				// 					}
+				// 				}
+			});
+
+			var time_set = null;
+			var tab_time = null; //自动切题定时器
+			var show_card = null; // 答题卡窗口
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					is_none: 0,
+					is_load: false,
+					w_arr: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'],
+					now_index: 0, //当前第几题
+					
+					list: [],
+					all_score: 0, //总得分
+					list_num: [0, 0, 0, 0, 0], //各题型数量
+					type_title: ['单选题', '多选题', '判断题', '填空题', '问答题'],
+					set_full: false, //全屏
+					times: 2000, //考试时间s  2小时  120*60
+					my_times: '00:00:00', // s转 时间格式
+					my_times_add: '00:00:00',
+					times_add: 0, //已消耗时间
+
+					a_num: 0, // 已做题数
+					r_num: 0, //正确数
+					e_num: 0, //错误数
+					h_num: 0, //半对数
+					n_num: 0, //未答数
+					rate: '0%', //正确率
+					is_end: false, //是否答完
+
+					is_paused: false,
+					op_index: null,
+					is_mokao: true, //是不是万人模考，因为万人模考需要在时间结束时，强制提交答案。而考试练习时可以超时
+
+
+					// 个人中心配置
+					is_show_tip: false, // 是否显示提示开关
+					is_auto_tab: false, //是否自动切题
+					is_animate: false, //是否显示动画
+
+					is_view_aues: false, //看题模式
+					is_skip_do: false, //是否跳过已做
+					is_only_video: false, //只显示视频
+
+					try_end_num: 20, //试用题数
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {
+					// 加载之后才显示 页面
+					after_load: function() {
+						if (this.list.length == '0') {
+							vm.is_none = 1
+							// mui.toast('暂无题目');
+							return false
+						}
+						$('#app_div').removeClass('hide');
+						var _l = [0, 0, 0, 0, 0];
+						for (var i = 0; i < this.list.length; i++) {
+
+							_l[parseInt(this.list[i].type)] += 1
+						}
+						this.list_num = _l;
+
+
+						//默认设置
+						setTimeout(function() {
+							var _color = $('.js_color_pan a.active').attr('data-color');
+							$('.ques_d_left .border_box .ques_div').parents('.border_box').css('color', '#333').css('background',
+								_color);
+							if ($(this).attr('data-color') == "#666") {
+								$('.ques_d_left .border_box .ques_div').parents('.border_box').css('color', '#fff')
+							}
+							var font_s = $('.js_font_val').val();
+							$('.js_range_p').css('width', $('.range_d').width() * (parseInt($('.js_font_val').val()) - parseInt($(
+								'.js_font_val').attr('min'))) / (parseInt($('.js_font_val').attr('max')) - parseInt($('.js_font_val').attr(
+								'min'))))
+							$('.ques_d_left').css('font-size', font_s + 'px');
+						}, 50)
+					},
+					// 单选选择
+					d_sele: function(_index) {
+						if (this.is_end) {
+							return false
+						}
+						var item = this.list[this.now_index];
+						item.my_answer = _index;
+						item.is_answer = true;
+					},
+					// 多选
+					ds_sele: function(_index) {
+						if (this.is_end) {
+							return false
+						}
+						var item = this.list[this.now_index];
+						var _arr = item.my_answer;
+						if (!this.is_in_arr(_index, _arr)) {
+							_arr.push(_index)
+						} else {
+
+							for (i = 0; i < _arr.length; i++) {
+								if (_arr[i] == _index) {
+									_arr.splice(i, 1);
+									break;
+								}
+							}
+						}
+						item.my_answer = _arr.sort();
+						if (item.my_answer.length > 0) {
+							item.is_answer = true
+						} else {
+							item.is_answer = false
+						}
+					},
+					// 填空提交
+					sub_blank: function() {
+						var item = this.list[this.now_index];
+						if (item.my_answer == "") {
+							item.is_answer = false
+						} else {
+							item.is_answer = true
+						}
+					},
+
+					// 简答提交答案
+					sub_jianda: function() {
+						var item = this.list[this.now_index];
+						if (!item.is_answer) {
+							if (item.my_answer == "") {
+								mui.toast("请输入答案");
+								return false
+							}
+							item.is_answer = true
+						}
+					},
+					// 简答提交分数
+					real_answer: function() {
+
+
+						var item = this.list[this.now_index];
+						if ($('.s_input_s').val() == "") {
+							mui.toast("请输入分数");
+							return false
+						}
+						var score = 0;
+						if ($('.s_input_s').val() == '0') {
+							item.is_right = '3';
+						} else {
+							if ($('.s_input_s').val() == item.ques_score) {
+								item.is_right = '1';
+								score = item.ques_score
+							} else {
+								item.is_right = '2';
+								score = $('.s_input_s').val()
+							}
+						}
+						item.my_score = score;
+						this.all_score += parseInt(score);
+					},
+					// 判断元素是否在某个数组
+					is_in_arr: function(text, arr) {
+						for (var i = 0; i < arr.length; i++) {
+							if (text === arr[i]) {
+								return true
+							}
+						}
+						return false
+					},
+					auto_tab_ques: function() {
+						// 如果自动切题
+						if (this.is_auto_tab) {
+							var _this = this;
+							tab_time = setTimeout(function() {
+								_this.next();
+							}, 5000)
+						}
+					},
+					// 单多选 算出 正确答案
+					fun_right: function(_arr) {
+						var _n_arr = [];
+						for (i = 0; i < _arr.length; i++) {
+							if (_arr[i].is_answer) {
+								_n_arr.push(i)
+							}
+						}
+						return _n_arr;
+					},
+					// 设置
+					set_items: function(item) {
+						var _this = this;
+						eval('_this.' + item + '=!' + '_this.' + item);
+						// 界面动画
+						if (item == "is_animate") {
+							this.ajax_set('<?=U("set_animate")?>', _this.is_animate ? '1' : '0')
+						}
+						// 全屏开关
+						if (item == "set_full") {
+							this.ajax_set('<?=U("set_full")?>', _this.set_full ? '1' : '0');
+							$('.js_full_s').click();
+						}
+						// 自动切题
+						if (item == "is_auto_tab") {
+							this.ajax_set('<?=U("set_change")?>', _this.is_auto_tab ? '1' : '0');
+						}
+						// 提示开关
+						if (item == "is_show_tip") {
+							this.ajax_set('<?=U("set_tip")?>', _this.is_show_tip ? '1' : '0');
+						}
+
+						// 看题模式
+						if (item == "is_view_aues") {
+							this.ajax_set('<?=U("set_view_aues")?>', _this.is_view_aues ? '1' : '0')
+							// 如果是关闭开题模式，重新加载题目
+							if (!this.is_view_aues) {
+								this.re_get_list();
+							} else {
+								this.re_set_all();
+							}
+						}
+
+						// 跳过曾经做的题
+						if (item == "is_skip_do") {
+							this.ajax_set('<?=U("set_skip_do")?>', _this.is_skip_do ? '1' : '0')
+							this.re_get_list();
+						}
+
+						// 只看视频
+						if (item == "is_only_video") {
+							this.ajax_set('<?=U("set_only_video")?>', _this.is_only_video ? '1' : '0')
+							this.re_get_list();
+						}
+
+					},
+					// 重新加载题目
+					re_get_list: function() {
+						var _url = "<?=U('index')?>";
+						var _data = {
+							is_skip_do: this.is_skip_do,
+							is_only_video: this.is_only_video
+						}
+						$.post(_url, _data, function(data) {
+							if (data.status == "1") {
+								this.re_set_all();
+								this.is_end = false
+							}
+						})
+						this.re_set_all();
+						this.is_end = false
+					},
+					// 重新家在题目后重置
+					re_set_all: function() {
+						var _this = this;
+						var _list = _this.list;
+						// 如果是看题模式
+						if (this.is_view_aues) {
+							// 逐个把题目答案算出。
+							for (var i = 0; i < _list.length; i++) {
+								var _type = _list[i].type;
+								if (_type == '0' || _type == '2') {
+									_this.show_ans_dx(i)
+								}
+								if (_type == '1') {
+									_this.show_ans_dxs(i)
+								}
+								if (_type == '3' || _type == '4') {
+									_this.show_ans_tk(i)
+								}
+
+							}
+
+							this.is_end = true;
+						}
+					},
+					// 看题模式 单选答案 及判断答案
+					show_ans_dx: function(_i) {
+						var item = this.list[_i];
+						var m_ans = null;
+						for (j = 0; j < item.choices.length; j++) {
+							if (item.choices[j].is_answer) {
+								m_ans = j;
+								break;
+							}
+						}
+						item.my_answer = null;
+						item.is_right = '3';
+						item.is_answer = true;
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					// 看题模式 多选答案
+					show_ans_dxs: function(_i) {
+						var item = this.list[_i];
+						var m_ans = [];
+						for (j = 0; j < item.choices.length; j++) {
+							if (item.choices[j].is_answer) {
+								m_ans.push(j);
+							}
+						}
+						item.my_answer = [];
+						item.answers = m_ans;
+						item.is_right = '3';
+						item.is_answer = true;
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					// 看题模式 填空答案
+					show_ans_tk: function(_i) {
+						var item = this.list[_i];
+						var m_ans = item.answer;
+						item.is_right = '3';
+						item.is_answer = true;
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					sub_answers: function() {
+						if (this.is_end) {
+							mui.toast('您已提交过');
+							return false
+						}
+
+						this.is_end = true;
+						var _list = this.list;
+						// 判断正误
+						for (var i = 0; i < _list.length; i++) {
+							var item = _list[i];
+							var que_score = parseInt(item.ques_score);
+							// 如果已回答
+							if (_list[i].is_answer) {
+								this.a_num += 1;
+								// 单选题 或者判断题
+								if (_list[i].type == "0" || _list[i].type == "2") {
+									// 判断正误
+									if (item.choices[item.my_answer].is_answer) {
+										// 正确
+										item.is_right = '1';
+										// 得分
+										item.my_score = que_score;
+										// 总分
+										this.all_score += que_score;
+										// 统计
+										item.i_have_r = parseInt(item.i_have_r) + 1;
+										item.all_r = parseInt(item.all_r) + 1;
+									} else {
+										// 错误
+										item.is_right = '3';
+									}
+
+								}
+								// 多选题
+								if (_list[i].type == "1") {
+									// 判断正误
+									var c = item.choices;
+									var a = item.my_answer;
+									var que_score = parseInt(item.ques_score);
+									var score = 0;
+									var s_num = 0;
+									var a_num = 0;
+									for (var j = 0; j < a.length; j++) {
+										if (c[a[j]].is_answer) {
+											score += 0.5;
+											s_num++
+										} else {
+											score -= 100
+										}
+									}
+
+									for (var j = 0; j < c.length; j++) {
+										if (c[j].is_answer) {
+											item.answers.push(j)
+										}
+									}
+
+									// 判断正误
+
+									// 如果 有错误，则为错
+									if (score < 0) {
+										item.is_right = '3';
+										item.my_score = 0;
+
+									} else {
+										// 如果全部正确
+										if (s_num == item.answers.length) {
+											score = que_score;
+											item.is_right = '1';
+											item.i_have_r = parseInt(item.i_have_r) + 1;
+											item.all_r = parseInt(item.all_r) + 1;
+										} else {
+											item.is_right = '2';
+										}
+										item.my_score = score;
+										this.all_score += score;
+									}
+
+
+								}
+
+								// 填空题
+								if (_list[i].type == "3") {
+									// 判断正误
+									if (item.my_answer == item.answer) {
+										// 正确
+										item.is_right = '1';
+										// 得分
+										item.my_score = que_score;
+										// 总分
+										this.all_score += que_score;
+										// 统计
+										item.i_have_r = parseInt(item.i_have_r) + 1;
+										item.all_r = parseInt(item.all_r) + 1;
+									} else {
+										// 错误
+										item.is_right = '3';
+									}
+								}
+
+
+
+
+
+								item.i_have_m = parseInt(item.i_have_m) + 1;
+								item.all_m = parseInt(item.all_m) + 1;
+
+							} else {
+								// 如果未回答
+								// 单选题
+								if (_list[i].type == "0") {
+									item.my_answer = null;
+								}
+								if (_list[i].type == "1") {
+									var c = item.choices;
+									for (var j = 0; j < c.length; j++) {
+										if (c[j].is_answer) {
+											item.answers.push(j)
+										}
+									}
+									item.my_answer = [];
+								}
+
+								if (_list[i].type == "3") {
+									item.my_answer = null;
+								}
+
+								this.n_num += 1
+								item.is_answer = true;
+								item.is_right = '3';
+								item.i_have_m = parseInt(item.i_have_m) + 1;
+								item.all_m = parseInt(item.all_m) + 1;
+							}
+						}
+
+						// 统计
+
+						for (i = 0; i < _list.length; i++) {
+							if (_list[i].is_answer) {
+								if (_list[i].my_score == _list[i].ques_score) {
+									this.r_num += 1
+								}
+								if (_list[i].my_score > 0 && _list[i].my_score < _list[i].ques_score) {
+									this.h_num += 1
+								}
+								if (_list[i].my_score == 0) {
+									this.e_num += 1
+								}
+							}
+						}
+						if (this.a_num == '0') {
+							this.rate = '0%';
+						} else {
+							this.rate = ((this.r_num + this.h_num * 0.5) * 100 / _list.length).toFixed(1) + '%';
+						}
+
+						// 提交
+
+						var _url = "<?=U('sub_answers')?>";
+						var _studyset_model = '<?=I("get.studyset_model")?>';
+						$.post(_url, {
+							id: "<?=I('get.moexam_id')?>",
+							data: JSON.stringify(_list),
+							studyset_model: _studyset_model
+						}, function(data) {
+
+						});
+
+						alert('已做题数：' + this.a_num + ',正确数：' + this.r_num + ',半对数：' + this.h_num + ',错误数：' + this.e_num + ',未做数：' +
+							this.n_num + ',正确率：' + this.rate);
+						clearInterval(time_set);
+
+
+					},
+					// 提交设置
+					ajax_set: function(_url, _val) {
+						var _data = {
+							val: _val
+						}
+						$.post(_url, _data, function(data) {
+
+						})
+					},
+					// ABCDEF按键
+					key_select: function(code) {
+						if (!this.list[this.now_index].is_answer && this.list[this.now_index].type == '0') {
+							if (code == "65") {
+								this.d_sele(0)
+							}
+							if (code == "66") {
+								this.d_sele(1)
+							}
+							if (code == "67") {
+								this.d_sele(2)
+							}
+							if (code == "68") {
+								this.d_sele(3)
+							}
+						}
+						if (!this.list[this.now_index].is_answer && this.list[this.now_index].type == '1') {
+							if (code == "65") {
+								this.ds_sele(0)
+							}
+							if (code == "66") {
+								this.ds_sele(1)
+							}
+							if (code == "67") {
+								this.ds_sele(2)
+							}
+							if (code == "68") {
+								this.ds_sele(3)
+							}
+							if (code == "69") {
+								this.ds_sele(4)
+							}
+							if (code == "70") {
+								this.ds_sele(5)
+							}
+						}
+					},
+					// 跳转题号
+					tab_ques: function(_index) {
+						// 清除自动切题定时器
+						clearTimeout(tab_time);
+						tab_time = null;
+						if (parseInt(_index) > this.try_end_num - 1) {
+							mui.toast('试用结束请先购买');
+							return false
+						}
+						this.now_index = _index;
+						mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+						// this.show_dabj();
+					},
+					// 下一题
+					next: function() {
+						//						if(this.is_end){
+						//							mui.toast('已经看到最后一题了哦')
+						//							return false
+						//						}
+
+						if (this.now_index + 2 > this.list.length) {
+							// if(!this.is_view_aues){
+							// 	this.sub_answers();
+							// }else{
+							// 	mui.toast('已经看到最后一题了哦')
+							// }
+							mui.toast('已经看到最后一题了哦')
+
+						} else {
+							this.tab_ques(this.now_index + 1)
+						}
+
+					},
+					// 上一题
+					prev: function() {
+						//						if(this.is_end){
+						//							return false
+						//						}
+						if (this.now_index - 1 < 0) {
+							mui.toast('没有上一题哦')
+						} else {
+							this.tab_ques(this.now_index - 1)
+						}
+					},
+					// 编辑笔记
+					edit_note: function() {
+						this.list[this.now_index].is_edit_note = !this.list[this.now_index].is_edit_note;
+					},
+					sub_note: function(_id) {
+						if ($('.js_note_content').val() == "") {
+							mui.toast("请输入笔记内容");
+						} else {
+							var _url = "<?=U('User/Practice/Index/add_note')?>";
+							var _content = $('.js_note_content').val();
+							$.post(_url, {
+								id: _id,
+								content: _content
+							}, function(data) {
+								if (data.status == 1) {
+									mui.toast('提交成功');
+									this.list[this.now_index].is_edit_note = false;
+									this.list[this.now_index].note = $('.js_note_content').val()
+								} else {
+									mui.toast(data.info);
+								}
+							})
+
+						}
+					},
+					time_set: function() {
+						var _this = this;
+						time_set = setInterval(function() {
+							if (_this.is_end) {
+								return false;
+							}
+							_this.times -= 1;
+							_this.times_add += 1;
+							if (_this.times == 0) {
+								if (_this.is_mokao) {
+									mui.toast('万人模考答题时间到，将在10s后强制提交答案，请查看 is_mokao 字段');
+									setTimeout(function() {
+										_this.sub_answers();
+										clearInterval(time_set);
+									}, 10000)
+
+								} else {
+									mui.toast('考试时间到，已继续计时')
+								}
+							}
+
+							var _time = _this.times;
+							var _h = Math.abs(parseInt(_time / 3600));
+							if (_h < 10) {
+								_h = '0' + _h
+							}
+							var _m = Math.abs(parseInt(_time % 3600 / 60));
+							if (_m < 10) {
+								_m = '0' + _m
+							}
+							var _s = Math.abs(parseInt(_time % 3600 % 60));
+							if (_s < 10) {
+								_s = '0' + _s
+							}
+
+							// 剩余时间
+							if (_this.times < 0) {
+								_this.my_times = "00:00:00"
+							} else {
+								_this.my_times = _h + ':' + _m + ':' + _s
+							}
+
+							var _time2 = _this.times_add;
+							var _h = Math.abs(parseInt(_time2 / 3600));
+							if (_h < 10) {
+								_h = '0' + _h
+							}
+							var _m = Math.abs(parseInt(_time2 % 3600 / 60));
+							if (_m < 10) {
+								_m = '0' + _m
+							}
+							var _s = Math.abs(parseInt(_time2 % 3600 % 60));
+							if (_s < 10) {
+								_s = '0' + _s
+							}
+							// 已消耗时间
+							_this.my_times_add = _h + ':' + _m + ':' + _s
+						}, 1000)
+					},
+
+					// show_dabj:function(){
+					// 	mui.toast('显示tab第一个--答案');
+
+					// },
+					show_card: function() {
+						var _this = this;
+						//保存数据到本地
+						plus.storage.removeItem('answers_list');
+						var answers_list = {
+							times: _this.times,
+							is_end: _this.is_end,
+							list: _this.list,
+							all_score:_this.all_score
+						}
+						var titleNView = { //详情页原生导航配置
+							backgroundColor: '#FFFFFF', //导航栏背景色
+							titleText: '答题卡', //导航栏标题
+							titleColor: '#333333', //文字颜色
+							autoBackButton: true, //自动绘制返回箭头
+							splitLine: { //底部分割线
+								color: '#f2f2f2'
+							}
+						}
+
+						plus.storage.setItem('answers_list', JSON.stringify(answers_list));
+						mui.openWindow({
+							url: 'card_win_test.html',
+							id: 'card_win_test.html',
+							styles: {
+								statusbar: {
+									background: '#FFFFFF'
+								},
+								titleNView: titleNView,
+								popGesture: 'close',
+								bounce: 'vertical'
+							},
+							extras: {
+
+							},
+							show: {
+								autoShow: true,
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+					},
+					// 收藏
+					love_this: function(_index) {
+						mui.toast('操作成功，ajax未接')
+						var _this = this;
+						if (_this.list[_index].is_love == 1) {
+							_this.list[_index].is_love = 0
+						} else {
+							_this.list[_index].is_love = 1
+						}
+					}
+
+				}
+			});
+
+			// app.after_load();
+			// app.time_set();
+
+			mui.plusReady(function() {
+				mui('#pullrefresh').scroll();
+
+				getData()
+			})
+
+			// 获取答题数据
+			function getData() {
+				var self = plus.webview.currentWebview()
+				var state = app.getState()
+				var data = {}
+				data.moexam_id = self.guid
+				data.studyset_model = self.model
+				data.subject_category_id = state.subject_id
+				// 
+				if (typeof(data.user_key) != 'undefined') {
+					data.user_key = state.user_key
+				}
+
+				//console.log(JSON.stringify(data)) 
+				mui.ajax(server + 'Api/V1/Topic/test', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							vm.member_set = data.info.member_set
+							vm.list = data.info.question_list;
+							// console.log(JSON.stringify(vm.list)) 
+							vm.after_load();
+							vm.time_set();
+							vm.is_load = true
+						} else {
+							vm.is_none = 1
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				// getPageData()
+			}
+
+			//获取分页数据
+			function getPageData() {
+				//				var state = app.getState();
+				//				var data = {}
+				//				data.user_key = state.user_key;
+				//				data.p = vm.page
+				//				// console.log(JSON.stringify(data))
+				//				mui.ajax(server + '', {
+				//					data: data,
+				//					dataType: 'json', //服务器返回json格式数据
+				//					type: 'get', //HTTP请求类型
+				//					timeout: 10000, //超时时间设置为10秒；              
+				//					success: function(data) {
+				//						//		            	console.log(JSON.stringify(data))
+				//						if (data.status == 1) {
+				//							if (data.info.list.length < 20) {
+				//								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+				//							} else {
+				//								mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//							}
+				//
+				//							for (var item of data.info.list) {
+				//								vm.somedata.push(item)
+				//							}
+				//							vm.page++
+				//						} else {
+				//							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//							mui.toast(data.msg)
+				//						}
+				//
+				//					},
+				//					error: function(xhr, type, errorThrown) {
+				//						//console.log(xhr.responseText)
+				//						//异常处理；
+				//						mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//						mui.toast('网络异常');
+				//					}
+				//				});
+			}
+
+
+			(function($) {
+				var html = '';
+				var html2 = '<div class="answer_tab">222222</div>';
+				var html3 = '<div class="answer_tab">333333</div>';
+				var html4 = '<div class="answer_tab">444444</div>';
+				var html5 = '<div class="answer_tab">555555</div>';
+				var item2 = document.getElementById('item2mobile');
+				var item3 = document.getElementById('item3mobile');
+				var item4 = document.getElementById('item4mobile');
+				var item5 = document.getElementById('item5mobile');
+				//				document.getElementById('slider').addEventListener('slide', function(e) {
+				//					if (e.detail.slideNumber === 1) {
+				//						if (item2.querySelector('.mui-loading')) {
+				//							setTimeout(function() {
+				//								item2.querySelector('.mui-table-view').innerHTML = html2;
+				//							}, 500);
+				//						}
+				//					} else if (e.detail.slideNumber === 2) {
+				//						if (item3.querySelector('.mui-loading')) {
+				//							setTimeout(function() {
+				//								item3.querySelector('.mui-table-view').innerHTML = html3;
+				//							}, 500);
+				//						}
+				//					} else if (e.detail.slideNumber === 3) {
+				//						if (item4.querySelector('.mui-loading')) {
+				//							setTimeout(function() {
+				//								item4.querySelector('.mui-table-view').innerHTML = html4;
+				//							}, 500);
+				//						}
+				//					} else if (e.detail.slideNumber === 4) {
+				//						if (item5.querySelector('.mui-loading')) {
+				//							setTimeout(function() {
+				//								item5.querySelector('.mui-table-view').innerHTML = html5;
+				//							}, 500);
+				//						}
+				//					}
+				//				});
+			})(mui);
+
+
+
+			// 数字输入框
+			$(document).on('keyup', 'input[data-type="number"]', function(e) {
+				var e = e || event;
+				if (e.keyCode == "37" || e.keyCode == "39") {
+					return false
+				}
+				$(this).val($(this).val().replace(/\D/gi, ""));
+				if ($(this).attr('data-max') && $(this).val() > parseInt($(this).attr('data-max'))) {
+					$(this).val($(this).attr('data-max'))
+				}
+
+				if ($(this).attr('data-min')) {
+					console.log(parseInt($(this).val()))
+					if ($(this).val() == '' || parseInt($(this).val()) < $(this).attr('data-min')) {
+						$(this).val($(this).attr('data-min'))
+					}
+				}
+
+			})
+
+
+			//监听切题
+			window.addEventListener('tab_ques', function(event) {
+				var _index = event.detail.index;
+				vm.tab_ques(_index)
+			});
+		</script>
+	</body>
+
+</html>

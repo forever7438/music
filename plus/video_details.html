@@ -1,0 +1,452 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>视频详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="https://g.alicdn.com/de/prismplayer/2.7.4/skins/default/aliplayer-min.css" rel="stylesheet" />
+		<style>
+			.details{ padding: .3rem; padding-bottom: 60px; background: #fff;}
+			.price{ font-size: .3rem; font-weight: 700; color: #FFA200;}
+			.total{ padding: .1rem; background: #f8f8f8; color: #999; font-size: .24rem;}
+			.video-list span{ margin-right: .3rem;}
+			.video-list li:after{ left: 0;}
+			.video-list li a{ color: #999!important;}
+			.video-list li a span{ color: #333;}
+			
+			.buy_box{ position: fixed; z-index: 999; left: 0; bottom: 0; width: 100%; height: 50px; background: #fff; font-size: .24rem;}
+			.buy_box .mui-btn{ border-radius: 0;}
+			.buy_box span{ margin-top: 2px;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div class="mui-content">
+					<div class="prism-player" id="J_prismPlayer"></div>
+					<div class="details" v-cloak>
+						<h3 class="title" v-html="somedata.course_name"></h3>
+						<template v-if="somedata.is_buy == 0">
+							<div class="price">￥{{somedata.price}}</div>
+						</template>
+						<template v-else>
+							<div class="price">{{somedata.begin_time}} -- {{somedata.end_time}}</div>
+						</template>
+						<div class="total margin_t20 mui-row mui-text-center">
+							<div class="mui-col-xs-3">
+								观看:{{somedata.view_count}}
+							</div>
+							<div class="mui-col-xs-3">
+								点击:{{somedata.click_num}}
+							</div>
+							<div class="mui-col-xs-3">
+								付费:{{somedata.buy_count}}
+							</div>
+							<div class="mui-col-xs-3">
+								下载:{{somedata.upload_num}}
+							</div>
+						</div>
+						<div class="video-list margin_t40" v-if="list.length != 0">
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell" v-for="(item,index) in list">
+									<a @tap="changeVideo({id:item.id})">
+										<span>{{index+1}}</span>{{item.course_name}}
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="buy_box mui-text-center">
+			<div class="mui-row">
+				<div class="mui-col-xs-3">
+					<a class="js_share">
+						<span class="mui-icon-extra icon-fenxiang"></span>
+						<div>分享</div>
+					</a>
+				</div>
+				<!-- <div class="mui-col-xs-2">
+					<a>
+						<span class="mui-icon-extra icon-liwu"></span>
+						<div>下载</div>
+					</a>
+				</div> -->
+				<div class="mui-col-xs-9">
+					<a @tap="openDetails({id:somedata.id})" class="mui-btn mui-btn-block mui-btn-primary">购买</a>
+				</div>
+			</div>
+		</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/aliplayer-h5-min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			var player,share_detail
+			
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: {
+						is_buy:0
+					},
+					video: '',
+					list: [],
+					title:'',
+					share_url:''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			// 监听视频播放
+			var handleReady = function(e) {
+				countNum()
+			}
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				
+				mui('.mui-scroll-wrapper').scroll();
+				
+				//预加分享
+				share_detail = mui.preload({
+					url: 'share.html',
+					id: 'share.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '60%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('body	').on('tap', '.js_share', function() {
+					mui.fire(share_detail, 'updataShare', {
+							share_url: vm.share_url,
+							title:vm.title
+					});
+					self.setStyle({
+						mask: 'rgba(0,0,0,0.5)'
+					});
+					share_detail.show("slide-in-bottom", 300);
+				})
+
+				self.addEventListener('maskClick', function() {
+					self.setStyle({
+						mask: 'none'
+					});
+					share_detail.hide('slide-out-bottom');
+					//plus.webview.getWebviewById('spec').hide();
+				}, false);
+
+				getData()
+			})
+
+			// 获取信息
+			function getData() {
+				var self = plus.webview.currentWebview()
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.video_id = self.guid
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Video/video_detail', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'POST', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info.info;
+							vm.video = data.info.info.video_data
+							vm.list = data.info.list;
+							vm.share_url = data.info.share_url;
+							vm.title = data.info.info.course_name;
+						} else {
+							mui.toast(data.msg)
+						}
+
+						player = new Aliplayer({
+							id: 'J_prismPlayer',
+							width: '100%',
+							height: '210px',
+							autoplay: false,
+							x5_type: 'h5',
+							controlBarVisibility: 'click',
+							skinLayout: [{
+									name: "bigPlayButton",
+									align: "cc"
+								},
+								{
+									name: "H5Loading",
+									align: "cc"
+								},
+								{
+									name: "errorDisplay",
+									align: "tlabs",
+									x: 0,
+									y: 0
+								},
+								{
+									name: "infoDisplay"
+								},
+								{
+									name: "tooltip",
+									align: "blabs",
+									x: 0,
+									y: 56
+								},
+								{
+									name: "thumbnail"
+								},
+								{
+									name: "controlBar",
+									align: "blabs",
+									x: 0,
+									y: 0,
+									children: [{
+											name: "progress",
+											align: "blabs",
+											x: 0,
+											y: 44
+										},
+										{
+											name: "playButton",
+											align: "tl",
+											x: 15,
+											y: 12
+										},
+										{
+											name: "timeDisplay",
+											align: "tl",
+											x: 10,
+											y: 7
+										},
+										{
+											name: "fullScreenButton",
+											align: "tr",
+											x: 10,
+											y: 12
+										},
+										{
+											name: "volume",
+											align: "tr",
+											x: 15,
+											y: 10
+										},
+									]
+								}
+							],
+							//播放方式二：点播用户推荐
+							vid: vm.video.VideoMeta.VideoId,
+							playauth: vm.video.PlayAuth,
+							cover: vm.video.VideoMeta.CoverURL,
+
+						}, function(player) {
+							// console.log('播放器创建好了。')
+						});
+
+						player.on('play', handleReady);
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 切换视频
+			function changeVideo(item) {
+				var self = plus.webview.currentWebview()
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.video_id = item.id
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Video/video_detail', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'POST', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info.info;
+							vm.video = data.info.info.video_data
+							vm.list = data.info.list;
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0,0,100);
+						} else {
+							mui.toast(data.msg)
+						}
+
+						player.dispose(); //销毁
+						$('#J_prismPlayer').empty(); //id为html里指定的播放器的容器id
+
+						player = new Aliplayer({
+							id: 'J_prismPlayer',
+							width: '100%',
+							height: '210px',
+							autoplay: false,
+							x5_type: 'h5',
+							controlBarVisibility: 'click',
+							skinLayout: [{
+									name: "bigPlayButton",
+									align: "cc"
+								},
+								{
+									name: "H5Loading",
+									align: "cc"
+								},
+								{
+									name: "errorDisplay",
+									align: "tlabs",
+									x: 0,
+									y: 0
+								},
+								{
+									name: "infoDisplay"
+								},
+								{
+									name: "tooltip",
+									align: "blabs",
+									x: 0,
+									y: 56
+								},
+								{
+									name: "thumbnail"
+								},
+								{
+									name: "controlBar",
+									align: "blabs",
+									x: 0,
+									y: 0,
+									children: [{
+											name: "progress",
+											align: "blabs",
+											x: 0,
+											y: 44
+										},
+										{
+											name: "playButton",
+											align: "tl",
+											x: 15,
+											y: 12
+										},
+										{
+											name: "timeDisplay",
+											align: "tl",
+											x: 10,
+											y: 7
+										},
+										{
+											name: "fullScreenButton",
+											align: "tr",
+											x: 10,
+											y: 12
+										},
+										{
+											name: "volume",
+											align: "tr",
+											x: 15,
+											y: 10
+										},
+									]
+								}
+							],
+							//播放方式二：点播用户推荐
+							vid: vm.video.VideoMeta.VideoId,
+							playauth: vm.video.PlayAuth,
+							cover: vm.video.VideoMeta.CoverURL,
+
+						}, function(player) {
+							// console.log('播放器创建好了。')
+						});
+
+						// 监听视频播放
+						player.on('play', handleReady);
+
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 统计观看次数
+			function countNum() {
+				var self = plus.webview.currentWebview()
+				var data = {}
+				data.video_id = vm.somedata.id
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Video/add_view_count', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.somedata.view_count++
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 打开购买页
+			function openDetails(item){
+				var state = app.getState();
+				if(typeof(state.user_key) == 'undefined'){
+					mui.toast('请登录后购买')
+					return
+				}
+				
+				mui.openWindow({
+					url: "video_buy.html",
+					id: "video_buy.html",
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close'
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: true,
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

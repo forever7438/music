@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			/*兼容iOS*/
+			.mui-scroll-wrapper{ top: 45px;}
+			
+			/*安卓兼容*/
+			/*body{ padding-bottom: 45px;}*/
+			
+			.mui-search .mui-placeholder{ text-align: left; padding: .04rem .2rem; font-size: 14px;}
+			.mui-search .mui-placeholder .mui-icon{ color: #999;}
+			input[type=search]{ background: #f0f0f0; margin-bottom: 0;}
+			.mui-input-row{ clear: none;}
+			/* .mui-search.mui-active:before{ line-height: 24px;} */
+			.mui-bar input[type=search]{ height: 32px;}
+			.search_box {margin-left: 34px; margin-right: 34px; height: 44px;}
+			.search_box .mui-icon-clear{ top: 2px!important;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="search_box">
+				<form id="nav_form" onsubmit="return search()">
+					<div class="mui-input-row mui-search">
+						<input id="searchInput" type="search" class="mui-input-clear" placeholder="搜索题目/讲义/资讯">
+					</div>
+				</form>
+			</div>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div v-show="loading == 1">
+						<div class="nodata loading mui-text-center">
+							<img src="../img/loading.gif" alt="" />
+							<div class="margin_t20">搜索中...</div>
+						</div>
+					</div>
+					<div v-if="is_none == 1">
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂未查到相关数据~</div>
+						</div>
+					</div>
+					{{somedata}}
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh",
+					up: {
+						contentrefresh: '正在加载...',
+						contentnomore: '没有更多数据了~',
+						callback: pullupRefresh
+					}
+				}
+			});
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					keywords: '',
+					somedata: [],
+					is_none: 0,
+					is_load: false,
+					loading: 0,
+					type:1
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {
+
+				}
+			});
+
+			mui.plusReady(function() {
+				// mui('#pullrefresh').scroll();
+				var self = plus.webview.currentWebview()
+
+				initNativeObjects();
+				showSoftInput();
+
+				//搜索收起
+				var scroller = document.getElementById('app')
+				scroller.addEventListener('tap', function() {
+					document.activeElement.blur();
+				})
+
+			})
+
+			//搜索商品
+			function search(list) {
+				document.activeElement.blur();
+				vm.keywords = document.getElementById('searchInput').value
+				getData()
+				return false;
+			}
+
+			function getData() {
+				var data = {}
+				data.keyword = vm.keywords;
+				data.type = vm.type;
+				data.p = 1
+				vm.loading = 1;
+				vm.nodata = 0;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Home/search_mess', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						console.log(JSON.stringify(data))
+						vm.somedata = [];
+						vm.page = 2;
+						vm.loading = 0;
+						if (data.status == 1) {
+							if (data.info.list.length == 0) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 1
+							} else if (data.info.list.length < 20) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 0
+								vm.somedata = data.info
+							} else {
+								mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.nodata = 0
+								vm.somedata = data.info
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.loading = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				getPageData()
+			}
+
+			//获取分页数据
+			function getPageData() {
+				setTimeout(function() {
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				}, 1000)
+				//				var state = app.getState();
+				//				var data = {}
+				//				data.user_key = state.user_key;
+				//				data.p = vm.page
+				//				// console.log(JSON.stringify(data))
+				//				mui.ajax(server + '', {
+				//					data: data,
+				//					dataType: 'json', //服务器返回json格式数据
+				//					type: 'get', //HTTP请求类型
+				//					timeout: 10000, //超时时间设置为10秒；              
+				//					success: function(data) {
+				//						//		            	console.log(JSON.stringify(data))
+				//						if (data.status == 1) {
+				//							if (data.info.list.length < 20) {
+				//								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+				//							} else {
+				//								mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//							}
+				//
+				//							for (var item of data.info.list) {
+				//								vm.somedata.push(item)
+				//							}
+				//							vm.page++
+				//						} else {
+				//							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//							mui.toast(data.msg)
+				//						}
+				//
+				//					},
+				//					error: function(xhr, type, errorThrown) {
+				//						//console.log(xhr.responseText)
+				//						//异常处理；
+				//						mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				//						mui.toast('网络异常');
+				//					}
+				//				});
+			}
+
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '视频详情', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			// 打开视频详情
+			function open_details(item) {
+				//更改详情页原生导航条信息和按钮信息
+				mui.openWindow({
+					url: 'video_details.html',
+					id: 'video_details.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			var nativeWebview, imm, InputMethodManager;
+			var initNativeObjects = function() {
+				if (mui.os.android) {
+					var main = plus.android.runtimeMainActivity();
+					var Context = plus.android.importClass("android.content.Context");
+					InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+					imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+				} else {
+					nativeWebview = plus.webview.currentWebview().nativeInstanceObject();
+				}
+			};
+			var showSoftInput = function() {
+				if (mui.os.android) {
+					imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+				} else {
+					nativeWebview.plusCallMethod({
+						"setKeyboardDisplayRequiresUserAction": false
+					});
+				}
+				setTimeout(function() {
+					var inputElem = document.querySelector('input');
+					inputElem.focus();
+					inputElem.parentNode.classList.add('mui-active'); //第一个是search，加上激活样式
+				}, 200);
+			};
+
+// 			(function($) {
+// 				var html = '';
+// 				var html2 = '<div class="answer_tab">222222</div>';
+// 				var html3 = '<div class="answer_tab">333333</div>';
+// 				var item2 = document.getElementById('item2mobile');
+// 				var item3 = document.getElementById('item3mobile');
+// 				document.getElementById('slider').addEventListener('slide', function(e) {
+// 					if (e.detail.slideNumber === 1) {
+// 						if (item2.querySelector('.mui-loading')) {
+// 							setTimeout(function() {
+// 								item2.querySelector('.mui-table-view').innerHTML = html2;
+// 							}, 500);
+// 						}
+// 					} else if (e.detail.slideNumber === 2) {
+// 						if (item3.querySelector('.mui-loading')) {
+// 							setTimeout(function() {
+// 								item3.querySelector('.mui-table-view').innerHTML = html3;
+// 							}, 500);
+// 						}
+// 					} else if (e.detail.slideNumber === 3) {
+// 						if (item4.querySelector('.mui-loading')) {
+// 							setTimeout(function() {
+// 								item4.querySelector('.mui-table-view').innerHTML = html4;
+// 							}, 500);
+// 						}
+// 					} else if (e.detail.slideNumber === 4) {
+// 						if (item5.querySelector('.mui-loading')) {
+// 							setTimeout(function() {
+// 								item5.querySelector('.mui-table-view').innerHTML = html5;
+// 							}, 500);
+// 						}
+// 					}
+// 				});
+// 			})(mui);
+		</script>
+	</body>
+
+</html>

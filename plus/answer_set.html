@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的设置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.del_recharge{ color: #FFA200; text-decoration: underline; font-size: .28rem;}
+			
+			.mui-input-row.mui-input-range{ padding: 0 20px 0 15px;}
+			
+			.range_box{ padding: 15px 0; background: #fff;}
+			.range_d{ position: relative;}
+			.mui-input-row label{ padding: 11px 0; width: 30%;}
+			.mui-input-range label~input[type=range]{ width: 70%;}
+			/*.range_box h3{ margin: 0; padding: 0 15px; font-size: .34rem; color: #333;}*/
+			.mui-input-range input[type=range]{ background: -webkit-linear-gradient(#ffa200, #ffa200) no-repeat #ececec; background-size: 15% 100%;}
+			/* .mui-input-range .mui-tooltip{ display: none;} */
+			
+			.mui-input-range input[type='range']::-webkit-slider-thumb{ background-color: #FFF; border:1px solid #ececec; width: 24px; height: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<span>界面动画开关</span>
+					<div id="animation" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.animation == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell" v-show="mokao">
+					<span>看题模式</span>
+					<div id="view_aues" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.view_aues == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell" v-show="mokao">
+					<span>自动切题开关</span>
+					<div id="switch_question" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.switch_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<!-- <li class="mui-table-view-cell">
+					<span>全屏切换开关</span>
+					<div class="mui-switch mui-switch-blue mui-switch-mini">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li> -->
+				<li class="mui-table-view-cell" v-show="mokao">
+					<span>声音提示开关</span>
+					<div id="sound_hints" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.sound_hints == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell" v-show="mokao">
+					<span>跳过曾做对的题</span>
+					<div id="skip_do" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.skip_do == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell" v-show="mokao">
+					<span>只看视频解析</span>
+					<div id="look_video" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.look_video == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell" v-show="member_set.view_aues == 1" v-show="mokao">
+					<span>只看错题</span>
+					<div id="look_wrong" class="js_switch mui-switch mui-switch-blue mui-switch-mini" v-bind:class="member_set.look_wrong == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/range.js"></script>
+		<script type="text/javascript">
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					member_set: {},
+					mokao:1
+				},
+				mounted: function() {
+					
+				},
+				updated: function() {
+					// console.log($('#range').val())
+				}
+			});
+
+			mui.init({
+				swipeBack: true
+			});
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				vm.member_set = self.set;
+				if(self.mokao)vm.mokao = self.mokao;
+				
+				self.setStyle({
+					bounce: 'vertical'
+				});
+				
+				// 界面动画
+				document.getElementById("animation").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('animation',1);
+					} else {
+						//console.log("关闭");  
+						setData('animation',0);
+					}
+				})
+				
+				// 看题模式
+				document.getElementById("view_aues").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('view_aues',1);
+					} else {
+						//console.log("关闭");  
+						setData('view_aues',0);
+					}
+				})
+				
+				// 自动切题
+				document.getElementById("switch_question").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('switch_question',1);
+					} else {
+						//console.log("关闭");  
+						setData('switch_question',0);
+					}
+				})
+				
+				// 声音开关
+				document.getElementById("sound_hints").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('sound_hints',1);
+					} else {
+						//console.log("关闭");  
+						setData('sound_hints',0);
+					}
+				})
+				
+				// 跳过对题
+				document.getElementById("skip_do").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('skip_do',1);
+					} else {
+						//console.log("关闭");  
+						setData('skip_do',0);
+					}
+				})
+				
+				// 只看视频解析
+				document.getElementById("look_video").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('look_video',1);
+					} else {
+						//console.log("关闭");  
+						setData('look_video',0);
+					}
+				})
+				
+				// 只看错题
+				document.getElementById("look_wrong").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启");
+						setData('look_wrong',1);
+					} else {
+						//console.log("关闭");  
+						setData('look_wrong',0);
+					}
+				})
+				
+				//重写返回逻辑
+// 				mui.back = function() {
+// 					var page = plus.webview.currentWebview().opener();
+// 					page.evalJS("getData()");
+// 					plus.webview.currentWebview().close("auto", 300);
+// 				}
+
+			})
+			
+			
+			// 设置信息
+			function setData(key,value) {
+				var state = app.getState();
+				var data = {};
+				if(state.user_key){
+					data.user_key = state.user_key;
+				}else{
+					vm.member_set[key] = value;
+					var page = plus.webview.currentWebview().opener()
+					page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+					
+// 					var page = plus.webview.currentWebview().opener();
+// 					page.evalJS("getData()");
+					
+					return false;
+				}
+				data[key] = value;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserAnswer/answer_set', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 2000, //超时时间设置为1秒；              
+					success: function(data) {
+						console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.member_set[key] = value;
+							
+							var page = plus.webview.currentWebview().opener()
+							page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+							
+// 							var page = plus.webview.currentWebview().opener();
+// 							page.evalJS("getData()");
+							
+							// vm.somedata = data.info
+						} else {
+							setTimeout(function(){
+								mui('#'+key).switch().toggle();
+							},500)
+							mui.toast(data.msg);
+							return false;
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						setTimeout(function(){
+							mui('#'+key).switch().toggle();
+						},500)
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+		</script>
+	</body>
+
+</html>

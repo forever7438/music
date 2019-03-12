@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>错题设置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.del_recharge{ color: #FFA200; text-decoration: underline; font-size: .28rem;}
+			
+			.mui-input-row.mui-input-range{ padding: 0 20px 0 15px;}
+			
+			.range_box{ padding: 15px 0; background: #fff;}
+			.range_d{ position: relative;}
+			.mui-input-row label{ padding: 11px 0; width: 30%;}
+			.mui-input-range label~input[type=range]{ width: 70%;}
+			/*.range_box h3{ margin: 0; padding: 0 15px; font-size: .34rem; color: #333;}*/
+			.mui-input-range input[type=range]{ background: -webkit-linear-gradient(#ffa200, #ffa200) no-repeat #ececec; background-size: 15% 100%;}
+			/* .mui-input-range .mui-tooltip{ display: none;} */
+			
+			.mui-input-range input[type='range']::-webkit-slider-thumb{ background-color: #FFF; border:1px solid #ececec; width: 24px; height: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设置</h1>
+		</header>
+		<div id="app" class="mui-content">
+			<ul class="mui-table-view margin_t40">
+				<li class="mui-table-view-cell">
+					<span>自动移除错题</span>
+					<div id="wrong" class="mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.remove_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<span>题目记忆</span>
+					<div id="remember" class="mui-switch mui-switch-blue mui-switch-mini" v-bind:class="somedata.memory_question == 1?'mui-active':''">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script type="text/javascript">
+			var remember,setFont;
+			var change = function($input) {
+				/*rangeinput change事件*/
+				clearTimeout(setFont)
+				setFont = setTimeout(function(){
+					setData('font_size',$input.value);
+					// console.log($input.value);
+				},1000)
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: ''
+				},
+				mounted: function() {
+					
+				},
+				updated: function() {
+					// console.log($('#range').val())
+				}
+			});
+
+			mui.init({
+				swipeBack: true
+			});
+
+			var wrongLayer = null;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				});
+				
+				getData();
+
+				//预加载记忆设置
+				remember = mui.preload({
+					url: 'remember.html',
+					id: 'remember.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '35%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				self.addEventListener('maskClick', function() {
+					self.setStyle({
+						mask: 'none'
+					});
+					
+					if(wrongLayer){
+						wrongLayer.hide();
+						wrongLayer = null;
+						mui('#wrong').switch().toggle();
+						return
+					}
+					
+					remember.hide('slide-out-bottom');
+					mui("#remember").switch().toggle();
+				}, false);
+				
+				
+				// 题目记忆
+				document.getElementById("remember").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						//console.log("开启了题目记忆");
+						self.setStyle({
+							mask: 'rgba(0,0,0,0.5)'
+						});
+						remember.show("slide-in-bottom", 300);
+					} else {
+						//console.log("关闭了题目记忆");  
+					}
+				})
+				
+				// 自动移除错题
+				document.getElementById("wrong").addEventListener("toggle", function(event) {
+					if (event.detail.isActive) {
+						if (wrongLayer) { // 避免快速多次点击创建多个窗口
+							return;
+						}
+						wrongLayer = plus.webview.create("set_wrong.html", "set_wrong.html", {
+							width: '80%',
+							height: '180px',
+							// background: 'rgba(0,0,0,.5)',
+							margin: "auto",
+							scrollIndicator: 'none',
+							scalable: false,
+							popGesture: 'none'
+						});
+						self.setStyle({
+							mask: 'rgba(0,0,0,0.5)'
+						});
+						wrongLayer.addEventListener("loaded", function() {
+							wrongLayer.show('zoom-fade-out', 100);
+						}, false);
+						return
+					} else {
+						setData('remove_question',1)
+					}
+				})
+
+			})
+			
+			// 关闭错题设置
+			function closeWrong(){
+				plus.webview.currentWebview().setStyle({
+					mask: 'none'
+				});
+				wrongLayer = null;
+				mui('#wrong').switch().toggle();
+			}
+			
+			// 错题设置
+			function setWrong(){
+				plus.webview.currentWebview().setStyle({
+					mask: 'none'
+				});
+				wrongLayer = null;
+			}
+
+			function hideLayer() {
+				plus.webview.currentWebview().setStyle({
+					mask: 'none'
+				});
+				if (remember.isVisible()) {
+					remember.hide('slide-out-bottom');
+				}
+			}
+			
+			// 设置信息
+			function setData(key,value) {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data[key] = value;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_focus', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							// vm.somedata = data.info
+						} else {
+// 							setTimeout(function(){
+// 								mui('#'+key).switch().toggle();
+// 							},500)
+							mui.toast(data.msg);
+							return false;
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 获取设置信息
+			function getData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_focus', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

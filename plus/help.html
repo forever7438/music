@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>帮助分类</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell" v-for="item in somedata">
+							<a @tap="open_help({title:item.title,id:item.id})" class="mui-navigate-right">
+								{{item.title}}
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: ''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.init({
+				//		        pullRefresh: {
+				//				    container:"#pullrefresh",
+				//				    down: {
+				//				      height: 50,
+				//				      auto: true,
+				//				      contentdown: "下拉可以刷新",
+				//				      contentover: "释放立即刷新",
+				//				      contentrefresh: "正在刷新...",
+				//				      callback: pulldownRefresh
+				//				    },
+				//				    up: {
+				//						contentrefresh: '正在加载...',
+				//						contentnomore: '没有更多数据了~',
+				//						callback: pullupRefresh
+				//					}
+				//				}
+			});
+
+			//		    //下拉刷新业务实现
+			//			function pulldownRefresh(){
+			//				setTimeout(function(){
+			//					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+			//					mui('#pullrefresh').pullRefresh().refresh(true);
+			//				},1000)
+			//			}
+			//			
+			//			//上拉加载业务实现
+			//			function pullupRefresh(){
+			//				setTimeout(function(){
+			//					mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+			//				},1000)
+			//			}
+			//		    
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				});
+				
+				// 获取数据
+				getData()
+			})
+			
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/help_list', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//		            	console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			/**
+			 * 打开激活码详情
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function open_help(item) {
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: 'help_list.html',
+					id: 'help_list.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

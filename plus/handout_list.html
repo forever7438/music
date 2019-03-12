@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>讲义列表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题1',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题2',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题3',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题4',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题5',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a @tap="open_details({title:'讲义标题6',id:'1'})" class="mui-navigate-right">
+							讲义标题题题标标义义讲讲
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			
+			var vm = new Vue({
+		        el: "#app",
+		        data: {
+					somedata:''
+		        },
+		        mounted: function() {
+		            
+		        },
+		        updated: function() {
+
+		        }
+		    })
+			
+			mui.init({
+		        pullRefresh: {
+				    container:"#pullrefresh",
+				    down: {
+				      height: 50,
+				      auto: true,
+				      contentdown: "下拉可以刷新",
+				      contentover: "释放立即刷新",
+				      contentrefresh: "正在刷新...",
+				      callback: pulldownRefresh
+				    },
+				    up: {
+						contentrefresh: '正在加载...',
+						contentnomore: '没有更多数据了~',
+						callback: pullupRefresh
+					}
+				}
+		    });
+		    
+		    //下拉刷新业务实现
+			function pulldownRefresh(){
+				setTimeout(function(){
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+					mui('#pullrefresh').pullRefresh().refresh(true);
+				},1000)
+			}
+			
+			//上拉加载业务实现
+			function pullupRefresh(){
+				setTimeout(function(){
+					mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+				},1000)
+			}
+//		    
+			mui.plusReady(function(){
+				
+			})
+			
+			/**
+		     * 打开详情
+		     * 
+		     * @param {Object} item 当前点击的对象
+		     */
+		    function open_details(item) {		
+		        //更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+				    url:'data_details.html',
+				    id:'data_details.html',
+				    styles:{
+				      statusbar:{
+				      	background:'#FFFFFF'
+				      },
+				      popGesture: 'close',
+				      titleNView: titleNView,
+				      bounce: 'vertical'
+				    },
+				    show:{
+				      autoShow:true,
+				    },
+				    waiting:{
+				      autoShow:false,
+				    }
+				})
+		    }
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的钱包</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.wallet_total{ padding: .6rem 0; height:3.4rem;background: -webkit-linear-gradient(#44adff, #0083eb); background: linear-gradient(#44adff, #0083eb); color: #fff;}
+			.wallet_total .total{ margin: 0; font-size: .8rem; font-weight: 700;}
+			.wallet_total .mui-btn{ margin: 0 .2rem; padding: 6px 30px; border-color: #fff; background: transparent; color: #fff; font-size: .28rem; font-weight: 700;}
+			.wallet_total .mui-btn:active{ color: #008BF7; background: #fff;}
+			
+			.practice { background: #fff;}
+			.mui-segmented-control.mui-scroll-wrapper{ height: 48px;}
+			.mui-segmented-control.mui-scroll-wrapper .mui-scroll{ height: 50px;}
+			.practice .mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0 10px; line-height: 48px; font-size: .28rem; color: #999;}
+			.practice .mui-control-item.mui-active{ position: relative; color: #333!important; font-weight: 700;}
+			.practice .mui-control-item.mui-active:before{ content: ''; position: absolute; bottom: 0; left: 50%; width: .4rem; margin-left: -.2rem; height: 2px; background: #008bf7;}
+			.practice.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item{ border-top-color: #f2f2f2; border-bottom-color: #fff;}
+			.practice .mui-table-view:before,.mui-table-view:after,.mui-table-view-cell:after{background-color:#f2f2f2}
+			
+			.practice li{ font-size: .24rem; color: #999;}
+			
+			.practice_btn{ padding: .4rem 0;}
+			
+			.mui-control-content {
+				background-color: white;
+				min-height:300px;
+			}
+			.mui-control-content .mui-loading {
+				margin: 100px 0;
+			}
+			
+			.mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.record_list .price{ font-size: .3rem; font-weight: 700; color: #333;}
+			.record_list .type{ font-size: .24rem; font-weight: 400; color: #999;}
+			.record_list .status{ font-size: .3rem; font-weight: 700; color: #008bf7;}
+			.record_list .time{ font-size: .24rem; font-weight: 400; color: #999;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="wallet_total mui-text-center">
+				<h3 class="total">{{balance}}</h3>
+				<div class="describe margin_t20">账户余额(元)</div>
+				<div class="margin_t30">
+					<button id="recharge" class="mui-btn">充值</button>
+					<button id="withdraw_cash" class="mui-btn">提现</button>
+				</div>
+			</div>
+			<!--底部记录-->
+			<div id="slider" class="mui-slider practice">
+				<!--<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">-->
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted"
+				 style="overflow: hidden;">
+					<div class="mui-scroll" style=" position: absolute; width: auto;">
+						<a class="mui-control-item mui-active" href="#item1mobile">
+							充值记录
+						</a>
+						<a class="mui-control-item" href="#item2mobile">
+							提现记录
+						</a>
+						<a class="mui-control-item" href="#item3mobile">
+							消费明细
+						</a>
+					</div>
+				</div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<ul class="mui-table-view record_list">
+							<template v-if="list1.length != 0">
+							<li class="mui-table-view-cell" v-for="item in list1">
+								<div class="mui-row">
+									<div class="mui-col-xs-6">
+										<div class="price">{{item.money}}</div>
+										<div class="type">{{item.status_text}}</div>
+									</div>
+									<div class="mui-col-xs-6 mui-text-right">
+										<div class="status">{{item.status_text}}</div>
+										<div class="time">{{item.update_time}}</div>
+									</div>
+								</div>
+							</li>
+							</template>
+							<template v-else>
+							<div class="nodata mui-text-center">
+								<img src="../img/nodata.png" alt="" />
+								<div class="margin_t20">暂无数据~</div>
+							</div>
+							</template>
+						</ul>
+						<div class="practice_btn mui-text-center" v-if="list1.length >= 20">
+							<button class="mui-btn mui-btn-blue">查看更多</button>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<ul class="mui-table-view record_list">
+							<template v-if="list2.length != 0">
+							<li class="mui-table-view-cell" v-for="item in list2">
+								<div class="mui-row">
+									<div class="mui-col-xs-6">
+										<div class="price">{{item.money}}</div>
+										<div class="type">{{item.status_text}}</div>
+									</div>
+									<div class="mui-col-xs-6 mui-text-right">
+										<div class="status">{{item.status_text}}</div>
+										<div class="time">{{item.update_time}}</div>
+									</div>
+								</div>
+							</li>
+							</template>
+							<template v-else>
+							<div class="nodata mui-text-center">
+								<img src="../img/nodata.png" alt="" />
+								<div class="margin_t20">暂无数据~</div>
+							</div>
+							</template>
+						</ul>
+						<div class="practice_btn mui-text-center" v-if="list2.length >= 20">
+							<button class="mui-btn mui-btn-blue">查看更多</button>
+						</div>
+					</div>
+					<div id="item3mobile" class="mui-slider-item mui-control-content">
+						<ul class="mui-table-view record_list">
+							<template v-if="list3.length != 0">
+							<li class="mui-table-view-cell" v-for="item in list3">
+								<div class="mui-row">
+									<div class="mui-col-xs-6">
+										<div class="price">{{item.money}}</div>
+										<div class="type">{{item.type_text}}</div>
+									</div>
+									<div class="mui-col-xs-6 mui-text-right">
+										<div class="status">{{item.status_text}}</div>
+										<div class="time">{{item.update_time}}</div>
+									</div>
+								</div>
+							</li>
+							</template>
+							<template v-else>
+							<div class="nodata mui-text-center">
+								<img src="../img/nodata.png" alt="" />
+								<div class="margin_t20">暂无数据~</div>
+							</div>
+							</template>
+						</ul>
+						<div class="practice_btn mui-text-center" v-if="list3.length >= 20">
+							<button class="mui-btn mui-btn-blue">查看更多</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--底部记录结束-->
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					balance:'',
+					type:1,
+					list1: [],
+					list2: [],
+					list3: []
+					
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			mui.init({
+				swipeBack: true
+			});
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				})
+				
+				getData('list1')
+			})
+
+			document.getElementById('recharge').addEventListener('click', function() {
+				open_details({
+					title: '充值',
+					url: 'recharge.html'
+				})
+			})
+
+			document.getElementById('withdraw_cash').addEventListener('click', function() {
+				open_details({
+					title: '提现',
+					url: 'withdraw_cash.html'
+				})
+			})
+			
+			//获取数据
+			function getData(cashType,boxType) {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.type = boxType || vm.type;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/get_balance', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.balance = data.info.balance
+							vm[cashType] = data.info.list
+							// console.log(JSON.stringify(vm[cashType]))
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			/**
+			 * 打开详情
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function open_details(item) {
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: item.url,
+					id: item.url,
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView,
+						bounce: 'vertical'
+					},
+					extras:{
+						balance:vm.balance
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			(function($) {
+				var item2 = document.getElementById('item2mobile');
+				var item3 = document.getElementById('item3mobile');
+				document.getElementById('slider').addEventListener('slide', function(e) {
+					if (e.detail.slideNumber === 1) {
+						vm.type = 2
+						getData('list2')
+					} else if (e.detail.slideNumber === 2) {
+						vm.type = 3
+						getData('list3')
+					} else if (e.detail.slideNumber === 3) {
+// 						if (item4.querySelector('.mui-loading')) {
+// 							setTimeout(function() {
+// 								item4.querySelector('.mui-table-view').innerHTML = html4;
+// 							}, 500);
+// 						}
+					}
+				});
+				//				var sliderSegmentedControl = document.getElementById('sliderSegmentedControl');
+				//				$('.mui-input-group').on('change', 'input', function() {
+				//					if (this.checked) {
+				//						sliderSegmentedControl.className = 'mui-slider-indicator mui-segmented-control mui-segmented-control-inverted mui-segmented-control-' + this.value;
+				//						//force repaint
+				//						sliderProgressBar.setAttribute('style', sliderProgressBar.getAttribute('style'));
+				//					}
+				//				});
+			})(mui);
+		</script>
+	</body>
+
+</html>

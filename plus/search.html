@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>搜索</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/wrong.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.slider_nav {
+				background: #fff;
+				border-bottom: 1px solid #f2f2f2;
+			}
+			
+			/* .mui-segmented-control.mui-scroll-wrapper .mui-scroll{ width: 100%;} */
+			.mui-segmented-control.mui-scroll-wrapper .mui-control-item {
+				/* display: inline-block; */
+				/* width: 20%; */
+				padding: 0 .2rem;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+				color: #999999;
+				font-size: .28rem;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+				position: relative;
+				color: #333;
+				font-size: .28rem;
+				font-weight: 700;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active:before {
+				content: '';
+				position: absolute;
+				left: 50%;
+				bottom: 0;
+				width: .4rem;
+				height: 2px;
+				margin-left: -.2rem;
+				background: #008BF7;
+			}
+
+			.screen {
+				position: relative;
+				line-height: 38px;
+			}
+
+			.screen:before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 50%;
+				margin-top: -10px;
+				height: 20px;
+				width: 1px;
+				background: #ddd;
+			}
+
+			.screen span {
+				display: inline-block;
+				vertical-align: middle;
+				font-size: 18px;
+				color: #444;
+			}
+
+			.screen:active,
+			.screen:active span {
+				color: #008BF7;
+			}
+			
+			.mui-search .mui-placeholder{ text-align: left; padding: .04rem .2rem; font-size: 14px;}
+			.mui-search .mui-placeholder .mui-icon{ color: #999;}
+			input[type=search]{ background: #f0f0f0; margin-bottom: 0;}
+			.mui-input-row{ clear: none;}
+			/* .mui-search.mui-active:before{ line-height: 24px;} */
+			.mui-bar input[type=search]{ height: 32px;}
+			.search_box {margin-left: 34px; margin-right: 34px; height: 44px;}
+			.search_box .mui-icon-clear{ top: 2px!important;}
+			
+			.search_tips{ line-height: 3rem; color: #999;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="search_box">
+				<form id="nav_form" onsubmit="return search()">
+					<div class="mui-input-row mui-search">
+						<input id="searchInput" type="search" class="mui-input-clear" placeholder="搜索题目/讲义/资讯">
+					</div>
+				</form>
+			</div>
+		</header>
+		<div id="app" class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen" v-show="first == 1">
+				<div class="mui-row slider_nav">
+					<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div class="mui-scroll">
+							<a class="mui-control-item mui-active" href="#item1mobile" data-id="1" data-wid="search-1.html">
+								题目({{somedata.topic}})
+							</a>
+							<a class="mui-control-item" href="#item2mobile" data-id="2" data-wid="search-2.html">
+								讲义({{somedata.lecture}})
+							</a>
+							<a class="mui-control-item" href="#item3mobile" data-id="3" data-wid="search-3.html">
+								资讯({{somedata.news}})
+							</a>
+							<a class="mui-control-item" href="#item4mobile" data-id="4" data-wid="search-4.html">
+								悬赏({{somedata.reward}})
+							</a>
+							<a class="mui-control-item" href="#item5mobile" data-id="5" data-wid="search-5.html">
+								视频({{somedata.course}})
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div v-show="first == 0" class="search_tips mui-text-center">请输入搜索关键字</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/scheduleGroup.js"></script>
+		<script>
+			mui.init({
+				statusBarBackground: '#ffffff'
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					first: 0,
+					somedata: '',
+					keyword: '',
+					type: 1,
+					pageload:1
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			var state;
+			mui.plusReady(function() {
+
+				state = app.getState();
+				var self = plus.webview.currentWebview()
+
+				initNativeObjects();
+				showSoftInput();
+				
+				
+				var old_back = mui.back;
+				mui.back = function() {
+					// 执行相应的事件
+					// console.log(selfWv.type)
+					self.close();
+					// 执行关闭
+					old_back();
+				};
+				
+				//搜索收起
+				// 								var scroller = document.getElementById('app')
+				// 								scroller.addEventListener('tap', function() {
+				// 									document.activeElement.blur();
+				// 								})
+			});
+
+			//搜索商品
+			function search(list) {
+				document.activeElement.blur();
+				vm.keyword = document.getElementById('searchInput').value
+				vm.first = 1
+				//监听刷新页面
+				if (vm.first == 1 && vm.pageload == 1) {
+					vm.pageload = 0
+					var currentId = plus.webview.currentWebview().id;
+					var group = new webviewGroup(currentId, {
+						items: [{
+							id: "search-1.html",
+							url: "search-1.html",
+							extras: {}
+						}, {
+							id: "search-2.html",
+							url: "search-2.html",
+							extras: {}
+						}, {
+							id: "search-3.html",
+							url: "search-3.html",
+							extras: {}
+						}, {
+							id: "search-4.html",
+							url: "search-4.html",
+							extras: {}
+						}, {
+							id: "search-5.html",
+							url: "search-5.html",
+							extras: {}
+						}],
+						onChange: function(obj) {
+							var c = document.querySelector(".mui-control-item.mui-active");
+							if (c) {
+								c.classList.remove("mui-active");
+							}
+							document.querySelector(".mui-scroll .mui-control-item:nth-child(" + (parseInt(obj.index) + 1) + ")").classList.add("mui-active");
+							
+							vm.type = parseInt(obj.index) + 1;
+							// 触发子页面查询
+							classSearch()
+						}
+					});
+					
+					mui(".mui-scroll").on("tap", ".mui-control-item", function(e) {
+						var wid = this.getAttribute("data-wid");
+						group.switchTab(wid);
+					});
+				}
+				
+				// 获取数量
+				getData()
+				
+				// 触发子页面查询
+				setTimeout(function(){
+					classSearch()
+				},350)
+				
+				return false;
+			}
+
+			function getData() {
+				var data = {}
+				data.keyword = vm.keyword;
+				data.type = 1;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Home/search_mess', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.somedata = [];
+						if (data.status == 1) {
+							vm.somedata = data.info.count
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 按分类查询
+			function classSearch(){
+				var type = parseInt(vm.type)
+				// setTimeout(function(){
+					// 触发子页面查询
+					switch(type){
+						case 1:
+							// 查询题目
+							var page1 = plus.webview.getWebviewById('search-1.html')
+							mui.fire(page1,'customEvent',{keyword:vm.keyword})
+							break;
+						case 2:
+							var page2 = plus.webview.getWebviewById('search-2.html')
+							mui.fire(page2,'customEvent',{keyword:vm.keyword})
+							// 查询讲义
+							break;
+						case 3:
+							var page3 = plus.webview.getWebviewById('search-3.html')
+							mui.fire(page3,'customEvent',{keyword:vm.keyword})
+							// 查询资讯
+							break;
+						case 4:
+							var page4 = plus.webview.getWebviewById('search-4.html')
+							mui.fire(page4,'customEvent',{keyword:vm.keyword})
+							// 查询视频
+							break;
+						case 5:
+							var page5 = plus.webview.getWebviewById('search-5.html')
+							mui.fire(page5,'customEvent',{keyword:vm.keyword})
+							// 查询悬赏
+							break;
+					}
+				// },300)
+			}
+
+			var nativeWebview, imm, InputMethodManager;
+			var initNativeObjects = function() {
+				if (mui.os.android) {
+					var main = plus.android.runtimeMainActivity();
+					var Context = plus.android.importClass("android.content.Context");
+					InputMethodManager = plus.android.importClass("android.view.inputmethod.InputMethodManager");
+					imm = main.getSystemService(Context.INPUT_METHOD_SERVICE);
+				} else {
+					nativeWebview = plus.webview.currentWebview().nativeInstanceObject();
+				}
+			};
+			var showSoftInput = function() {
+				if (mui.os.android) {
+					imm.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+				} else {
+					nativeWebview.plusCallMethod({
+						"setKeyboardDisplayRequiresUserAction": false
+					});
+				}
+				setTimeout(function() {
+					var inputElem = document.querySelector('input');
+					inputElem.focus();
+					inputElem.parentNode.classList.add('mui-active'); //第一个是search，加上激活样式
+				}, 200);
+			};
+		</script>
+
+	</body>
+
+</html>

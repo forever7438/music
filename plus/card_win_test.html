@@ -1,0 +1,526 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			body{  background: #fff; }
+			.set_jy .ques_card{ padding-bottom: 60px;}
+			.mui-content{ background: #fff; }
+			/*练习模式*/
+			.ques_div{ position: relative; }
+			.ques_div .op_btn{ width: 40px; height: 26px; margin-left: 20px; cursor: pointer; text-align: right; line-height: 20px; position: relative;}
+			.ques_div .op_btn:hover .arr{ transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+			.ques_div .op_down{ display: none; position: absolute; right: 0px; top: 26px; width: 150px; box-shadow: 0 3px 5px rgba(0,0,0,0.05); background: #fff; z-index: 20}
+			.ques_div .op_down a{ display: block; line-height: 34px; padding:0 10px; color: #333; text-align: left;}
+			.ques_div .op_down a img{ width: 20px; height: 20px; float: left; margin-top: 7px; margin-right: 10px;}
+			.ques_div .op_down a img.img1{ display: none }
+			.ques_div .op_down a img.img2{ display: block }
+			.ques_div .op_down a:hover{ background: #008bf7; color: #fff }
+			.ques_div .op_btn:hover .op_down{ display: block; }
+			.ques_div .op_down a:hover img.img1{ display: block }
+			.ques_div .op_down a:hover img.img2{ display: none }
+			.ques_div .t{ overflow: hidden; font-size: 14px; }
+			.ques_div .t p{ display: inline; color: #333}
+
+			/*单选*/
+			.ch_ques{ padding-top: 10px; }
+			.ch_ques .c_item{ line-height: 36px; color: #333; display: block; font-size: 14px; }
+			.ch_ques .c_item .radio_d{ position: relative; width: 20px; height: 20px; text-align: center; font-size: 14px; font-weight: normal; color: #999; line-height: 18px; border-radius: 50%; border: 1px solid #999; float: left; margin-right: 10px; margin-top: 8px;}
+			
+			.ch_ques .c_item.select{ color: #008bf7 }
+			.ch_ques .c_item.select .radio_d{ border-color:#008bf7; color:#fff; background: #008bf7 }
+			
+
+			.ch_ques .c_item.error{ color: #ff4f4f }
+			.ch_ques .c_item.error .radio_d{ border-color:#ff4f4f; color:#fff; background: #ff4f4f }
+
+			.ch_ques .c_item.success{ color: #00a245 }
+			.ch_ques .c_item.success .radio_d{ border-color:#00a245;color:#fff; background: #00a245}
+			/*多选*/
+			.chs_ques .c_item .radio_d{ border-radius: 2px; }
+			/*.chs_ques .c_item .radio_d{ border: none; border-radius: 0; background: url(../img/sele3.png); }
+			.chs_ques .c_item.select .radio_d{ border-radius: 0; background: url(../img/sele4.png); }
+			.chs_ques .c_item.error .radio_d{ border-radius: 0; background: url(../img/sele2.png); }
+			.chs_ques .c_item.success .radio_d{ border-radius: 0; background: url(../img/sele1.png); }*/
+
+			.ques_div .video_btn{ position: absolute; right: 0px; bottom: 20px; color:#333;}
+			.ques_div .video_btn img{ position: relative; top: -1px; margin-right: 5px; }
+			.q_btns .my_btn.normal_btn{ padding: 0 20px; margin-right: 10px; }
+
+			body .answer_d .status_img{ position: relative; top: -5px; margin-left: 5px; width: 0.44rem!important; }
+			.answer_d .i_box{ line-height: 24px; }
+			.it .box{ width: 25%; float: left; text-align: center; }
+			.it .box .tt{ display: inline-block; }
+			.it .box img{ margin-left: 10px; }
+			.change_btns .btns img{ position: relative; top: -1px; margin: 0 5px; }
+			.change_btns .btns:hover{ color: #008bf7  }
+			.ques_d_right{ width:262px; float: right; min-height: 100px; margin-left: 20px;  }
+			.ques_d_left{ overflow: hidden; padding-bottom: 60px;}
+
+			.ques_d_right .set_box_div .box{ width: auto; float: none; padding: 0 5px; font-size: 12px; }
+			.ques_card{ padding: 0 0.2rem; }
+			.ques_card .tt{ line-height: 0.74rem; font-weight: bold; font-size: 0.28rem; color: #333 }
+			.ques_card .i_box{ display: block; width:0.7rem; height: 0.7rem; float: left; margin:0.1rem 0.2rem 0.1rem 0; border: 1px solid #dddddd;  text-align: center; line-height:0.66rem; font-size:0.28rem; color: #333}
+			.ques_card .i_box.status1{ border-color:#00a245; color: #00a245}
+			.ques_card .i_box.status3{ border-color:#ff4f4f; color: #ff4f4f}
+			.ques_card .i_box.status2{ border-color:#1dcdff; color: #1dcdff}
+			.ques_card .i_box.status4{ border-color:#ffa200; color: #ffa200}
+
+			.color_info{ padding: 10px 10px; position: fixed; left: 0; bottom: 0; width: 100%; border-top: 1px solid #eee; z-index: 20; background: #fff; }
+			.color_info .item_b{/* width: 25%; float: left; */ line-height:0.5rem; font-size: 0.30rem;}
+			.color_info .item_b div{ display: inline-block; }
+			.color_info .item_b .c{ position: relative; top: -2px; margin-left: .1rem; width: 0.5rem; height: 0.5rem; vertical-align: middle; }
+			.color_info .item_b .c.c1{ background:#00a245  }
+			.color_info .item_b .c.c2{ background:#ff4f4f  }
+			.color_info .item_b .c.c3{ background:#1dcdff  }
+			.color_info .item_b .c.c4{ background:#fff; border: 1px solid #ddd  }
+			.color_info .item_b .c.c5{ background:#ffa200  }
+			/* .color_info .item_b .t{ text-align: right; } */
+
+			.s_input_s{border:1px solid #ddd; height: 28px!important; border-radius: 4px; width:60px!important; padding: 0!important; margin-right: 5px; padding-left: 5px!important; }
+
+			.answer_d .text{ overflow: hidden; }
+
+			.paper_re{ padding: 0 40px; padding-top: 20px; }
+			.paper_re .bo{ width: 16.66%; float: left; line-height: 24px;}
+
+			.change_btns{position: fixed;
+			    left: 220px;
+			    right: 300px;
+			    bottom: 50px;}
+
+
+			.title_btns a{ color: #333; font-size: 0.28rem; font-weight: normal; }
+			.title_btns a span{ font-size: 0.36rem; margin-right: 5px; }
+			.title_btns a span.active{ color:#FE8864  }
+
+			.margin_t10{ margin-top: 0.10rem; }
+			.margin_t20{ margin-top: 0.20rem; }
+			.margin_t30{ margin-top: 0.30rem; }
+			.margin_t40{ margin-top: 0.40rem; }
+			.margin_t80{ margin-top: 0.80rem; }
+			.margin_b10{ margin-bottom: 0.10rem; }
+			.margin_b20{ margin-bottom: 0.20rem; }
+			.margin_b30{ margin-bottom: 0.30rem; }
+			.margin_b40{ margin-bottom: 0.40rem; }
+			.margin_l10{ margin-left: 0.10rem; }
+			.margin_l20{ margin-left: 0.20rem; }
+			.margin_l30{ margin-left: 0.30rem; }
+			.margin_l40{ margin-left: 0.40rem; }
+			.margin_r10{ margin-right: 0.10rem; }
+			.margin_r20{ margin-right: 0.20rem; }
+			.margin_r30{ margin-right: 0.30rem; }
+			.margin_r40{ margin-right: 0.40rem; }
+			.margin_lr10{ margin-right: 0.10rem; margin-left: 0.10rem; }
+			.margin_lr20{ margin-right: 0.20rem; margin-left: 0.20rem;}
+			.margin_lr30{ margin-right: 0.30rem; margin-left: 0.30rem;}
+			.margin_lr40{ margin-right: 0.40rem; margin-left: 0.40rem;}
+			.margin_tb10{ margin-top: 0.10rem; margin-bottom: 0.10rem; }
+			.margin_tb20{ margin-top: 0.20rem; margin-bottom: 0.20rem; }
+			.margin_tb30{ margin-top: 0.30rem; margin-bottom: 0.30rem; }
+			.margin_tb40{ margin-top: 0.40rem; margin-bottom: 0.40rem; }
+			/*内边距*/
+			.pad_t5{ padding-top: 0.05rem; }
+			.pad_t10{ padding-top: 0.10rem; }
+			.pad_t20{ padding-top: 0.20rem; }
+			.pad_t30{ padding-top: 0.30rem; }
+			.pad_t40{ padding-top: 0.40rem; }
+
+			.pad_b10{ padding-bottom: 0.10rem; }
+			.pad_b15{ padding-bottom: 0.15rem; }
+			.pad_b20{ padding-bottom: 0.20rem; }
+			.pad_b30{ padding-bottom: 0.30rem; }
+			.pad_b40{ padding-bottom: 0.40rem; }
+
+			.pad_l10{ padding-left: 0.10rem; }
+			.pad_l20{ padding-left: 0.20rem; }
+			.pad_l30{ padding-left: 0.30rem; }
+			.pad_l40{ padding-left: 0.40rem; }
+
+			.pad_r10{ padding-right: 0.10rem; }
+			.pad_r20{ padding-right: 0.20rem; }
+			.pad_r30{ padding-right: 0.30rem; }
+			.pad_r40{ padding-right: 0.40rem; }
+
+			.pad_lr10{ padding-right: 0.10rem; padding-left: 0.10rem; }
+			.pad_lr20{ padding-right: 0.20rem; padding-left: 0.20rem; }
+			.pad_lr30{ padding-right: 0.30rem; padding-left: 0.30rem; }
+			.pad_lr40{ padding-right: 0.40rem; padding-left: 0.40rem; }
+
+			.pad_tb10{ padding-top: 0.10rem; padding-bottom: 0.10rem; }
+			.pad_tb20{ padding-top: 0.20rem; padding-bottom: 0.20rem; }
+			.pad_tb30{ padding-top: 0.30rem; padding-bottom: 0.30rem; }
+			.pad_tb40{ padding-top: 0.40rem; padding-bottom: 0.40rem; }
+			
+			.blank_textarea{height: 140px; padding: 5px; border-color: #DEDEDE; background: #F8F8F8; color:#333; font-size: 14px;}
+			
+			body .color_yellow{ color: #ffa200 }
+			body .color_yellow2{ color: #fcff00 }
+			body .color_yellow3{ color: #fe8864 }
+			body .color_blue{color: #008BF7;}
+			body .color_green{ color:#00a245 }
+			body .color_999{ color: #999;}
+
+			body .wd_confirm{ background: #fe8864; height: 28px; padding: 0; border-color:#fe8864  }
+
+			body .tk_input{ border: none; border-bottom:1px solid #ddd;  border-radius: 0; padding: 0; font-size: 14px; }
+
+		</style>
+	</head>
+
+	<body>
+		
+	<!-- 	<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">答题卡</h1>
+		</header> -->
+
+		<div class="mui-content" id="app">
+			<div>
+				<div class="mui-scroll" v-cloak>
+					<div class="bg_fff pad_lr20 pad_tb20" v-if="!is_view_aues">
+				<span class="color_yellow3" v-if="!is_end">考试剩余时间：{{my_times}}</span>
+				<span class="color_yellow3" v-if="is_end">考试得分：{{all_score}}</span>
+			</div>
+			<div class="set_jy active" style="margin-left: 0; width: 100%">
+				<!-- <div class="title mui-clearfix"><img src="__IMG__/arr4.png" class="mui-pull-right" alt="">答题卡 <span class="color_999 f12">{{now_index+1}}/{{list.length}}</span></div> -->
+				<div class="card_down">
+					<div class="ques_card">
+						<template v-for="(item2,index2) in list_num" v-if="item2>0">
+							<div class="tt f12">
+								{{type_title[index2]}} <span class="pad_l10">（
+								 <template v-if="index2=='0'">每题1分，</template>
+								<template v-if="index2=='1'">每题2分，</template>
+								共{{item2}}题）</span>
+							</div>
+							<div class="mui-clearfix" style="margin-right: -0.2rem;">
+								<template v-for="(item,index) in list" v-if="item.type==index2">
+									<!-- error h_success -->
+
+									<a href="'javascript:;" v-on:tap="tab_ques(index)" v-if="!is_end && index2==4" class="i_box" v-bind:class="item.is_answer?item.is_right==null?'':'status4':''">{{index+1}}</a>
+									<a href="'javascript:;" v-on:tap="tab_ques(index)" v-if="is_end || index2!=4" class="i_box" v-bind:class="item.is_answer?item.is_right==null?'status4':'status'+item.is_right:''">{{index+1}}</a>
+								</template>
+							</div>
+						</template>
+					</div>
+					<div class="color_info mui-row mui-text-center" v-if="is_end">
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>正确</div>
+								<div class="c c1"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>错误</div>
+								<div class="c c2"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>半对</div>
+								<div class="c c3"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>未做</div>
+								<div class="c c4"></div>
+							</div>
+						</div>
+					</div>
+
+					<div class="color_info mui-row mui-text-center" v-if="!is_end">
+						<div class="mui-col-xs-6">
+							<div class="item_b">
+								<div>已做</div>
+								<div class="c c5"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-6">
+							<div class="item_b">
+								<div>未做</div>
+								<div class="c c4"></div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+				</div>
+			</div>
+		</div>
+	
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+// 				pullRefresh: {
+// 					container: "#pullrefresh",
+// 					up: {
+// 						contentrefresh: '正在加载...',
+// 						contentnomore: '没有更多数据了~',
+// 						callback: pullupRefresh
+// 					}
+// 				}
+			});
+
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					is_load:false,
+					w_arr:['A','B','C','D','E','F','G','H','I','J','K'],
+					now_index:0, //当前第几题
+					
+					/*list:[
+						//单选
+						// id: id
+						// type 题型 单选 0
+						// ques_score 本题分数
+						// ques  题干
+						//  choices 选项 title 选项内容  is_answer 是否是正确答案
+						// my_answer 我的回答  默认给null
+						// is_answer 是否回答，默认给 false
+						// is_right 正确类型， 默认给null    1正确，2 半正确 3错误
+						// my_score 我本题得分 默认 0
+						// note 笔记内容，默认给‘’，用于显示添加笔记按钮
+						// is_edit_note 是否在编辑 笔记， 默认给false
+						// i_have_m 我做了几次
+						// i_have_r 我做对了几次
+						// all_m 全网用户做了几次
+						// all_r 全网用户做对次数
+						// analysis 解析
+						// video 视频解析地址 默认 ''，有的话，视频播放页面地址
+						// is_cj:false 是否是场景题
+						// cj_content 场景题场景内容
+						{id:"1",type:'0',ques_score:"1",ques:"你在哪个省份？",choices:[{title:'湖南',is_answer:false},{title:'湖北',is_answer:true},{title:'海南',is_answer:false},{title:'云南',is_answer:false}],my_answer:null,is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"10",all_m:"100",all_r:"50",analysis:'系统检测您的ip是湖北，所以你是湖北省的',video:'',is_cj:false,cj_content:''},
+						{id:"2",type:'0',ques_score:"1",ques:"习大大担任什么职务",choices:[{title:'湖北省省委书记',is_answer:false},{title:'河南省省委书记',is_answer:false},{title:'国家主席',is_answer:true},{title:'最高检检察长',is_answer:false}],my_answer:null,is_answer:false,is_right:null,my_score:0,note:'笔记内容笔记内容',is_edit_note:false,i_have_m:'10',i_have_r:"8",all_m:"100",all_r:"70",analysis:'',video:'<?=U("video")?>',is_cj:true,cj_content:'场景题描述场景题描述场景题描述场景题描述场景题描述场景题描述'},
+						{id:"3",type:'0',ques_score:"1",ques:"彭麻麻的配偶是？",choices:[{title:'王岐山',is_answer:false},{title:'胡汉三',is_answer:false},{title:'李小龙',is_answer:false},{title:'习大大',is_answer:true}],my_answer:null,is_answer:false,is_right:null,my_score:0,note:'笔记内容笔记内容',is_edit_note:false,i_have_m:'2',i_have_r:"0",all_m:"100",all_r:"70",analysis:'中国人都知道',video:'',is_cj:false,cj_content:''},
+
+
+						//多选
+						// id: id
+						// type 题型 多选 1
+						// ques_score 本题分数
+						// ques  题干
+						// choices 选项 title 选项内容  is_answer 是否是正确答案
+						// answers 正确答案的索引， 你给[]
+						// my_answer 我的回答  默认给 []     注意这里和单选不一样
+						// is_answer 是否回答，默认给 false
+						// is_right 正确类型， 默认给null    1正确，2 半正确 3错误
+						// my_score 我本题得分 默认 0
+						// note 笔记内容，默认给‘’，用于显示添加笔记按钮
+						// is_edit_note 是否在编辑 笔记， 默认给false
+						// i_have_m 我做了几次
+						// i_have_r 我做对了几次
+						// all_m 全网用户做了几次
+						// all_r 全网用户做对次数
+						// analysis 解析
+						// video 视频解析地址 默认 ''，有的话，视频播放页面地址
+						// is_cj:false 是否是场景题
+						// cj_content 场景题场景内容
+						{id:"4",type:'1',ques_score:"2",ques:"以下哪些是直辖市？",choices:[{title:'武汉市',is_answer:false},{title:'天津市',is_answer:true},{title:'北京市',is_answer:true},{title:'重庆市',is_answer:true},{title:'道明寺',is_answer:false}],my_answer:[],answers:[],is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"10",all_m:"100",all_r:"50",analysis:'请查看百科',video:'',is_cj:false,cj_content:''},
+						{id:"5",type:'1',ques_score:"2",ques:"以下哪些是省会城市？",choices:[{title:'武汉市',is_answer:true},{title:'深圳市',is_answer:false},{title:'长沙市',is_answer:true},{title:'成都市',is_answer:true},{title:'鄂州市',is_answer:false}],my_answer:[],answers:[],is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"10",all_m:"100",all_r:"50",analysis:'请查看百科',video:'1111',is_cj:false,cj_content:''},
+
+
+						
+						//判断题 和单选一样  type 不一样，选项不一样
+						// id: id
+						// type 题型  2
+						// ques_score 本题分数
+						// ques  题干
+						//  choices 选项 title 选项内容  is_answer 是否是正确答案
+						// my_answer 我的回答  默认给null
+						// is_answer 是否回答，默认给 false
+						// is_right 正确类型， 默认给null    1正确，2 半正确 3错误
+						// my_score 我本题得分 默认 0
+						// note 笔记内容，默认给‘’，用于显示添加笔记按钮
+						// is_edit_note 是否在编辑 笔记， 默认给false
+						// i_have_m 我做了几次
+						// i_have_r 我做对了几次
+						// all_m 全网用户做了几次
+						// all_r 全网用户做对次数
+						// analysis 解析
+						// video 视频解析地址 默认 ''，有的话，视频播放页面地址
+						// is_cj:false 是否是场景题
+						// cj_content 场景题场景内容
+						{id:"6",type:'2',ques_score:"1",ques:"蓝胖子是男生",choices:[{title:'正确',is_answer:true},{title:'错误',is_answer:false}],my_answer:null,is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"10",all_m:"100",all_r:"50",analysis:'和大雄睡一起，不是男的是什么',video:'',is_cj:false,cj_content:''},
+
+
+						//填空
+						// id: id
+						// type 题型 3
+						// ques_score 本题分数
+						// ques  题干
+						// answer 答案
+						// my_answer 我的回答  默认给 ''  和单选不一样
+						// is_answer 是否回答，默认给 false
+						// is_right 正确类型， 默认给null    1正确，2 半正确 3错误
+						// my_score 我本题得分 默认 0
+						// note 笔记内容，默认给‘’，用于显示添加笔记按钮
+						// is_edit_note 是否在编辑 笔记， 默认给false
+						// i_have_m 我做了几次
+						// i_have_r 我做对了几次
+						// all_m 全网用户做了几次
+						// all_r 全网用户做对次数
+						// analysis 解析
+						// video 视频解析地址 默认 ''，有的话，视频播放页面地址
+						// is_cj:false 是否是场景题
+						// cj_content 场景题场景内容
+						{id:"7",type:'3',ques_score:"1",ques:"湖北的省会城市是______",answer:'武汉',my_answer:'',is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"5",all_m:"100",all_r:"20",analysis:'',video:'<?=U("video")?>',is_cj:false,cj_content:''},
+
+
+						//问答
+						// id: id
+						// type 题型 3
+						// ques_score 本题分数
+						// ques  题干
+						// answer 答案
+						// my_answer 我的回答  默认给 ''  和单选不一样
+						// is_answer 是否回答，默认给 false
+						// is_right 正确类型， 默认给null    1正确，2 半正确 3错误
+						// my_score 我本题得分 默认 0
+						// note 笔记内容，默认给‘’，用于显示添加笔记按钮
+						// is_edit_note 是否在编辑 笔记， 默认给false
+						// i_have_m 我做了几次
+						// i_have_r 我做对了几次
+						// all_m 全网用户做了几次
+						// all_r 全网用户做对次数
+						// analysis 解析
+						// video 视频解析地址 默认 ''，有的话，视频播放页面地址
+						// is_cj:false 是否是场景题
+						// cj_content 场景题场景内容
+						{id:"8",type:'4',ques_score:"20",ques:"请简述武汉的地理优势",answer:'武汉，简称“汉”，别称“江城”，是湖北省省会、中部六省唯一的副省级市和特大城市，中国中部地区的中心城市，长江经济带核心城市，全国重要的工业基地、科教基地和综合交通枢纽，也是中央军委武汉联勤保障基地驻所。全市下辖13个市辖区，总面积8494.41平方公里，2017年常住人口1091.4万人。武汉地处江汉平原东部、长江中游。世界第三大河长江及其最大支流汉江横贯市境中央，将武汉中心城区一分为三，形成武汉三镇（武昌、汉口、汉阳）隔江鼎立的格局，市内江河纵横、湖港交织，水域面积占全市总面积的四分之一，构成了武汉滨江滨湖的水域生态环境。武汉有“九省通衢”之称，是中国内陆最大的水陆空交通枢纽、长江中游航运中心，其高铁网辐射大半个中国，是华中地区唯一可直航全球五大洲的城市。武汉是国家历史文化名城、楚文化的重要发祥地，境内盘龙城遗址有3500年历史。春秋战国以来，武汉地区一直是中国南方的军事和商业重镇。清末洋务运动促进了武汉工业兴起和经济发展，使其成为近代中国重要的经济中心，被誉为"东方芝加哥"。武汉是中国民主革命的发祥地，武昌起义作为辛亥革命的开端，具有重要历史意义。',my_answer:'',is_answer:false,is_right:null,my_score:0,note:'',is_edit_note:false,i_have_m:'10',i_have_r:"5",all_m:"100",all_r:"20",analysis:'',video:'<?=U("video")?>',is_cj:false,cj_content:''},
+
+					],*/
+					list:[],
+					all_score:0, //总得分
+					list_num:[0,0,0,0,0],//各题型数量
+					type_title:['单选题','多选题','判断题','填空题','问答题'],
+					set_full:false, //全屏
+					times:0,
+					my_times:'00:00:00',
+					a_num:0,
+					r_num:0,
+					e_num:0,
+					h_num:0,
+					n_num:0,
+					rate:'0%',
+					is_end:false,
+
+
+					// 个人中心配置
+					is_show_tip:false, // 是否显示提示开关
+					is_auto_tab:false, //是否自动切题
+					is_animate:false,//是否显示动画
+					
+					is_view_aues:false, //看题模式
+					is_skip_do:false,//是否跳过已做
+					is_only_video:false, //只显示视频
+
+					try_end_num:20, //试用题数
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods:{
+					// 加载之后才显示 页面
+					after_load:function(){
+						var _l=[0,0,0,0,0];
+						for(var i=0;i<this.list.length;i++){
+							_l[parseInt(this.list[i].type)]+=1
+						}
+						this.list_num=_l;
+					},
+					// 跳转题号
+					tab_ques:function(_index){
+						//通知答题页面 切题
+						var p_page= plus.webview.currentWebview().opener();
+						mui.fire(p_page,'tab_ques',{
+						    index:_index
+						});
+						mui.back();
+					},
+					
+					time_set:function(){
+						var _this=this;
+						time_set=setInterval(function(){
+							_this.times-=1;
+							var _time=_this.times;
+							var _h=parseInt(_time/3600);
+							if(_h<10){
+								_h='0'+_h
+							}
+							var _m=parseInt(_time%3600/60);
+							if(_m<10){
+								_m='0'+_m
+							}
+							var _s=parseInt(_time%3600%60);
+							if(_s<10){
+								_s='0'+_s
+							}
+							if(_this.times<0){
+								_this.my_times="00:00:00"
+							}else{
+								_this.my_times=_h+':'+_m+':'+_s
+							}
+						},1000)
+					},
+
+					// show_dabj:function(){
+					// 	mui.toast('显示tab第一个--答案');
+
+					// },
+					show_card:function(){
+						if(show_card){
+							show_card.close();
+						}
+						show_card=plus.webview.create('card_win.html','card_win.html',{scrollIndicator:'none',background:'transparent',scalable:false,popGesture:'none',height:'100%',bottom:0},{});
+						
+						_sele.setStyle({mask:'rgba(0,0,0,0.4)'});
+						show_card.show('pop-in');
+					}
+
+				}
+			});
+
+			// app.after_load();
+			// app.time_set();
+			mui.plusReady(function() {
+				mui('.mui-scroll-wrapper').scroll();
+				getData();
+			})
+			
+			function getData(){
+				//获取本地 数据
+				var self = plus.webview.currentWebview()
+				// console.log(JSON.stringify(self.answers_list))
+				var datas = self.answers_list
+				
+				vm.all_score = datas.all_score;
+				vm.list = datas.list;
+				vm.times = datas.times;
+				vm.is_end = datas.is_end;
+				//计算各题型数量
+				vm.after_load();
+				//开启计时
+				vm.time_set();
+			}
+
+		</script>
+	</body>
+
+</html>

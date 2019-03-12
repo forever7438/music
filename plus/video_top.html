@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>课件列表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header id="app" class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">{{title}}</h1>
+		</header>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				subpages: [{
+					url: "video-list.html",
+					id: "video-list.html",
+					styles: {
+						top: "45px",
+						bottom: "0"
+					}
+				}]
+			})
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					title:''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+			
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview()
+				vm.title = self.title;
+			})
+		</script>
+	</body>
+
+</html>

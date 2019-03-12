@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>学霸榜</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style type="text/css">
+			.my_top { padding: 0 .3rem; margin-bottom: .3rem; height: 1rem; line-height: 1rem; background: #fff; font-weight: 700; font-size: .34rem;}
+			.my_top a{ margin-right: .3rem; padding: .08rem .3rem; border-radius: .5rem; font-size: .28rem; color: #ccc; border:1px solid #ccc; font-weight: 400;}
+			.my_top .active{color: #0083EB; border:1px solid #0083EB;}
+			.mui-table-view-cell.mui-active{ background: #fff!!important;}
+			.top_title{ padding: 0 .3rem; background: #fff; line-height: 1rem;}
+			.top_list span{ color: #fe8864;}
+			
+			.more a{padding: .16rem .8rem; background: #ddf0ff; color: #0083EB; border-radius: .6rem;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div class="my_top">
+						<a :class="selected == 1?'active':''">每日正确率</a>
+						<a :class="selected == 2?'active':''">总正确率</a>
+					</div>
+					<template v-if="somedata.length != 0">
+						<div class="mui-row top_title">
+							<div class="mui-col-xs-2"><b>名次</b></div>
+							<div class="mui-col-xs-4"><b>昵称</b></div>
+							<div class="mui-col-xs-4"><b>手机号</b></div>
+							<div class="mui-col-xs-2"><b>正确率</b></div>
+						</div>
+						<ul class="mui-table-view top_list">
+							<li class="mui-table-view-cell" v-for="item in somedata">
+								<div class="mui-row">
+									<div class="mui-col-xs-2">{{item.rownum}}</div>
+									<div class="mui-col-xs-4">{{item.mem_nickname}}</div>
+									<div class="mui-col-xs-4">{{item.mem_mobile}}</div>
+									<div class="mui-col-xs-2"><span>{{item.right_rate}}</span></div>
+								</div>
+							</li>
+						</ul>
+						<div class="mui-text-center more margin_t40">
+							<a @tap="openList()">查看更多</a>
+						</div>
+					</template>
+					<template v-else>
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无数据~</div>
+						</div>
+					</template>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh",
+					down: {
+						height: 50,
+						auto: false,
+						contentdown: "下拉可以刷新",
+						contentover: "释放立即刷新",
+						contentrefresh: "正在刷新...",
+						callback: pulldownRefresh
+					},
+// 					up: {
+// 						contentrefresh: '正在加载...',
+// 						contentnomore: '没有更多数据了~',
+// 						callback: pullupRefresh
+// 					}
+				}
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata:[],
+					todayRank:'',
+					totalRank: '',
+					selected:1,
+					nodata: 0,
+					is_active: 0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				// var page = plus.webview.getWebviewById('top.html')
+				// vm.mokao_id = page.guid
+				getData()
+				
+				mui('body').on('tap','.my_top a',function(){
+					if(vm.selected == 1){
+						vm.selected = 2
+						vm.somedata = vm.totalRank
+					}else{
+						vm.selected = 1
+						vm.somedata = vm.todayRank
+					}
+				})
+			})
+
+			//下拉刷新业务实现
+			function pulldownRefresh() {
+				getData()
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				// getPageData()
+			}
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {};
+				data.subject = state.subject_id;
+				data.type = 2;
+				mui.ajax(server + 'Api/V1/Home/rank_list', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						vm.somedata = [];
+						if (data.status == 1) {
+								vm.nodata = 0
+								vm.todayRank = data.info.rank_day.list;
+								vm.totalRank = data.info.rank_all.list;
+								if(vm.selected == 1){
+									vm.somedata = vm.todayRank
+								}else{
+									vm.somedata = vm.totalRank
+								}
+						} else {
+							mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//获取分页数据
+			function getPageData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.mokao_id = vm.mokao_id;
+				data.p = vm.page
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/SimulationTest/rank', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.length < 20) {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							} else {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							}
+
+							for (var item of data.info.rank) {
+								vm.somedata.push(item)
+							}
+							vm.page++
+						} else {
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//		            	console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			function openList() {
+					mui.openWindow({
+						url: "home_top_more.html",
+						id: "home_top_more.html",
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						extras: {
+							type: 2,
+							selected:vm.selected
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: true,
+						}
+					})
+			}
+		</script>
+	</body>
+
+</html>

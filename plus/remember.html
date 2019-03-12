@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>设置错题提示时间</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html,body,.mui-content{ background: #fff;}
+			.title{ padding: 15px 0; font-size: .34rem; font-weight: 700;}
+			.time_box label{margin-bottom: 10px; display: block; padding: 0 15px;}
+			.time_box label span{ display: block; padding: 15px 0; border: 1px solid #f2f2f2; font-size: .3rem; color: #999;}
+			.time_box label input{ display: none;}
+			.time_box label input:checked ~ span{ border-color: #008bf7; color: #008bf7;}
+			
+			.price_box{}
+			.price_box h3{ font-size: 0.34rem; line-height: 0.9rem;}
+			.price_box .price_span{ padding: 0 0.3rem;}
+			.price_box .price_span ul:before,.price_box .price_span ul:after,.price_box .price_span ul li:after{ display: none;}
+			/*.price_box .price_span label{ display: block; background: #ccc;}*/
+			.price_box .price_span ul a{ display: block; margin-bottom: 5px; padding: 0.2rem 0; border:1px solid #f2f2f2; font-size: 0.28rem; color: #999;}
+			.price_box .price_span ul .mui-selected a{ border-color: #008BF7; color: #008BF7;}
+			.price_box .price_span ul .mui-selected a:after{ display: none;}
+			.price_box .price_span input{ margin: 0; padding-right: 50px; height: 46px; line-height: 46px; border-radius: 0; border:1px solid #f2f2f2;}
+			.price_box .price_span .price-input{ position: relative; margin: 5px 0; padding: 0;}
+			.price_box .price_span .price-input span{ position: absolute; top: 0; right: 10px; line-height: 46px; color: #999;}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="price_box">
+				<h3 class="mui-text-center">设置错题提示时间</h3>
+				<div class="price_span mui-text-center">
+					<ul class="mui-table-view mui-table-view-radio">
+						<li class="mui-table-view-cell mui-selected" data-id="1">
+							<a class="mui-navigate-right">1小时</a>
+						</li>
+						<li class="mui-table-view-cell" data-id="2">
+							<a class="mui-navigate-right">2小时</a>
+						</li>
+						<li class="mui-table-view-cell" data-id="3">
+							<a class="mui-navigate-right">3小时</a>
+						</li>
+						<h3 class="mui-text-center">自定义时间</h3>
+						<li class="mui-table-view-cell price-input">
+							<span>小时</span>
+							<input class="mui-text-right js_time" type="tel" />
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="btn-content">
+				<button class="mui-btn mui-btn-block mui-btn-primary" data-loading-text="提交中">确定</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			var num = 1;
+			
+			mui.plusReady(function() {
+				var list = document.querySelector('.mui-table-view.mui-table-view-radio');
+				list.addEventListener('selected', function(e) {
+					num = e.detail.el.getAttribute('data-id');
+				});
+			})
+
+			mui(document.body).on('tap', '.mui-btn', function(e) {
+				var _this = this
+				mui(_this).button('loading');
+				
+				if(num == null || num == 0){
+					num = document.querySelector('.js_time').value;
+				}
+				
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.type = 1;
+				data.number = num;
+				console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_number', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							mui(_this).button('reset');
+							var setPage = plus.webview.getWebviewById('set.html');
+							setPage.evalJS("hideLayer()")
+						} else {
+							mui.toast(data.msg);
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+				
+// 				setTimeout(function() {
+// 					mui(this).button('reset');
+// 					var setPage = plus.webview.getWebviewById('set.html');
+// 					setPage.evalJS("hideLayer()")
+// 				}.bind(this), 1500);
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,222 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>简易设置</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			html, body { position: relative; height: 100%; background: transparent; }
+		.mui-bar-nav~.mui-content { position: absolute; left: 0; width: 100%; top: 0px; bottom: 44px; }
+		#app { position: absolute; z-index: 1; width: 100%; height: 100%; overflow: hidden; border-radius: .2rem .2rem 0 0; background: #fff; opacity: 1; }
+		.mui-bar-nav .mui-icon { padding-top: 13px; color: #fff; }
+		
+		.set_box{ padding: .4rem;}
+		.set_box h3{ font-size: 0.34rem; font-weight: 700;}
+		
+		.mui-input-row.mui-input-range{ padding: 0 20px 0 15px;}
+		
+		.range_box{ padding: 15px 0; background: #fff;}
+		.range_d{ position: relative;}
+		.mui-input-row label{ padding: 11px 0; width: 30%;}
+		.mui-input-range label~input[type=range]{ width: 70%;}
+		/*.range_box h3{ margin: 0; padding: 0 15px; font-size: .34rem; color: #333;}*/
+		.mui-input-range input[type=range]{ background: -webkit-linear-gradient(#ffa200, #ffa200) no-repeat #ececec; background-size: 15% 100%;}
+		/* .mui-input-range .mui-tooltip{ display: none;} */
+		.mui-input-range input[type='range']::-webkit-slider-thumb{ background-color: #FFF; border:1px solid #ececec; width: 24px; height: 24px;}
+		
+		.bg_set { padding: .3rem 0;}
+		.bg_set a{ float: left; width: .8rem; height: .8rem; border:1px solid #f2f2f2; margin-right: .3rem;}
+		.bg_set .active{ border:1px solid #FFA200;}
+		
+		.bg_btn{ padding: .2rem 0;}
+		.bg_btn .icon-xiazai{ padding: 10px; background: #008bf7; border-radius: 50%; color: #fff;}
+		.bg_btn .icon-fenxiang{ padding: 10px; background: #ffa200; border-radius: 50%; color: #fff;}
+		
+		.bg_btn .mui-icon-arrowdown{ font-size: 50px; color: #ccc;}
+	    </style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="set_box">
+				<h3 class="">字体大小</h3>
+				<div class="mui-row range_box">
+					<div class="mui-input-row mui-input-range margin_t20 range_d">
+						<input id="range" type="range" min="12" max="30" v-bind:value="member_set.font_size">
+					</div>
+					<div class="mui-row" style="padding: 0 10px;">
+						<div class="mui-col-xs-4 mui-text-left">小</div>
+						<div class="mui-col-xs-4 mui-text-center">中</div>
+						<div class="mui-col-xs-4 mui-text-right">大</div>
+					</div>
+				</div>
+				<h3 class="">背景颜色</h3>
+				<div class="mui-clearfix bg_set">
+					<a :class="member_set.background == 0?'active':''" data-id="0" style="background: #fff;"></a>
+					<a :class="member_set.background == 1?'active':''" data-id="1" style="background: #fbe6cf;"></a>
+					<a :class="member_set.background == 2?'active':''" data-id="2" style="background: #e4eacf;"></a>
+					<a :class="member_set.background == 3?'active':''" data-id="3" style="background: #000;"></a>
+				</div>
+				<div class="mui-row bg_btn">
+					<div class="mui-col-xs-4">
+						<span class="mui-icon-extra icon-xiazai"></span>
+					</div>
+					<div class="mui-col-xs-4 mui-text-center">
+						<span @tap="hideLayer()" class="mui-icon mui-icon-arrowdown"></span>
+					</div>
+					<div class="mui-col-xs-4 mui-text-right">
+						<span class="mui-icon-extra icon-fenxiang"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/range.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var remember, setFont;
+			var change = function($input) {
+				/*rangeinput change事件*/
+				clearTimeout(setFont)
+				setFont = setTimeout(function() {
+					setData('font_size', $input.value);
+					// console.log($input.value);
+				}, 200)
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					member_set: {}
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				vm.member_set = self.set;
+				setTimeout(function() {
+					$('#range').css('background-size', ($('#range').val() - 12) * 6.25 + '% 100%');
+				})
+
+				mui('body').on('tap', '.bg_set a', function() {
+					var state = app.getState();
+					var _this = $(this);
+					var value = _this.attr('data-id');
+					var data = {};
+					if (state.user_key) {
+						data.user_key = state.user_key;
+					}else{
+						vm.member_set['background'] = value
+						_this.addClass('active').siblings().removeClass('active');
+						var page = plus.webview.currentWebview().opener()
+						page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+						return;
+					}
+					data['type'] = value;
+					// console.log(JSON.stringify(data))
+					mui.ajax(server + 'Api/V1/UserCenter/set_background', {
+						data: data,
+						dataType: 'json', //服务器返回json格式数据
+						type: 'post', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；              
+						success: function(data) {
+							// console.log(JSON.stringify(data))
+							if (data.status == 1) {
+								vm.member_set['background'] = value
+								_this.addClass('active').siblings().removeClass('active');
+								var page = plus.webview.currentWebview().opener()
+								page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+							} else {
+								// 							setTimeout(function(){
+								// 								mui('#'+key).switch().toggle();
+								// 							},500)
+								mui.toast(data.msg);
+								return false;
+							}
+						},
+						error: function(xhr, type, errorThrown) {
+							//console.log(JSON.stringify(xhr.responseText))
+							//异常处理；
+							// vm.abnormal = 0;
+							mui.toast('网络异常');
+						}
+					});
+					
+				})
+
+			})
+
+			$('#range').RangeSlider({
+				min: 12,
+				max: 28,
+				step: 1,
+				callback: change
+			});
+
+			// 设置信息
+			function setData(key, value) {
+				var state = app.getState();
+				var data = {};
+				if (state.user_key) {
+					data.user_key = state.user_key;
+				}else{
+					vm.member_set[key] = value
+					var page = plus.webview.currentWebview().opener()
+					page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+					return;
+				}
+				data[key] = value;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserAnswer/answer_set', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.member_set[key] = value
+							var page = plus.webview.currentWebview().opener()
+							page.evalJS("changeSet('" + JSON.stringify(vm.member_set) + "')")
+							
+						} else {
+// 							setTimeout(function(){
+// 								mui('#'+key).switch().toggle();
+// 							},500)
+							mui.toast(data.msg);
+							return false;
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 隐藏
+			function hideLayer(){
+				var homePage = plus.webview.getWebviewById('answer_new.html')
+				homePage.evalJS("hideMask()")
+			}
+		</script>
+	</body>
+
+</html>

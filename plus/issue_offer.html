@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>发布悬赏</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<link href="../css/media_components.css" rel="stylesheet" />
+		<link href="../css/imageviewer.css" rel="stylesheet" />
+		<style>
+			.mui-input-group .mui-input-row:after{ left: 0;}
+			.feedback_textarea{ height: 4rem!important;}
+			.feedback_textarea textarea{ height: 4rem;}
+			
+			.feedback_class{ line-height: 40px;}
+			.feedback_class span{ line-height: 40px; color: #999;}
+			.feedback_class a{ padding: 0 0 0 15px;}
+			.feedback_class a:active{ background: #f8f8f8; color: #333;}
+			
+			.btn-content{ position: fixed; padding: 0; bottom: 0; left: 0; width: 100%;}
+			.btn-content button{ margin: 0; border-radius: 0;}
+			.mui-scroll-wrapper{ top: 44px; bottom: 60px;}
+			
+			.feedback_class .upload_voice{ width: 5rem; color: #FFA200; font-size: .3rem; padding-right: .3rem;}
+			.feedback_class span input{ font-size: .3rem;}
+			
+			.audio_box{ position: fixed; z-index: 9999; bottom: -100%; left: 0; width: 100%; background: #fff; padding: .4rem 0 .2rem 0; transition: .3s;}
+			.audio_box h3{ margin: 0; font-size: .34rem;}
+			.audio_box .media-item.button-item {
+				width: 2.2rem;
+				height: 2.2rem;
+				position: relative;
+				margin: .1rem .1rem;
+				border-radius: 50%;
+				border: none;
+				font-size: 80px;
+				background: #008bf7;
+				color: #fff;
+			}
+			.upload_voice .mui-icon-closeempty{ color: #FFA200;}
+			.audio_box .media-item.button-item:active{ background: #0062CC;}
+			.audio_box_show{ bottom: 0;}
+			
+			.upload_voice .media-item.audio-item{padding: 0 20px 0 0; margin: 0; border: none; border-radius: 0; background: none;}
+			.upload_voice .media-item .mui-icon-closeempty{ position: absolute; margin-left: 5px; top: 0; right: 0; width: 20px; height: 40px; line-height: 40px; background: none; color: #FFA200; border-radius: 0; font-size: 24px;}
+			
+			#voiceBtn{ color: #FFA200;}
+			
+			.closeAudio{ color: #ccc;}
+			.closeAudio span{ font-size: 1rem!important;}
+			.audio_box .custom-media-list{ padding: .4rem 0 0 0;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发布悬赏</h1>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div id="app" class="mui-content">
+					<form class="mui-input-group">
+						<div class="mui-input-row">
+							<input type="text" name="" maxlength="100" placeholder="请输入标题" v-model="title" />
+						</div>
+						<div class="mui-input-row feedback_textarea">
+							<textarea v-model="content" maxlength="200" placeholder="请输入详情..."></textarea>
+						</div><!-- 
+						<div class="mui-input-row feedback_class">
+							<a id='showTypePicker' class="mui-block"><span class="mui-pull-right mui-icon mui-icon-arrowright"></span>
+								<div id='typeResult' class="ui-alert">请选择分类</div>
+							</a>
+						</div> -->
+						<div class="mui-input-row feedback_class">
+							<a class="mui-block">
+								<span id="voiceBox" class="mui-pull-right mui-text-right upload_voice"><span id="voiceBtn" v-show="voiceShow">录制音频文件</span></span>
+								<div class="ui-alert">音频文件</div>
+							</a>
+						</div>
+						<div class="mui-input-row feedback_class">
+							<a class="mui-block">
+								<span class="mui-pull-right"><input style="width: 5rem;" class="mui-text-right" type="text" name="" value=""
+									 :placeholder="'账户余额：￥'+balance" v-model="money" /></span>
+								<div class="ui-alert">设置悬赏金额</div>
+							</a>
+						</div>
+					</form>
+				</div>
+				<div id="imgList"></div>
+			</div>
+		</div>
+		<div class="audio_box mui-text-center">
+			<h3>按住录制语音</h3>
+			<div id="audioList"></div>
+			<div class="closeAudio">
+				<span id="closeAudio" class="mui-icon mui-icon-closeempty"></span>
+			</div>
+		</div>
+		<div class="btn-content">
+			<button class="mui-btn mui-btn-block mui-btn-primary js_submit" data-loading-text="提交中">提交</button>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script src="../js/md5.min.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
+		<script src="../js/media_components.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true,
+				gestureConfig: {
+					longtap: true, //默认为false
+					hold: true, //默认为false，不监听
+					release: true //默认为false，不监听
+				}
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					topic_id:'',
+					balance: '0.00',
+					money:'',
+					title:'',
+					type: [],
+					content: '',
+					selected: '',
+					imgID: [],
+					voiceID: '',
+					voiceShow:1
+				},
+				mounted: function() {
+					mui('#imgList').imageListInit({
+						size: 9
+					});
+
+					mui('#audioList').audioListInit({
+						size: 1
+					});
+				},
+				updated: function() {
+
+				}
+			})
+
+			// 提交
+			mui(document.body).on('tap', '.js_submit', function(e) {
+				
+				if (vm.title == '') {
+					mui.toast('请填写标题')
+					return false;
+				}
+				
+				if (vm.content == '') {
+					mui.toast('请填写详情')
+					return false;
+				}
+
+// 				if (vm.selected == '') {
+// 					mui.toast('请选择类型')
+// 					return false;
+// 				}
+				
+				if (vm.money == '') {
+					mui.toast('请输入悬赏金额')
+					return false;
+				}
+				
+				var _this = this;
+				mui(_this).button('loading');
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.ques_title = vm.title;
+				data.content = vm.content
+				data.ques_category_id = vm.selected;
+				data.ques_topic_id = vm.topic_id;
+				data.ques_pics = vm.imgID;
+				data.ques_voice = vm.voiceID;
+				data.money = vm.money;
+				mui.ajax(server + 'Api/V1/Reward/release', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						mui(_this).button('reset');
+						if (data.status == 1) {
+							var parentPage = plus.webview.currentWebview().opener();
+							parentPage.evalJS("getOffer()");
+							mui.toast(data.msg);
+							mui.back();
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						mui(_this).button('reset');
+						mui.toast('网络异常');
+					}
+				});
+			});
+
+			var mask
+			// 上传音频
+			mui(document.body).on('tap', '#voiceBtn', function(e) {
+				$('textarea,input').blur()
+				mask = mui.createMask(hideVoice);
+				if ($('.audio_box').hasClass('audio_box_show')) {
+					mask.close(); //关闭遮罩
+					$('.audio_box').removeClass('audio_box_show')
+				} else {
+					mask.show(); //显示遮罩
+					$('.audio_box').addClass('audio_box_show')
+				}
+			});
+
+			// 关闭录音
+			mui(document.body).on('tap', '#closeAudio', function(e) {
+				mask.close(); //关闭遮罩
+				// $('.audio_box').removeClass('audio_box_show')
+			});
+
+
+			function hideVoice() {
+				$('.audio_box').removeClass('audio_box_show')
+			}
+
+
+			mui.plusReady(function() {
+				mui('.mui-scroll-wrapper').scroll();
+				
+				var self = plus.webview.currentWebview();
+				vm.topic_id = self.guid;
+				vm.selected = self.type;
+				self.addEventListener('hide',function(){
+					document.activeElement.blur()
+				})
+				
+				// getData()
+			})
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Reward/release_reward', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.ques_category != 0) {
+								for (item in data.info.ques_category) {
+									var obj = {}
+									obj.value = data.info.ques_category[item].id
+									obj.text = data.info.ques_category[item].title
+									vm.type.push(obj)
+								}
+							}
+							var typePicker = new mui.PopPicker();
+
+							typePicker.setData(vm.type);
+
+							var showTypePickerButton = document.getElementById('showTypePicker');
+							var typeResult = document.getElementById('typeResult');
+							showTypePickerButton.addEventListener('tap', function(event) {
+								$('textarea,input').blur()
+								typePicker.show(function(items) {
+									typeResult.innerText = items[0].text;
+									vm.selected = items[0].value
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+							vm.balance = data.info.balance
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

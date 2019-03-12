@@ -1,0 +1,606 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>悬赏大厅</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/media_components.css" rel="stylesheet" />
+		<style>
+			.mui-table-view-cell.mui-active{ background: #fff;}
+			.screen_box{ padding: 0 .2rem 0 0; background: #fff; line-height: .8rem; border-bottom: 1px solid #f2f2f2;}
+			.screen_box span{ vertical-align: middle; font-size: 18px;}
+			.screen_box .active{ color: #008BF7; font-weight: 700;}
+			.screen_box .active span{ font-weight: 400; color: #333;}
+			
+			.offer_list .avatar img{ width: .8rem; height: .8rem; border-radius: 50%;}
+			.offer_list .info{ margin-left: 1rem; font-size: .3rem;}
+			.offer_list .info .name{ vertical-align: bottom; line-height: .5rem;}
+			.offer_list .info .time{ font-size: .24rem; color: #999; line-height: .3rem;}
+			.offer_list .help_btn{ line-height: .8rem; color: #008BF7;}
+			.offer_list .help_btn span{ font-size: 20px; margin-right: .1rem;}
+			.offer_list .txt{ font-size: .3rem;}
+			
+			/* .offer_list .album {display: flex; justify-content:space-around;} */
+			/* .offer_list .album a{ display: inline-block; position: relative; z-index: 2; flex: 1;} */
+			
+			.offer_list .album a{ float: left; margin: 5px 0; width: 2rem; height: 2rem; margin-left: .3rem;}
+			.offer_list .album a:nth-child(3n+1){ margin-left: 0;}
+			.offer_list .album img{ width: 2rem; height: 2rem; background-size:cover; background-position:center center;}
+			.offer_list .tags>span{ display: inline-block; margin-left: .2rem; padding: 0 .4rem; border:1px solid #ffa200; height: .5rem; line-height: .5rem; color: #FFA200; border-radius: .25rem;}
+			.offer_list .tags>span:first-child{margin-left: 0;}
+			.offer_list .tags .price{ color: #fe8864; border-color: #fe8864;}
+			.offer_list .tags a{ color: #FFA200;}
+			.offer_list .tags i{margin-right: .1rem; font-size: 18px!important; vertical-align: middle;}
+			.offer_list .tags .date{ padding: 0; border: none; color: #999; line-height: 20px;}
+			.margin_left{ margin-left: 1rem;}
+			.set_best{ line-height: .8rem;}
+			.set_best a{ color: #fe8965;}
+			
+			.reply_list .album{ margin-left: 1rem;}
+			.reply_list .album a{ width: 1.6rem; height: 1.6rem;}
+			.reply_list .album img{ width: 1.6rem; height: 1.6rem;}
+			
+			.reply_none{ padding: 1rem 0 2rem 0;}
+			.reply_none span{ color: #FFA200;}
+			
+			.reply_btn{ position: fixed; z-index: 999; bottom: 0; left: 0; width: 100%;}
+			.reply_btn button{ margin: 0; border-radius: 0;}
+			
+			.audio {
+				display: inline-block;
+				margin: 0px;
+				width: 30px;
+				height: 30px;
+				position: relative;
+				vertical-align: middle;
+			}
+		</style>
+		<!--App自定义的css-->
+		<style type="text/css">
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 10000;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 9999;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<!--下拉刷新容器-->
+			<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="mui-table-view offer_list">
+						<li class="mui-table-view-cell wrong_item">
+							<div class="mui-row">
+								<div class="mui-col-xs-6">
+									<div class="avatar mui-pull-left">
+										<img v-bind:src="somedata.headimg != ''?somedata.headimg:'../img/avatar.png'" />
+									</div>
+									<div class="info">
+										<div class="name"><b>{{somedata.mem_nickname}}</b></div>
+										<div class="time">{{somedata.add_time}}</div>
+									</div>
+								</div>
+								<div class="mui-col-xs-6 mui-text-right">
+									<!--<a class="help_btn"><span class="mui-icon mui-icon-help"></span>帮助他/她</a>-->
+								</div>
+								<div class="mui-col-xs-12 txt margin_t20" v-html="somedata.content">
+								</div>
+							</div>
+							<div class="album mui-clearfix margin_t20" v-if="somedata.ques_pics.length != 0">
+								<a v-for="(i,index) in somedata.ques_pics">
+									<img src="../img/img_opacity.png" :data-preview-src="somedata.ques_big_pics[index]" :data-preview-group="somedata.id" :data="somedata.ques_big_pics[index]" :style="{backgroundImage:'url(' + i + ')'}" alt="" />
+									<!-- <img src="../img/img_opacity.png" :data="somedata.ques_big_pics[index]" :style="{backgroundImage:'url(' + i + ')'}" alt="" /> -->
+								</a>
+							</div>
+							<div class="tags margin_t30">
+								<span>{{somedata.ques_category_text}}</span>
+								<span class="price">￥{{somedata.money}}</span>
+								<a class="mui-pull-right" v-if="somedata.ques_voice">
+									<div @tap="playVoice(somedata.ques_voice,$event)" class="audio mui-col-"><span></span><span></span><span></span></div>{{somedata.ques_voice_time}}
+									<!-- <i class="mui-icon-extra icon-yuyin"></i> -->
+								</a>
+							</div>
+						</li>
+					</ul>
+					<template v-if="nodata == 0">
+						<template v-if="somedata.status == 0">
+							<div class="reply_none mui-text-center">
+								用户<span>{{reply.user_names}}</span>等{{reply.count}}人进行了解答
+							</div>
+						</template>
+						<template v-else>
+							<ul class="mui-table-view offer_list reply_list">
+								<li class="mui-table-view-cell wrong_item" v-for="item in reply">
+									<div class="mui-row">
+										<div>
+											<div class="avatar mui-pull-left">
+												<img v-bind:src="item.mem_headimg != ''?item.mem_headimg:'../img/avatar.png'" />
+											</div>
+											<div class="info">
+												<div class="mui-pull-right set_best">
+													<a @tap="setBest({id:item.id})" v-if="somedata.status != 1">设为最佳答案</a>
+													<a v-if="item.is_good == 1">最佳答案</a>
+												</div>
+												<div class="name" style="line-height: .8rem;"><b>{{item.mem_nickname}}</b></div>
+											</div>
+										</div>
+										<div class="txt margin_t20 margin_left" v-html="item.content">
+										</div>
+									</div>
+									<div class="album mui-clearfix margin_t20" v-if="item.ques_pics.length != 0">
+										<a v-for="(i,index) in item.ques_pics">
+											<img src="../img/img_opacity.png" :data="item.ques_big_pics[index]" :style="{backgroundImage:'url(' + i + ')'}"
+											 alt="" />
+										</a>
+									</div>
+									<div class="tags margin_t10 margin_left">
+										<span class="date">{{item.add_time}}</span>
+										<a class="mui-pull-right" v-if="item.ques_voice != ''">
+											<div @tap="playVoice(item.ques_voice,$event)" class="audio mui-col-"><span></span><span></span><span></span></div>{{item.ques_voice_time}}
+											<!-- <i class="mui-icon-extra icon-yuyin"></i>{{item.ques_voice_time}} -->
+										</a>
+									</div>
+								</li>
+							</ul>
+						</template>
+					</template>
+					<template v-else>
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无数据~</div>
+						</div>
+					</template>
+				</div>
+			</div>
+			<template v-if="somedata.status == 0">
+				<div class="reply_btn">
+					<button id="helpBtn" class="mui-btn mui-btn-block mui-btn-primary">帮助他/她</button>
+				</div>
+			</template>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig:{
+					longtap:true,
+				},
+				pullRefresh: {
+					container: "#refreshContainer",
+					// 			    down: {
+					// 			      height: 50,
+					// 			      auto: false,
+					// 			      contentdown: "下拉可以刷新",
+					// 			      contentover: "释放立即刷新",
+					// 			      contentrefresh: "正在刷新...",
+					// 			      callback: pulldownRefresh
+					// 			    },
+					up: {
+						contentrefresh: '正在加载...',
+						contentnomore: '没有更多数据了~',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					guid: '',
+					somedata: {
+						ques_pics: []
+					},
+					reply: [],
+					page: 2,
+					nodata: 0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {}
+			});
+			
+			// 帮助他 
+			mui('body').on('tap', '#helpBtn', function() {
+				mui.openWindow({
+					url: 'offer-help.html',
+					id: 'offer-help.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						// bounce: 'vertical'
+					},
+					extras: {
+						guid: vm.guid
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				vm.guid = self.guid;
+				
+				// 长按下载图片
+				$('body').on('longtap', '.album img', function(e) {
+					console.log('长按图片下载')
+				});
+				
+				getData()
+
+				// 监听图片的点击
+// 				$('body').on('tap', '.album img', function(e) {
+// 					// 获取图片地址列表
+// 					var images = $(this).parents('.album').find('img')
+// 					var urls = [];
+// 					for (var i = 0; i < images.length; i++) {
+// 						// console.log("url:"+images[i].getAttribute('data'))
+// 						urls.push(images[i].getAttribute('data'));
+// 					}
+// 
+// 					// 查询图片在列表中的位置
+// 					// 由于dom节点列表是伪数组，需要处理一下
+// 					var index = [].slice.call(images).indexOf(this);
+// 					plus.nativeUI.previewImage(urls, {
+// 						background: '#111',
+// 						current: index,
+// 						loop: false,
+// 						indicator: 'number'
+// 					});
+// 				});
+			})
+
+			//下拉刷新业务实现
+			// 			function pulldownRefresh() {
+			// 				setTimeout(function() {
+			// 					mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+			// 					mui('#refreshContainer').pullRefresh().refresh(true);
+			// 				}, 1000)
+			// 			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				getPageData()
+			}
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.id = vm.guid
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Reward/info', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						// mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+						vm.somedata = [];
+						vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.reply.length == 0) {
+								mui('#refreshContainer').pullRefresh().disablePullupToRefresh();
+								vm.somedata = data.info.info;
+								vm.nodata = 1;
+							} else if (typeof(data.info.reply.length) == 'undefined') {
+								mui('#refreshContainer').pullRefresh().disablePullupToRefresh();
+								vm.somedata = data.info.info;
+								vm.reply = data.info.reply;
+								vm.nodata = 0;
+							} else if (data.info.reply.length < 20) {
+								mui('#refreshContainer').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 0;
+								vm.somedata = data.info.info;
+								vm.reply = data.info.reply;
+							} else {
+								mui('#refreshContainer').pullRefresh().refresh(true);
+								vm.nodata = 0;
+								vm.somedata = data.info.info;
+								vm.reply = data.info.reply;
+							}
+						} else {
+							//mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						// mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//获取分页数据
+			function getPageData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.id = vm.guid
+				data.p = vm.page
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/reward_problem_reply', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//		            	console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.length < 20) {
+								mui('#refreshContainer').pullRefresh().endPullupToRefresh(true);
+							} else {
+								mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+							}
+
+							for (var item of data.info) {
+								vm.reply.push(item)
+							}
+							vm.page++
+						} else {
+							mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+							mui.toast(data.msg)
+						}
+						mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理；
+						mui('#refreshContainer').pullRefresh().endPullupToRefresh(false);
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 设置最佳答案
+			function setBest(item) {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.id = item.id;
+				data.reward_id = vm.guid
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/set_best_answer', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						if (data.status == 1) {
+							getData()
+							mui.toast(data.msg)
+						} else {
+							//mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						// mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 转化时间
+			function formatSeconds(value) {
+				var secondTime = parseInt(value); // 秒
+				var minuteTime = 0; // 分
+				var hourTime = 0; // 小时
+				if (secondTime > 60) { //如果秒数大于60，将秒数转换成整数
+					//获取分钟，除以60取整数，得到整数分钟
+					minuteTime = parseInt(secondTime / 60);
+					//获取秒数，秒数取佘，得到整数秒数
+					secondTime = parseInt(secondTime % 60);
+					//如果分钟大于60，将分钟转换成小时
+					if (minuteTime > 60) {
+						//获取小时，获取分钟除以60，得到整数小时
+						hourTime = parseInt(minuteTime / 60);
+						//获取小时后取佘的分，获取分钟除以60取佘的分
+						minuteTime = parseInt(minuteTime % 60);
+					}
+				}
+				var result = "" + parseInt(secondTime);
+
+				if (minuteTime > 0) {
+					result = "" + parseInt(minuteTime) + ":" + result;
+				}
+				if (hourTime > 0) {
+					result = "" + parseInt(hourTime) + ":" + result;
+				}
+				return result;
+			}
+			
+			// 播放语音
+			var audio = document.createElement('audio');
+			function playVoice(url,event) {
+				var iconDiv = event.currentTarget; 
+				// console.log(url)
+				if (audio !== null) {
+					if (iconDiv.classList.contains('playing') != true) {
+						$('.audio').removeClass('playing')
+						iconDiv.classList.add('playing')
+						audio.src = url;
+						audio.play(); // 播放 
+						audio.addEventListener('ended', function() {
+							iconDiv.classList.remove('playing')
+						}, false);
+					} else {
+						iconDiv.classList.remove('playing')
+						audio.pause(); // 暂停
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

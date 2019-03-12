@@ -1,0 +1,444 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.mui-badge-danger, .mui-badge-red{ background: #ff0000;}
+			.member_top{background: #fff;}
+			.member_info{ padding: .2rem .4rem; background: #fff;}
+			.member_info .avatar{ width: 1.2rem; height: 1.2rem;}
+			.member_info .avatar img{ width: 1.2rem; height: 1.2rem; border-radius: 50%;}
+			.member_info .info{ margin-left: 1.4rem;}
+			.member_info .name{ line-height: .7rem; font-size: .34rem;}
+			.member_info .tag{ font-size: .28rem; color: #999; line-height: .5rem;}
+			.member_info .tag .mui-active{ color: #008BF7;}
+			.member_info .icon_box{ line-height: 1.2rem; color: #999;}
+			
+			.member_info .login{ margin-left: 1.4rem; line-height: 1.2rem;}
+			.member_info .login a{ text-decoration: underline; color: #008BF7; font-weight: 700;}
+			
+			.sub_nav { margin: 0 .2rem; display: flex; justify-content:space-around; padding: .4rem 0; border-top:1px solid #f2f2f2;}
+			.sub_nav a{ display: inline-block; position: relative; z-index: 2; font-size: .24rem; color: #333; flex: 1;}
+			.sub_nav a div{ line-height: .28rem;}
+			.sub_nav .total{ font-size: .2rem; color: #999;}
+			.sub_nav span{ margin-bottom: .1rem; font-size: .44rem; color: #ffa200;}
+			.sub_nav a:active,.sub_nav a:active span{ color: #008BF7;}
+			
+			.member_nav .mui-icon-extra{ width: 18px; height: 18px; margin-right: .2rem; color: #8c8c8c; font-size: 18px;}
+			.member_nav a{ font-size: .3rem;}
+			
+			.back_btn button{ border-color: #fff; background: #fff; font-size: .3rem; border-radius: 0;}
+			
+			#changeClass{word-break:keep-all;white-space:nowrap; }
+			/*.mui-scroll-wrapper{ top: 44px;}*/
+		</style>
+	</head>
+
+	<body>
+		<div v-cloak id="app">
+			<template v-if="abnormal">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="mui-content">
+							<div class="member_top">
+								<div class="member_info mui-clearfix">
+									<div class="js_goMember icon_box mui-pull-right">
+										<span class="mui-icon mui-icon-arrowright"></span>
+									</div>
+									<div class="js_goMember avatar mui-pull-left">
+										<img v-bind:src="somedata.headimg != ''?somedata.headimg:'../img/avatar.png'" />
+									</div>
+									<div class="login mui-hidden">
+										<a href="">立即登录</a>
+									</div>
+									<div class="info">
+										<div class="name"><b class="js_goMember" v-html="somedata.nickname"></b></div>
+										<div class="tag">当前科目：{{subject.title}}<a id="changeClass" class="mui-active">【切换】</a></div>
+									</div>
+								</div>
+								<div class="sub_nav mui-text-center js_member">
+									<a data-url="notes.html" data-title="我的笔记">
+										<span class="mui-icon-extra icon-biji"></span>
+										<div>我的笔记</div>
+										<div class="total">({{somedata.note_num_del}})</div>
+									</a>
+									<a data-url="correction.html" data-title="我的纠错">
+										<span class="mui-icon-extra icon-jiucuo"></span>
+										<div>我的纠错</div>
+										<div class="total">({{somedata.correct_num_del}})</div>
+									</a>
+									<a data-url="favorite.html" data-title="我的收藏">
+										<span class="mui-icon-extra icon-shoucang"></span>
+										<div>我的收藏</div>
+										<div class="total">({{somedata.favorite_num_del}})</div>
+									</a>
+									<a data-url="download.html" data-title="我的下载">
+										<span class="mui-icon-extra icon-xiazai"></span>
+										<div>我的下载</div>
+										<div class="total">({{somedata.download_num}})</div>
+									</a>
+								</div>
+							</div>
+							<ul class="mui-table-view margin_t20 member_nav js_member">
+								<li class="mui-table-view-cell">
+									<a data-url="message.html" data-title="我的消息" class="mui-navigate-right">
+										<span class="mui-badge mui-badge-red">{{somedata.unread_num}}</span>
+										<span class="mui-icon-extra icon-xiaoxi"></span>消息
+									</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="set.html" data-title="设置中心" class="mui-navigate-right"><span class="mui-icon-extra icon-shezhi"></span>设置中心</a>
+								</li>
+							</ul>
+							<ul class="mui-table-view margin_t20 member_nav js_member">
+								<li class="mui-table-view-cell">
+									<a data-url="practice.html" data-title="练习记录" class="mui-navigate-right"><span class="mui-icon-extra icon-lianxi"></span>练习记录</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="test.html" data-title="考试记录" class="mui-navigate-right"><span class="mui-icon-extra icon-kaoshi"></span>考试记录</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="schedule.html" data-title="我的进度" class="mui-navigate-right"><span class="mui-icon-extra icon-jindu"></span>我的进度</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="score.html" data-title="我的成绩" class="mui-navigate-right"><span class="mui-icon-extra icon-chengji"></span>我的成绩</a>
+								</li>
+							</ul>
+							<ul class="mui-table-view margin_t20 member_nav js_member">
+								<li class="mui-table-view-cell">
+									<a data-url="code.html" data-title="我的激活码" class="mui-navigate-right"><span class="mui-icon-extra icon-jihuoma"></span>我的激活码</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="wallet.html" data-title="我的钱包" class="mui-navigate-right"><span class="mui-icon-extra icon-qianbao"></span>我的钱包</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="my_offer.html" data-title="我的悬赏" class="mui-navigate-right"><span class="mui-icon-extra icon-xuanshang"></span>我的悬赏</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="spread.html" data-title="我的推广链接" class="mui-navigate-right"><span class="mui-icon-extra icon-tuiguang"></span>我的推广链接</a>
+								</li>
+							</ul>
+							<ul class="mui-table-view margin_t20 member_nav js_member">
+								<li class="mui-table-view-cell">
+									<a data-url="help.html" data-title="帮助中心" class="mui-navigate-right"><span class="mui-icon-extra icon-bangzhu"></span>帮助中心</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="feedback.html" data-title="意见反馈" class="mui-navigate-right"><span class="mui-icon-extra icon-yijian"></span>意见反馈</a>
+								</li>
+								<li class="mui-table-view-cell">
+									<a data-url="about.html" data-title="关于魔考" class="mui-navigate-right"><span class="mui-icon-extra icon-guanyu"></span>关于魔考</a>
+								</li>
+							</ul>
+							<div class="back_btn margin_t20">
+								<button id="exit" type="button" class="mui-btn mui-btn-primary mui-btn-outlined mui-btn-block"><b>退出登录</b></button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</template>
+			<template v-else>
+				<div class="abnormal mui-text-center">
+					<div>
+						<img src="../img/wifi.png" alt="" />
+					</div>
+					<div class="margin_t40">
+						网络异常，请检查网络设置
+					</div>
+					<button id="resetBtn" class="mui-btn mui-btn-primary">点击重试</button>
+				</div>
+			</template>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					subject: {
+						id: '',
+						title: ''
+					},
+					somedata: '',
+					isLogin: 0,
+					abnormal: 1,
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			var spread = null;
+			var state, class_list;
+			mui.plusReady(function() {
+				mui('.mui-scroll-wrapper').scroll();
+
+				state = app.getState();
+				//获取
+				if (vm.isLogin != 0) {
+					vm.subject.pid = state.subject_pid
+					vm.subject.id = state.subject_id
+					vm.subject.title = state.subject_title
+					getData()
+				}
+
+				//监听刷新页面
+				document.addEventListener('updateData', function() {
+					state = app.getState();
+					if (typeof(state.user_key) != 'undefined' && vm.isLogin == 0) {
+						vm.isLogin = 1;
+						vm.subject.pid = state.subject_pid
+						vm.subject.id = state.subject_id
+						vm.subject.title = state.subject_title
+						getData()
+					}
+				});
+
+				//预加分类
+				class_list = mui.preload({
+					url: 'change_class.html',
+					title: 'change_class.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '40%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('body').on('tap', '#changeClass', function() {
+					mui.fire(class_list, 'updataClass', {
+						guid: vm.subject.pid,
+						title: vm.subject.title
+					});
+
+					var mainPage = plus.webview.getLaunchWebview();
+					var selfID = plus.webview.currentWebview().id
+					mainPage.evalJS("showMask('" + selfID + "')")
+					//					self.setStyle({mask:'rgba(0,0,0,0.5)'});
+					class_list.show("slide-in-bottom", 200);
+				})
+
+				mui('.js_member').on('tap', 'a', function() {
+					var _target = this.getAttribute('data-url');
+					var title = this.getAttribute('data-title');
+					//推广页面弹窗
+					if (_target == 'spread.html') {
+						if (spread) { // 避免快速多次点击创建多个窗口
+							return;
+						}
+						spread = plus.webview.create("spread.html", "spread.html", {
+							width: '80%',
+							height: '180px',
+							// background: 'rgba(0,0,0,.5)',
+							margin: "auto",
+							scrollIndicator: 'none',
+							scalable: false,
+							popGesture: 'none'
+						});
+						spread.addEventListener("loaded", function() {
+							var mainPage = plus.webview.getLaunchWebview();
+							var selfID = plus.webview.currentWebview().id
+							mainPage.evalJS("showMask('" + selfID + "')")
+							spread.show('zoom-fade-out', 100);
+							// spread = null;
+						}, false);
+						return
+					}
+
+					open_member({
+						title: title,
+						url: _target
+					})
+				})
+				
+				//重新加载数据
+				mui('body').on('tap', '#resetBtn', function() {
+					getData();
+				})
+				
+			})
+			
+			mui('body').on('tap', '.js_goMember', function() {
+				mui.openWindow({
+					url: 'member_info.html',
+					id: 'member_info.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: { //详情页原生导航配置
+							backgroundColor: '#FFFFFF', //导航栏背景色
+							titleText: '编辑资料', //导航栏标题
+							titleColor: '#333333', //文字颜色
+							autoBackButton: true, //自动绘制返回箭头
+							splitLine: { //底部分割线
+								color: '#f2f2f2'
+							}
+						}
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			})
+
+			function hideLayer() {
+				class_list.hide('slide-out-bottom');
+				
+				if(spread){
+					spread.hide('zoom-fade-in')
+					spread = null;
+				}
+			}
+
+			// 更新科目
+			function upData() {
+				state = app.getState();
+				vm.subject.pid = state.subject_pid
+				vm.subject.id = state.subject_id
+				vm.subject.title = state.subject_title
+				getData()
+			}
+
+			/**
+			 * 打开会员详情
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function open_member(item) {
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: item.url,
+					id: item.url,
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			//获取数据
+			function getData() {
+				var data = {}
+				data.user_key = state.user_key;
+				//				console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/index', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							var mainPage = plus.webview.getLaunchWebview();
+							
+							vm.somedata = data.info
+							if(data.info.unread_num == 0){
+								mainPage.evalJS("isBadge(0)")
+							}else{
+								mainPage.evalJS("isBadge(1)")
+							}
+						} else {
+							mui.toast(data.msg)
+						}
+						vm.abnormal = 1;
+					},
+					error: function(xhr, type, errorThrown) {
+						//		            	console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//退出操作******************
+			document.getElementById('exit').addEventListener('tap', function() {
+				if (mui.os.ios) {
+
+					var btnArray = [{
+						title: "确定",
+						style: "destructive"
+					}];
+					plus.nativeUI.actionSheet({
+						title: "确定退出登录？",
+						cancel: "取消",
+						buttons: btnArray
+					}, function(event) {
+						var index = event.index;
+						switch (index) {
+							case 1:
+								//注销账号
+								app.setState({});
+								plus.runtime.restart();
+								break;
+						}
+					});
+
+					return;
+				}
+				var btnArray = [{
+					title: "注销当前账号"
+				}, {
+					title: "直接关闭应用"
+				}];
+				plus.nativeUI.actionSheet({
+					cancel: "取消",
+					buttons: btnArray
+				}, function(event) {
+					var index = event.index;
+					switch (index) {
+						case 1:
+							//注销账号
+							app.setState({});
+							//						vm.isLogin = 0;
+							plus.runtime.restart();
+							break;
+						case 2:
+							plus.runtime.quit();
+							break;
+					}
+				});
+			}, false);
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的成绩</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html,body,.mui-content{ background: #fff!important; height: 100%;}
+			.icon_scrore { padding: 1rem 0 .6rem 0;}
+			.icon_scrore img{ width: 2.9rem; height: 2.2rem;}
+			
+			.scrore_info{ line-height: .7rem; font-size: .3rem;}
+			.scrore_info .date span{ color: #008bf7;}
+			.scrore_info .time{ font-size: .24rem; color: #999;}
+			.scrore_info .total span{ color: #fe8864;}
+			.scrore_info .slogan{ line-height: .5rem; color: #ffa200;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="icon_scrore mui-text-center">
+				<img src="../img/icon_score.png" />
+			</div>
+			<div class="scrore_info mui-text-center">
+				<div class="date">你在<span>{{somedata.add_time}}</span></div>
+				<div>选择了{{somedata.subject_title}}</div>
+				<template v-if='somedata.is_use == 1'>
+					<div class="time">至今使用{{somedata.use_time}}</div>
+					<div>在此期间你</div>
+					<div class="total">
+						<b>总共回答 <span>{{somedata.question_num}}题</span> ；答对 <span>{{somedata.right_num}}题</span> ；答错 <span>{{somedata.error_num}}题</span>
+							；半对 <span>{{somedata.right_error}}题</span></b>
+					</div>
+				</template>
+				<template v-else>
+					<div class="time">当前还未开始使用</div>
+				</template>
+				<div class="slogan margin_t20">想要有更多的进步</div>
+				<div class="slogan">随时随地魔考大师，祝您使用愉快！</div>
+			</div>
+			<div class="btn-content">
+				<button class="mui-btn mui-btn-block mui-btn-primary js_share">分享</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					title:'我的成绩',
+					share_url:''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			var share_detail
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				})
+
+				getData()
+
+				//预加分享
+				share_detail = mui.preload({
+					url: 'share.html',
+					id: 'share.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '60%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('.mui-content').on('tap', '.js_share', function() {
+					mui.fire(share_detail, 'updataShare', {
+							share_url: vm.share_url,
+							title:vm.title
+					});
+					self.setStyle({
+						mask: 'rgba(0,0,0,0.5)'
+					});
+					share_detail.show("slide-in-bottom", 300);
+				})
+
+				self.addEventListener('maskClick', function() {
+					self.setStyle({
+						mask: 'none'
+					});
+					share_detail.hide('slide-out-bottom');
+					//plus.webview.getWebviewById('spec').hide();
+				}, false);
+			})
+
+			// 获取信息
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				mui.ajax(server + 'Api/V1/user_center/achievement', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info;
+							vm.share_url = data.info.share_url;
+						} else {
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

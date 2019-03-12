@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>更多讨论</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 id="title" class="mui-title">更多</h1>
+		</header>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+			    subpages:[{
+			      url:"more-list.html",
+			      id:"more-list.html",
+			      styles:{
+			      	top:"45px",
+			      	bottom:"0"
+			      }
+			    }]
+			})
+			
+			mui.plusReady(function(){
+				var self = plus.webview.currentWebview();
+				var type = self.type
+				if(type == 1){
+					document.getElementById('title').innerHTML = '更多讨论'
+				}else if(type == 2){
+					document.getElementById('title').innerHTML = '更多笔记'
+				}else if(type == 3){
+					document.getElementById('title').innerHTML = '更多纠错'
+				}else{
+					document.getElementById('title').innerHTML = '更多悬赏'
+				}
+				
+			})
+		</script>
+	</body>
+
+</html>

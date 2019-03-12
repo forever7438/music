@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.background_list { background: #fff;}
+			.background_list li{ padding: 0 15px; line-height: 1rem; border-bottom: 1px solid #f2f2f2;}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+		    <div class="background_list">
+		    	<li style="background: #fbe6cf;" data-id="1">
+		    		羊皮纸
+		    	</li>
+		    	<li style="background: #e4eacf;" data-id="2">
+		    		护眼绿
+		    	</li>
+		    	<li style="background: #ffffff;" data-id="0">
+		    		无暇白
+		    	</li>
+		    	<li style="background: #000000; color: #fff;" data-id="3">
+		    		夜间黑
+		    	</li>
+		    </div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			
+			mui.plusReady(function(){
+				
+				mui('.background_list').on('tap','li',function(){
+					var _this = this;
+					var state = app.getState();
+					var data = {};
+					data.user_key = state.user_key;
+					data.type = _this.getAttribute('data-id');
+					// console.log(JSON.stringify(data))
+					mui.ajax(server + 'Api/V1/UserCenter/set_background', {
+						data: data,
+						dataType: 'json', //服务器返回json格式数据
+						type: 'post', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；              
+						success: function(data) {
+							console.log(JSON.stringify(data))
+							if (data.status == 1) {
+								// vm.somedata = data.info
+								var setPage = plus.webview.getWebviewById('set.html');
+								setPage.evalJS("changeBg('"+ _this.innerText +"')")
+								mui.back()
+							} else {
+								mui.toast(data.msg);
+							}
+						},
+						error: function(xhr, type, errorThrown) {
+							//console.log(JSON.stringify(xhr.responseText))
+							//异常处理；
+							// vm.abnormal = 0;
+							mui.toast('网络异常');
+						}
+					});
+				})
+			})
+		</script>
+	</body>
+
+</html>

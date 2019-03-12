@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>切换分类</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.title{ position: fixed; z-index: 9; top: 0; left: 0; width: 100%; padding: 0 .3rem; line-height: 50px; border-bottom:1px solid #f2f2f2; background: #f8f8f8;}
+			.title a{ color: #008bf7;}
+			.class_list{ margin-top: 50px; background: #fff;}
+			.class_list span{ padding: 3px 8px; margin-right: .2rem; border:1px solid #ffa200; color: #ffa200; font-size: .2rem; border-radius: 3px;}
+			.class_list .active{ border-color: #fe8864; color: #fe8864;}
+			.class_list div{ position: relative; top: 2px; display: inline-block;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<div class="mui-content">
+				<div class="title">
+					<a id="changeBtn" class="mui-pull-right">【切换分类】</a>
+					<div class="mui-ellipsis"><b>当前选择：{{title}}</b></div>
+				</div>
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="class_list">
+							<ul class="mui-table-view">
+								<li class="mui-table-view-cell" v-for="item in somedata">
+									<a @tap="setClass({id:item.id,title:item.title})">
+										<span v-bind:class="item.is_buy == 1?'active':''">{{item.is_buy == 1?'已激活':'可试用'}}</span>
+										<div>{{item.title}}</div>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					pid: '',
+					title: '',
+					somedata: ''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			mui.plusReady(function() {
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005
+				})
+
+				mui('body').on('tap', '#changeBtn', function() {
+					mui.openWindow({
+						url: "class_top.html",
+						id: "class_top.html",
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						extras: {
+							guid: vm.pid
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: true,
+						}
+					})
+				})
+			})
+
+			//监听自定义事件，获取分类
+			document.addEventListener('updataClass', function(event) {
+				var state = app.getState();
+				var data = {};
+				vm.title = event.detail.title;
+				vm.pid = event.detail.guid
+				data.user_key = state.user_key;
+				data.pid = vm.pid;
+				data.p = 1;
+
+				mui.ajax(server + 'Api/V1/Subjectchoose/subject_choose', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						vm.somedata = data.info;
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			});
+
+			function setClass(item) {
+				var state = app.getState();
+				state.subject_id = item.id
+				state.subject_title = item.title
+				app.setState(state)
+
+				//更新首页数据
+				var homePage = plus.webview.getWebviewById('./plus/home.html');
+				homePage.evalJS('getData()')
+				
+				var memberPage = plus.webview.getWebviewById('./plus/member.html');
+				memberPage.evalJS('upData()')
+				// mui.fire(memberPage, 'updateData');
+
+				//关闭切换分类
+				var mainPage = plus.webview.getLaunchWebview();
+				mainPage.evalJS('hideMask()')
+				homePage.evalJS("hideLayer()")
+			}
+		</script>
+	</body>
+
+</html>

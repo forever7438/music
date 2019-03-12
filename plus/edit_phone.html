@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>修改手机</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-input-group .mui-input-row{ padding: 8px 0; height: auto; line-height: 40px;}
+			.phone{ background: #fff; padding: 15px; color: #999;}
+			.code_box{ position: relative;}
+			.code_box a{ position: absolute; right: 15px; top: 0; line-height: 56px; color: #ffa200; font-size: .3rem;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-arrowleft mui-pull-left"></a>
+			<h1 class="mui-title">修改手机号</h1>
+		</header>
+		<div id="app" class="mui-content">
+			<div class="phone">当前手机号：{{phone}}</div>
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>新手机号</label>
+					<input type="text" class="mui-input-clear" placeholder="输入新手机号" v-model="mobile">
+				</div>
+				<div class="mui-input-row code_box">
+					<a id="sendBtn">获取验证码</a>
+					<label>短信验证码</label>
+					<input type="text" placeholder="输入短信验证码" v-model="code">
+				</div>
+			</form>
+			<div class="btn-content">
+				<button class="js_submit mui-btn mui-btn-block mui-btn-primary" data-loading-text="提交中">确定</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/library.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+			
+			var vm = new Vue({
+				el:'#app',
+				data:{
+					phone:'',
+					mobile:'',
+					code:''
+				}
+			})
+			
+			mui.plusReady(function(){
+				var state = app.getState();
+				vm.phone = myJs.replaceStr(state.mobile,[3,5,3],0)
+			})
+
+			mui(document.body).on('tap', '.js_submit', function(e) {
+				var _this = this
+				mui(_this).button('loading');
+				var state = app.getState()
+				var data = {}
+				data.user_key = state.user_key;
+				data.mobile = vm.mobile;
+				data.code = vm.code;
+				mui.ajax(server + 'Api/V1/set/edit_mobile', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							state = app.getState();
+							state.mobile = vm.mobile
+							app.setState(state)
+							vm.phone = myJs.replaceStr(state.mobile,[3,5,3],0)
+							mui.back();
+							mui.toast(data.msg)
+						} else {
+							mui.toast(data.msg)
+						}
+						vm.mobile = '';
+						vm.code = '';
+						mui(_this).button('reset');
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui(_this).button('reset');
+						mui.toast('网络异常');
+					}
+				});
+			});
+			
+			var sendBtn = document.getElementById('sendBtn');
+			
+			//发送验证码
+			sendBtn.addEventListener('tap', function() {
+				senmobile(60);
+			})
+			var issend = true;
+
+			function senmobile(t) {
+				if (issend) {
+					//验证电话号码手机号码 
+					if (vm.mobile != "") {
+						var p1 = /^(0|86|17951)?(13[0-9]|14[0-9]|15[0-9]|16[0-9]|17[0-9]|18[0-9]|19[0-9])[0-9]{8}$/;  
+						var me = false;  
+						if (p1.test(vm.mobile)) me=true 
+						if (!me){  
+								vm.mobile.value='';  
+								mui.toast('请输入正确的手机号码'); 
+								// mobile.focus();
+								return false;  
+						}
+						issend = false;
+						var data = {}
+						data.account = vm.mobile;
+						data.type = 1;
+						mui.ajax(server + 'Api/V1/Register/get_mobile_code_app', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data))
+								if (data.status == 1) {
+									var time = setInterval(function() {
+										set_time(t);
+										if (t <= 0) {
+											clearInterval(time);
+										}
+										t--;
+									}, 1000);
+									mui.toast(data.msg)
+								} else {
+									issend = true;
+									mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								//console.log(JSON.stringify(xhr.responseText))
+								//异常处理；
+								mui.toast('网络异常');
+							}
+						});
+					} else {
+						mui.toast('手机号码不能为空！');
+						return false;
+					}
+				}
+			}
+
+			function set_time(countdown) {
+				//var get_code=document.getElementById('js_get_code'); 
+				if (countdown == 0) {
+					sendBtn.innerHTML = "重新发送";
+					issend = true;
+				} else {
+					sendBtn.innerHTML = countdown + " 秒后重发";
+				}
+			}
+		</script>
+	</body>
+
+</html>

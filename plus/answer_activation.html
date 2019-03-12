@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>输入激活码</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html,body{ background: #ffffff}
+			.mui-content{ background: #ffffff}
+			.title{ position: relative; font-weight: 700; line-height: 60px; font-size: 17px; color: #333;}
+			.title .mui-icon{ position: absolute; right: 0; top: 0; color: #ccc; font-size: 42px; font-weight: 700;}
+			.title .mui-icon:active{ color: #008BF7;}
+			
+			.layer_input{ padding: 0 30px;}
+			.layer_input input{ margin: 0; padding: 10px; font-size: 15px; border-radius: 0; border:none; border-bottom:1px solid #ddd; -webkit-user-select:text; -moz-user-select:text; -ms-user-select:text; user-select:text;}
+			
+			.mui-btn{ padding: 10px 20px;}
+			.tips{ height: 20px; line-height: 20px; color: #ff0000;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="title mui-text-center">
+				<span>输入激活码</span>
+				<a @tap="hideLayer()" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+			</div>
+			<div class="layer_input">
+				<input type="text" v-model="code" placeholder="输入激活码">
+				<div class="tips">{{tips}}</div>
+			</div>
+			<div class="mui-text-center margin_t20">
+				<button @tap="activation()" class="mui-btn mui-btn-primary">激活</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					code: '',
+					tips: ''
+				},
+				mounted: function() {
+					$('input').focus(function(){
+						plus.webview.currentWebview().setStyle({
+							top: '200px'
+						});
+					})
+					
+					$('input').blur(function(){
+						plus.webview.currentWebview().setStyle({
+							top: 'auto'
+						});
+					})
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				
+				
+				
+			})
+			
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '变更协议', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			
+			// 激活
+			function activation() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.code_no = vm.code;
+				// console.log(JSON.stringify(data));
+				mui.ajax(server + 'Api/V1/Question/software_activation', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'POST', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.tips = data.msg
+							if(data.info.is_new != 0){
+								mui.openWindow({
+									url: "agreement.html",
+									id: "agreement.html",
+									styles: {
+										statusbar: {
+											background: '#FFFFFF'
+										},
+										titleNView: titleNView,
+										bounce: 'vertical',
+										popGesture: 'close'
+									},
+									show: {
+										autoShow: true,
+									},
+									waiting: {
+										autoShow: true,
+									}
+								})
+							}
+						} else {
+							vm.tips = data.msg
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 隐藏
+			function hideLayer(){
+				$('input').blur()
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("hideMask()")
+			}
+		</script>
+	</body>
+
+</html>

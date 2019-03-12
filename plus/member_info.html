@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>会员信息</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.mui-input-group .mui-input-row{ padding: 8px 0; height: auto; line-height: 40px;}
+			.mui-input-group .mui-input-row input{ color: #999;}
+			.mui-input-group .mui-input-row a{ display: block;}
+			.avatar img{ width: 40px; height: 40px; border-radius: 50%; vertical-align: middle;}
+			.mui-input-group .mui-input-row .mui-icon{ color: #999; vertical-align: middle;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="mui-input-group">
+				<div class="mui-input-row avatar">
+					<label>头像</label>
+					<div class="mui-text-right">
+						<a id="avatar" data-url="cropper.html">
+							<img v-bind:src="somedata.headimg" />
+							<span class="mui-icon mui-icon-arrowright"></span>
+						</a>
+					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>邮箱</label>
+					<input type="text" class="mui-text-right" placeholder="请输入邮箱" v-model="somedata.email">
+				</div>
+				<div class="mui-input-row">
+					<label>昵称</label>
+					<input type="text" class="mui-text-right" placeholder="请输入昵称" v-model="somedata.nickname">
+				</div>
+				<div class="mui-input-row">
+					<label>修改手机号</label>
+					<div class="mui-text-right">
+						<a class="js_goEdit" data-url="edit_phone.html"><span class="mui-icon mui-icon-arrowright"></span></a>
+					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>修改密码</label>
+					<div class="mui-text-right">
+						<a class="js_goEdit" data-url="edit_password.html"><span class="mui-icon mui-icon-arrowright"></span></a>
+					</div>
+				</div>
+			</div>
+			<div class="btn-content">
+				<button class="js_submit mui-btn mui-btn-block mui-btn-primary">保存</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: {
+						headimg: '',
+						email: '',
+						nickname: ''
+					}
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			mui.plusReady(function() {
+				getData();
+
+				document.getElementById('avatar').addEventListener('click', function() {
+					page.imgUp(this, 1);
+				})
+
+				//前往修改页面
+				mui('body').on('tap', '.js_goEdit', function() {
+					var _url = this.getAttribute('data-url')
+					mui.openWindow({
+						url: _url,
+						id: _url,
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+				})
+			})
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				//				console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Set/set_member_info', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//		            	console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			var page = null;
+			page = {
+				imgUp: function(_this, maxnum) {
+					plus.nativeUI.actionSheet({
+						cancel: "取消",
+						buttons: [{
+								title: "拍照"
+							},
+							{
+								title: "从相册中选择"
+							}
+						]
+					}, function(e) { //1 是拍照  2 从相册中选择  
+						switch (e.index) {
+							case 1:
+								appendByCamera();
+								break;
+							case 2:
+								appendByGallery();
+								break;
+						}
+					});
+				}
+				//摄像头  
+			}
+
+			// 拍照添加文件
+			function appendByCamera() {
+				plus.nativeUI.showWaiting()
+				plus.camera.getCamera().captureImage(function(e) {
+					plus.io.resolveLocalFileSystemURL(e, function(entry) {
+						var path = entry.toLocalURL();
+						//打开裁剪页面
+						mui.openWindow({
+							url: 'cropper.html',
+							id: 'cropper.html',
+							styles: {
+								statusbar: {
+									background: '#000000'
+								},
+								popGesture: 'close'
+							},
+							extras: {
+								imgSrc: path
+							},
+							show: {
+								autoShow: true,
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+						plus.nativeUI.closeWaiting();
+						//                var image = new Image(); 
+						//	            	image.src = path;
+						//	            	plus.nativeUI.showWaiting()
+						//	            	image.onload = function() {
+						//		                var imgData = getBase64Image(image);
+						//			            _this.parents('.login_up').find('.img_list').append('<div class="mui-col-xs-3"><input type="hidden" value="'+ imgData +'"><span class="del_img"><span class="mui-icon mui-icon-closeempty"></span></span><a href=""><img src="'+ path +'" alt="" /></a></div>')
+						//			            plus.nativeUI.closeWaiting();
+						//		            }
+					}, function(e) {
+						plus.nativeUI.closeWaiting();
+						mui.toast("读取拍照文件错误：" + e.message);
+					});
+				}, function() {
+					plus.nativeUI.closeWaiting();
+					console.log("取消拍照");
+				});
+			}
+
+			// 从相册添加文件
+			function appendByGallery() {
+				plus.nativeUI.showWaiting()
+				plus.gallery.pick(function(e) {
+					//          		for(let i in e.files){
+					//打开裁剪页面
+					mui.openWindow({
+						url: 'cropper.html',
+						id: 'cropper.html',
+						styles: {
+							statusbar: {
+								background: '#000000'
+							},
+							popGesture: 'close'
+						},
+						extras: {
+							imgSrc: e
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+					plus.nativeUI.closeWaiting();
+					//          			console.log(e.files[i])
+					//          			let image = new Image(); 
+					//		            	image.src = e.files[i];
+					//		            	plus.nativeUI.showWaiting()
+					//		            	image.onload = function() {
+					//			                let imgData = getBase64Image(image); 
+					////			                console.log(e.files[i])
+					//				            _this.parents('.login_up').find('.img_list').append('<div class="mui-col-xs-3"><input type="hidden" value="'+ imgData +'"><span class="del_img"><span class="mui-icon mui-icon-closeempty"></span></span><a href=""><img src="'+ e.files[i] +'" alt="" /></a></div>')
+					//				            plus.nativeUI.closeWaiting();
+					//			            }
+					//			    	}
+
+				}, function(e) {
+					plus.nativeUI.closeWaiting();
+					console.log("取消选择图片");
+				}, {
+					filter: "image",
+					multiple: false,
+					maximum: 1
+				});
+			}
+
+			mui(document.body).on('tap', '.js_submit', function(e) {
+				var _this = this
+				mui(_this).button('loading');
+
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.email = vm.somedata.email;
+				data.nickname = vm.somedata.nickname;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Set/set_member_info', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							// vm.somedata.email = data.email
+							// vm.somedata.nickname = data.nickname
+							var page = plus.webview.currentWebview().opener()
+							page.evalJS("getData()");
+							mui.toast(data.msg);
+						} else {
+							mui.toast(data.msg);
+						}
+						mui(_this).button('reset');
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui(_this).button('reset');
+						mui.toast('网络异常');
+					}
+				});
+
+			});
+		</script>
+	</body>
+
+</html>

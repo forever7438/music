@@ -1,0 +1,2340 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<style>
+			/*兼容iOS*/
+			.mui-scroll-wrapper{ bottom: 50px;}
+			
+			/*安卓兼容*/
+			/*body{ padding-bottom: 50px;}*/
+			
+			
+			.answer_box{ background: none;}
+			/* .answer_box{ padding-bottom: 60px;} */
+			.answer_title{ margin: 0 .3rem; height: 1rem; line-height: 1rem; border-bottom: 1px solid rgba(204,204,204,.5); font-weight: 400; font-size: 0.28rem;}
+			.answer_title a{ color: inherit!important;; margin-left: .2rem;}
+			.answer_title a:first-child{ margin: 0;}
+			.answer_title a span{ color: inherit; font-size: .34rem; margin-right: .1rem; vertical-align: middle;}
+			.answer_title .active{ color: #FFA200!important;}
+			.answer_title *{ background: inherit!important; background-color: inherit!important;;}
+			.answer_content{ padding: .3rem; line-height: 1.2;}
+			
+			.answer_tab{ padding: .3rem; min-height: 2rem;}
+			.answer_tab .status_img{ position: relative; top: 0px; margin-left: 5px; width: 0.44rem!important; }
+			/* .answer_font, .answer_font p{ line-height: 1.4; font-size: inherit!important;} */
+			
+			.operate_box{ position: fixed; z-index:99; height: 50px; line-height: 50px; left: 0; bottom: 0; width: 100%;  border-top: 1px solid rgba(204,204,204,.5); background: #fff;}
+			.operate_box span{ position: relative; top: 2px;}
+			.operate_box a{ display: block; font-weight: 700;}
+			.operate_box a.disabled{ color: #ccc;}
+			
+			.practice{ border-top:1px solid rgba(204,204,204,.5)}
+			.practice .mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0 10px; font-size: inherit!important; color: #999;}
+			.practice .mui-control-item.mui-active{ position: relative; color: inherit!important; font-weight: 700;}
+			.practice .mui-control-item.mui-active:before{ content: ''; position: absolute; bottom: 0; left: 50%; width: .4rem; margin-left: -.2rem; height: 2px; background: #008bf7;}
+			.practice.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item{ border-top-color: rgba(204,204,204,.5); border-bottom-color: rgba(204,204,204,0);}
+			.practice .mui-table-view:before,.mui-table-view:after,.mui-table-view-cell:after{background-color:#f2f2f2}
+			
+			.mui-control-content .mui-loading {
+				margin: 100px 0;
+			}
+			
+			.mui-table-view{ background: none;}
+			
+			.ques_div .ques_title span{ color: inherit!important; display: inline;}
+			.ques_div .ques_title p{ line-height: 1.4; margin: 0; display: inline; color: inherit!important; font-size: inherit!important;}
+			/* .ques_div .ques_title span{ display: inline-block;} */
+			
+			.select_box { line-height: 2.4;}
+			.select_box a{ color: inherit; position: relative; display: block; padding-left: .6rem;}
+			.select_box a span{ color: inherit; position: absolute; left: 0; top: 50%; margin-top: -.21rem; margin-right: .2rem; display: inline-block; width: .42rem; height: .42rem; font-size: .3rem; border:1px solid #ccc; color: #ccc; line-height: 1; border-radius: 50%; line-height: .4rem; text-align: center;}
+			.mulite_select a span{ border-radius: 0;}
+			
+			.select_box .select{ color: #008bf7 }
+			.select_box .select span{ border-color:#008bf7; color:#fff; background: #008bf7 }
+			
+			.select_box .error{ color: #ff4f4f }
+			.select_box .error span{ border-color:#ff4f4f; color:#fff; background: #ff4f4f }
+
+			.select_box .success{ color: #00a245 }
+			.select_box .success span{ border-color:#00a245;color:#fff; background: #00a245}
+			
+			textarea{ border:1px solid rgba(187,187,187,.8); padding: .1rem; border-radius: 0; background: inherit; font-size: .28rem;}
+			
+			body .color_yellow{ color: #ffa200 }
+			body .color_yellow2{ color: #fcff00 }
+			body .color_yellow3{ color: #fe8864 }
+			body .color_blue{color: #008BF7;}
+			body .color_green{ color:#00a245 }
+			
+			.tips_box span{ width: 1.4rem; font-size: .28rem!important;}
+			.tips_box span:after { display: inline-block; width: 100%; content: '';}
+			.tips_box div{ margin-left: 1.4rem;}
+			.tips_box div,.tips_box p{ color: inherit!important; font-size: inherit!important;}
+			
+			.add_note{ padding-bottom: .3rem; color: #0083EB;}
+			.add_note span{ font-size: .34rem; margin-right: .1rem;}
+			
+			.mui-scroll{ min-height: 100%;}
+			.mui-pull{ color: inherit!important;}
+			
+			.edit_btn{ position: fixed; z-index: 999; right: 0; bottom: 3rem;}
+			.edit_btn img{ width: .74rem; height: .74rem;}
+			
+			.offer_list .avatar img{ width: .8rem!important; height: .8rem!important; border-radius: 50%;}
+			.offer_list .info{ margin-left: 1rem; font-size: .3rem;}
+			.offer_list .info .name{ vertical-align: bottom; line-height: .5rem;}
+			.offer_list .info .time{ font-size: .24rem; color: #999; line-height: .3rem;}
+			.offer_list .help_btn{ line-height: .8rem; color: #008BF7;}
+			.offer_list .help_btn span{ font-size: 20px; margin-right: .1rem;}
+			.offer_list .txt{ font-size: .3rem;}
+			.offer_list .album a{ float: left; margin: 5px 0; width: 2rem; height: 2rem; margin-left: .3rem;}
+			.offer_list .album a:nth-child(3n+1){ margin-left: 0;}
+			.offer_list .album img{ width: 2rem!important; width: 2rem!important; background-size:cover; background-position:center center;}
+			.offer_list .tags span{ display: inline-block; margin-left: .2rem; padding: 0 .4rem; border:1px solid #ffa200; height: .5rem; line-height: .5rem; color: #FFA200; border-radius: .25rem;}
+			.offer_list .tags span:first-child{margin-left: 0;}
+			.offer_list .tags .price{ color: #fe8864; border-color: #fe8864;}
+			.offer_list .nodata{ padding: .3rem 0;}
+			
+			.offer_list .mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.changeOperat{ padding: .3rem 0 0 0; border-top:1px solid #f8f8f8;}
+			.changeOperat span{ position: relative; top: -1px; margin-right: .1rem; vertical-align: middle;}
+			
+			.offer_list li:last-child{ border-bottom:1px solid #f8f8f8}
+			
+			
+			
+			.issue_btn{ border:none}
+			.issue_btn .mui-icon-extra{ position: relative; top: -1px; margin-right: .1rem; vertical-align: middle; font-size: 20px;}
+		</style>
+		<style type="text/css">
+			.mui-preview-image.mui-fullscreen {
+				position: fixed;
+				z-index: 10000;
+				background-color: #000;
+			}
+			.mui-preview-header,
+			.mui-preview-footer {
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 9999;
+			}
+			.mui-preview-header {
+				height: 44px;
+				top: 0;
+			}
+			.mui-preview-footer {
+				height: 50px;
+				bottom: 0px;
+			}
+			.mui-preview-header .mui-preview-indicator {
+				display: block;
+				line-height: 25px;
+				color: #fff;
+				text-align: center;
+				margin: 15px auto 4;
+				width: 70px;
+				background-color: rgba(0, 0, 0, 0.4);
+				border-radius: 12px;
+				font-size: 16px;
+			}
+			.mui-preview-image {
+				display: none;
+				-webkit-animation-duration: 0.5s;
+				animation-duration: 0.5s;
+				-webkit-animation-fill-mode: both;
+				animation-fill-mode: both;
+			}
+			.mui-preview-image.mui-preview-in {
+				-webkit-animation-name: fadeIn;
+				animation-name: fadeIn;
+			}
+			.mui-preview-image.mui-preview-out {
+				background: none;
+				-webkit-animation-name: fadeOut;
+				animation-name: fadeOut;
+			}
+			.mui-preview-image.mui-preview-out .mui-preview-header,
+			.mui-preview-image.mui-preview-out .mui-preview-footer {
+				display: none;
+			}
+			.mui-zoom-scroller {
+				position: absolute;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-align: center;
+				-webkit-align-items: center;
+				align-items: center;
+				-webkit-box-pack: center;
+				-webkit-justify-content: center;
+				justify-content: center;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				top: 0;
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				-webkit-backface-visibility: hidden;
+			}
+			.mui-zoom {
+				-webkit-transform-style: preserve-3d;
+				transform-style: preserve-3d;
+			}
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				width: auto;
+				height: auto;
+				max-width: 100%;
+				max-height: 100%;
+			}
+			.mui-android-4-1 .mui-slider .mui-slider-group .mui-slider-item img {
+				width: 100%;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-slider-group .mui-slider-item {
+				display: inline-table;
+			}
+			.mui-android-4-1 .mui-slider.mui-preview-image .mui-zoom-scroller img {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.mui-preview-loading {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				top: 0;
+				left: 0;
+				display: none;
+			}
+			.mui-preview-loading.mui-active {
+				display: block;
+			}
+			.mui-preview-loading .mui-spinner-white {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-left: -25px;
+				margin-top: -25px;
+				height: 50px;
+				width: 50px;
+			}
+			.mui-preview-image img.mui-transitioning {
+				-webkit-transition: -webkit-transform 0.5s ease, opacity 0.5s ease;
+				transition: transform 0.5s ease, opacity 0.5s ease;
+			}
+			@-webkit-keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@keyframes fadeIn {
+				0% {
+					opacity: 0;
+				}
+				100% {
+					opacity: 1;
+				}
+			}
+			@-webkit-keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			@keyframes fadeOut {
+				0% {
+					opacity: 1;
+				}
+				100% {
+					opacity: 0;
+				}
+			}
+			p img {
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--下拉刷新容器-->
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll" v-cloak :style="'font-size:' + member_set.font_size + 'px;' + 'background:' + (member_set.background == 0?'#fff;':member_set.background == 1?'#fbe6cf;':member_set.background == 2?'#e4eacf;':member_set.background == 3?'#000;':'#fff;') + (member_set.background == 3?' color:#fff':' color:#333')">
+					<div v-show="loading == 1">
+						<div class="nodata loading mui-text-center">
+							<img src="../img/loading.gif" alt="" />
+							<div class="margin_t20">题目加载中...</div>
+						</div>
+					</div>
+					<div v-if="is_none == 1">
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无题目~</div>
+							<button class="mui-action-back mui-btn mui-btn-primary margin_t40">返回</button>
+						</div>
+					</div>
+					<div class="answer_box" v-show="loading == 0 && is_none == 0">
+						<div class="answer_title mui-clearfix">
+							<div class="mui-pull-right">
+								<template v-if="somedata.length != 0">
+									<a @tap="open_details({id:somedata[nowindex].video_id_for_app})" v-if="somedata[nowindex].video_id_for_app != ''"><span
+										 class="mui-icon-extra icon-shipin"></span>视频解析</a>
+								</template>
+								<a @tap="show_card" v-show="is_set == 1"><span class="mui-icon-extra icon-datika"></span>答题卡</a>
+								<template v-if="somedata.length != 0">
+									<a @tap="love_this()"><span class="mui-icon-extra icon-star" :class="somedata[nowindex].is_love==1?'active':''"></span></a>
+								</template>
+							</div>
+							<b v-if="somedata.length != 0">{{type_title[somedata[nowindex].type]}}<span style="padding-left: 10px">{{nowindex + 1}}/{{somedata.length}}</span></b>
+						</div>
+						<div class="answer_content">
+							<div class="ques_div mui-clearfix" v-if="somedata.length != 0">
+								<!-- 场景题 begin -->
+								<template v-if="somedata[nowindex].is_cj">
+									<div class="mui-clearfix">
+										<div class="ques_title" style="padding-bottom: .3rem;" v-html="somedata[nowindex].cj_content"></div>
+									</div>
+								</template>
+								<!-- 场景题 end -->
+
+								<!-- 多选 begin -->
+								<template v-if="somedata[nowindex].type == 1">
+									<div class="mui-clearfix">
+										<div class="ques_title">
+											{{nowindex + 1}}、<span v-html="somedata[nowindex].ques"></span>({{somedata[nowindex].ques_score}}分)
+										</div>
+										<div class="select_box mulite_select margin_t30">
+											<template v-if="!somedata[nowindex].is_answer">
+												<a v-for="(item,index) in somedata[nowindex].choices" :class="is_in_arr(index,somedata[nowindex].my_answer)?'select':''"
+												 @tap="multiple_selection(index)">
+													<span>{{answer_arr[index]}}</span>{{item.title}}
+												</a>
+											</template>
+											<template v-else>
+												<a v-for="(item,index) in somedata[nowindex].choices" :class="is_in_arr(index,somedata[nowindex].answers)?'success':is_in_arr(index,somedata[nowindex].my_answer)?'error':''"
+												 @tap="multiple_selection(index)">
+													<span>{{answer_arr[index]}}</span>{{item.title}}
+												</a>
+											</template>
+										</div>
+										<div class="margin_t30 mui-text-center" v-if="is_end == false">
+											<button @tap="submit_multiple" data-loading-icon data-loading-text="5s后自动切换下一题" class="mui-btn mui-btn-blue">提交</button>
+										</div>
+									</div>
+								</template>
+								<!-- 多选 end -->
+
+								<!-- 单选题 or 判断题 begin -->
+								<template v-if="somedata[nowindex].type == 0 || somedata[nowindex].type == 2">
+									<div class="mui-clearfix">
+										<div class="ques_title">{{nowindex + 1}}、<span v-html="somedata[nowindex].ques"></span>({{somedata[nowindex].ques_score}}分)
+										</div>
+										<div class="select_box margin_t30">
+											<template v-for="(item,index) in somedata[nowindex].choices">
+												<a :class="somedata[nowindex].is_answer?somedata[nowindex].my_answer==index?somedata[nowindex].is_right=='1'?'success':'error':item.is_answer?'success':'':''"
+												 @tap="single_election(index)">
+													<span>{{answer_arr[index]}}</span>{{item.title}}
+												</a>
+											</template>
+										</div>
+									</div>
+								</template>
+								<!-- 单选题 or 判断题 end -->
+
+								<!-- 简答 begin -->
+								<template v-if="somedata[nowindex].type == 4">
+									<div class="mui-clearfix">
+										<div class="ques_title">{{nowindex+1}}、<span v-html="somedata[nowindex].ques"></span>({{somedata[nowindex].ques_score}}分)</div>
+										<div class="margin_t20">
+											<template v-if="is_end == false">
+												<textarea rows="5" v-model="somedata[nowindex].my_answer" :disabled="somedata[nowindex].is_answer?true:false"></textarea>
+											</template>
+											<template v-else>
+												<textarea rows="5" disabled="disabled" v-model="somedata[nowindex].my_answer"></textarea>
+											</template>
+										</div>
+										<div class="mui-text-center" v-if="is_end == false">
+											<button @tap="submit_short" data-loading-icon data-loading-text="请参考答案给自己打分" class="mui-btn mui-btn-blue">提交</button>
+										</div>
+									</div>
+								</template>
+								<!-- 简答 end -->
+
+								<!-- 填空 begin -->
+								<template v-if="somedata[nowindex].type == 3">
+									<div class="mui-clearfix">
+										<div class="ques_title">{{nowindex+1}}、<span v-html="somedata[nowindex].ques"></span>({{somedata[nowindex].ques_score}}分)</div>
+										<div v-if="!somedata[nowindex].is_answer">
+											<div><input type="text" v-model="somedata[nowindex].my_answer" placeholder="请在此输入答案"></div>
+										</div>
+										<div class="mui-text-center">
+											<button v-on:tap="" class="mui-btn mui-btn-primary">提交</button>
+										</div>
+									</div>
+								</template>
+								<!-- 填空 end -->
+							</div>
+						</div>
+						<!--底部切换-->
+						<div id="slider" class="mui-slider practice" v-show="somedata.length != 0 ? somedata[nowindex].is_answer : false">
+							<!--<div class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">-->
+							<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted"
+							 style="overflow: hidden;">
+								<div class="mui-scroll" style=" position: absolute; width: auto;">
+									<a id="changeTab" class="mui-control-item mui-active" href="#item1mobile">
+										答案
+									</a>
+									<a class="mui-control-item" href="#item2mobile">
+										讨论
+									</a>
+									<a class="mui-control-item" href="#item3mobile">
+										笔记
+									</a>
+									<a class="mui-control-item" href="#item4mobile">
+										纠错
+									</a>
+									<a class="mui-control-item" href="#item5mobile">
+										悬赏求助
+									</a>
+								</div>
+							</div>
+							<div id="changeBox" class="mui-slider-group changeBox">
+								<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+									<div class="answer_tab answer_font" v-if="somedata.length != 0">
+										<img :src="'../img/status' + somedata[nowindex].is_right + '.png'" class="mui-pull-right status_img" v-if="!member_set.view_aues && somedata[nowindex].is_right!=null"
+										 alt="">
+										<!-- 多选答案 begin -->
+										<template v-if="somedata[nowindex].type == 1">
+											<template v-if="somedata[nowindex].is_right=='1'">
+												<div class="color_green">回答正确：<template v-for="(item,index) in somedata[nowindex].answers">{{answer_arr[item]}}</template></div>
+											</template>
+											<template v-else>
+												<div class="color_blue">正确答案：<template v-for="(item,index) in somedata[nowindex].answers">{{answer_arr[item]}}</template></div>
+												<div class="color_yellow margin_t20">您的答案：<template v-for="(item,index) in somedata[nowindex].my_answer">{{answer_arr[item]}}</template></div>
+											</template>
+										</template>
+										<!-- 多选答案 end -->
+
+										<!-- 判断-->
+										<template v-if="somedata[nowindex].type == 2">
+											<template v-if="somedata[nowindex].is_right == 1">
+												<div class="color_green">回答正确：{{somedata[nowindex].choices[fun_right(somedata[nowindex].choices)[0]].title}}</div>
+											</template>
+											<template v-else>
+												<div class="color_blue">正确答案：{{somedata[nowindex].choices[fun_right(somedata[nowindex].choices)[0]].title}}</div>
+												<div class="color_yellow margin_t20">您的答案：{{somedata[nowindex].my_answer==null?'':somedata[nowindex].choices[somedata[nowindex].my_answer].title}}</div>
+											</template>
+										</template>
+										<!-- 判断 -->
+
+										<!-- 单选答案 begin -->
+										<template v-if="somedata[nowindex].type == 0">
+											<template v-if="somedata[nowindex].is_right == 1">
+												<div class="color_green">回答正确：{{answer_arr[fun_right(somedata[nowindex].choices)[0]]}}</div>
+											</template>
+											<template v-else>
+												<div class="color_blue">正确答案：{{answer_arr[fun_right(somedata[nowindex].choices)[0]]}}</div>
+												<div class="color_yellow margin_t20">您的答案：{{answer_arr[somedata[nowindex].my_answer]}}</div>
+											</template>
+										</template>
+										<!-- 单选答案 end -->
+
+										<!-- 填空 begin-->
+										<template v-if="somedata[nowindex].type=='3'">
+											<template v-if="somedata[nowindex].is_right=='1'">
+												<div class="color_green">回答正确：{{somedata[nowindex].answer}}</div>
+											</template>
+											<template v-else>
+												<div class="color_blue">正确答案：{{somedata[nowindex].answer}}</div>
+												<div class="color_yellow">您的答案：{{somedata[nowindex].my_answer}}</div>
+											</template>
+										</template>
+										<!-- 填空 end -->
+
+										<!-- 问答-->
+										<template v-if="somedata[nowindex].type == 4">
+											<div class="mui-clearfix margin_t20 tips_box color_blue">
+												<span class="mui-pull-left">参考答案：</span>
+												<div v-html="somedata[nowindex].answer"></div>
+											</div>
+											<div class="mui-clearfix margin_t20 tips_box color_yellow">
+												<span class="mui-pull-left">您的答案：</span>
+												<div v-html="somedata[nowindex].my_answer"></div>
+											</div>
+										</template>
+										<!-- 问答 -->
+
+										<!-- 统计&解析 -->
+										<div class="margin_t20 tips_box mui-clearfix" v-if="!member_set.view_aues">
+											<span class="mui-pull-left mui-text-right">统计：</span>
+											<div>本题您做了{{parseInt(somedata[nowindex].i_have_m)}}次，正确率{{(parseInt(somedata[nowindex].i_have_r)*100/parseInt(somedata[nowindex].i_have_m)).toFixed(1)}}%，全站共{{parseInt(somedata[nowindex].all_m)}}人做答，正确率{{(parseInt(somedata[nowindex].all_r)*100/parseInt(somedata[nowindex].all_m)).toFixed(1)}}%</div>
+										</div>
+										<div class="margin_t20 tips_box mui-clearfix">
+											<span class="mui-pull-left">参考解析：</span>
+											<div v-html="somedata[nowindex].analysis"></div>
+										</div>
+										<div class="mui-clearfix">
+											<a class="add_note mui-pull-right" v-if="somedata[nowindex].note==''" @tap="edit_note"><span class="mui-icon-extra icon-biji1"></span>添加笔记/解析</a>
+											<div class="color_yellow">
+												本题得分：
+												<template v-if="somedata[nowindex].type != 4 || somedata[nowindex].type== 4 && somedata[nowindex].is_right != null">
+													{{somedata[nowindex].my_score}}
+												</template>
+												<template v-if="somedata[nowindex].type == 4 && somedata[nowindex].is_answer && somedata[nowindex].is_right == null">
+													<input type="number" style="width: 1.4rem; border-radius: 0; padding: 0px 5px; height: 33px;" data-type="number"
+													 v-bind:data-max="somedata[nowindex].ques_score" v-model="somedata[nowindex].my_score">
+													<button @tap="real_answer" class="mui-btn mui-btn-primary">确定</button>
+												</template>
+											</div>
+										</div>
+										<!-- 添加笔记 -->
+										<template v-if="somedata[nowindex].note!='' || somedata[nowindex].is_edit_note">
+											<div class="mui-clearfix">
+												<a v-if="somedata[nowindex].note!=''" @tap="edit_note" class="mui-pull-right"><span class="mui-icon mui-icon-compose"></span>{{somedata[nowindex].is_edit_note?'取消':'修改'}}</a>
+												笔记内容
+											</div>
+											<div class="margin_t20">
+												<div>
+													<textarea rows="5" v-bind:disabled="somedata[nowindex].is_edit_note?false:true" placeholder="请输入笔记内容"
+													 v-model="somedata[nowindex].note" maxlength="500"></textarea>
+													<div class="mui-text-center" v-if="somedata[nowindex].is_edit_note || somedata[nowindex].note==''">
+														<button @tap="submit_note(somedata[nowindex].id)" class="mui-btn mui-btn-primary">提交</button>
+													</div>
+												</div>
+											</div>
+										</template>
+									</div>
+								</div>
+								<div id="item2mobile" class="mui-slider-item mui-control-content">
+									<div class="mui-text-center margin_t30">
+										<button class="issue_btn mui-btn mui-btn-primary mui-btn-outlined" :data-type="somedata.length != 0 ? somedata[nowindex].type:''" :data-id="somedata.length != 0 ? somedata[nowindex].id:''" data-url="issue_discuss.html"><span class="mui-icon-extra icon-bianji"></span>发布</button>
+									</div>
+									<div class="nodata loading mui-text-center" v-if="changeLoading == 1">
+										<img src="../img/loading.gif" alt="" />
+										<div class="margin_t20">加载中...</div>
+									</div>
+									<div class="nodata mui-text-center" v-else-if="changeLoading == 2 && discuss.length == 0">
+										<img src="../img/nodata.png" alt="" />
+										<div class="margin_t20">暂无讨论内容~</div>
+									</div>
+									<template v-else>
+									<ul class="mui-table-view offer_list">
+										<li class="mui-table-view-cell wrong_item" v-if="discuss.length > 0" v-for="(item,index) in discuss">
+											<div class="mui-row">
+												<div class="mui-col-xs-12">
+													<div class="avatar mui-pull-left">
+														<img :src="item.mem_headimg != ''?item.mem_headimg:'../img/avatar.png'" />
+													</div>
+													<div class="info">
+														<div class="name"><b>{{item.mem_nickname}}</b></div>
+														<div class="time">{{item.add_time}}</div>
+													</div>
+												</div>
+												<div class="mui-col-xs-12 mui-ellipsis-2 txt">
+													{{item.content}}
+												</div>
+											</div>
+											<div class="mui-row mui-text-center changeOperat margin_t20">
+												<div class="mui-col-xs-4">
+													<a @tap="report({id:item.id,model:1,type:0})">
+														<span class="mui-icon-extra icon-jubao"></span>举报
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="jump_comment({type:1,id:item.id})">
+														<span class="mui-icon-extra icon-pinglun"></span>评论({{item.reply_num}})
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="fabulous({id:item.id,model:1,type:0,index:index})">
+														<span class="mui-icon-extra icon-zan"></span>赞({{item.like_num}})
+													</a>
+												</div>
+											</div>
+										</li>
+									</ul>
+									<div class="mui-text-center" style="padding: 40px 0;">
+										<button @tap="jump_list({type:1,id:somedata.length != 0?somedata[nowindex].id:''})" class="mui-btn mui-btn-primary">查看更多讨论</button>
+									</div>
+									</template>
+								</div>
+								<div id="item3mobile" class="mui-slider-item mui-control-content">
+									<div class="mui-text-center margin_t30">
+										<button class="issue_btn mui-btn mui-btn-primary mui-btn-outlined" :data-type="somedata.length != 0 ? somedata[nowindex].type:''" :data-id="somedata.length != 0 ? somedata[nowindex].id:''" data-url="issue_note.html"><span class="mui-icon-extra icon-bianji"></span>发布</button>
+									</div>
+									<div class="nodata loading mui-text-center" v-if="changeLoading == 1">
+										<img src="../img/loading.gif" alt="" />
+										<div class="margin_t20">加载中...</div>
+									</div>
+									<div class="nodata mui-text-center" v-else-if="note.length == 0 && changeLoading == 2">
+										<img src="../img/nodata.png" alt="" />
+										<div class="margin_t20">暂无笔记内容~</div>
+									</div>
+									<template v-else>
+									<ul class="mui-table-view offer_list">
+										<li class="mui-table-view-cell wrong_item" v-if="note.length > 0" v-for="(item,index) in note">
+											<div class="mui-row">
+												<div class="mui-col-xs-12">
+													<div class="avatar mui-pull-left">
+														<img :src="item.mem_headimg != ''?item.mem_headimg:'../img/avatar.png'" />
+													</div>
+													<div class="info">
+														<div class="name"><b>{{item.mem_nickname}}</b></div>
+														<div class="time">{{item.add_time}}</div>
+													</div>
+												</div>
+												<div class="mui-col-xs-12 mui-ellipsis-2 txt">
+													{{item.content}}
+												</div>
+											</div>
+											<div class="mui-row mui-text-center changeOperat margin_t20">
+												<div class="mui-col-xs-4">
+													<a @tap="report({id:item.id,model:2,type:0})">
+														<span class="mui-icon-extra icon-jubao"></span>举报
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="jump_comment({type:2,id:item.id})">
+														<span class="mui-icon-extra icon-pinglun"></span>评论({{item.reply_num}})
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="fabulous({id:item.id,model:2,type:0,index:index})">
+														<span class="mui-icon-extra icon-zan"></span>赞({{item.like_num}})
+													</a>
+												</div>
+											</div>
+										</li>
+									</ul>
+									<div class="mui-text-center" style="padding: 40px 0;">
+										<button @tap="jump_list({type:2,id:somedata.length != 0?somedata[nowindex].id:''})" class="mui-btn mui-btn-primary">查看更多笔记</button>
+									</div>
+									</template>
+								</div>
+								<div id="item4mobile" class="mui-slider-item mui-control-content">
+									<div class="mui-text-center margin_t30">
+										<button class="issue_btn mui-btn mui-btn-primary mui-btn-outlined" :data-type="somedata.length != 0 ? somedata[nowindex].type:''" :data-id="somedata.length != 0 ? somedata[nowindex].id:''" data-url="issue_wrong.html"><span class="mui-icon-extra icon-bianji"></span>发布</button>
+									</div>
+									<div class="nodata loading mui-text-center" v-if="changeLoading == 1">
+										<img src="../img/loading.gif" alt="" />
+										<div class="margin_t20">加载中...</div>
+									</div>
+									<div class="nodata mui-text-center" v-else-if="changeLoading == 2 && wrong.length == 0">
+										<img src="../img/nodata.png" alt="" />
+										<div class="margin_t20">暂无纠错内容~</div>
+									</div>
+									<template v-else>
+									<ul class="mui-table-view offer_list">
+										<li class="mui-table-view-cell wrong_item" v-if="wrong.length > 0" v-for="(item,index) in wrong">
+											<div class="mui-row">
+												<div class="mui-col-xs-12">
+													<div class="avatar mui-pull-left">
+														<img :src="item.headimg != ''?item.headimg:'../img/avatar.png'" />
+													</div>
+													<div class="info">
+														<div class="name"><b>{{item.nickname}}</b></div>
+														<div class="time">{{item.add_time}}</div>
+													</div>
+												</div>
+												<div class="mui-col-xs-12 mui-ellipsis-2 txt">
+													{{item.content}}
+												</div>
+											</div>
+											<div class="album mui-clearfix margin_t20" v-if="item.ques_pics.length != 0">
+												<a v-for="(i,index) in item.ques_pics">
+													<img src="../img/img_opacity.png" :data-preview-src="item.ques_big_pics[index]" :data-preview-group="item.id" :data="item.ques_big_pics[index]" :style="{backgroundImage:'url(' + i + ')'}" alt="" />
+												</a>
+											</div>
+											<div class="mui-row mui-text-center changeOperat margin_t20">
+												<div class="mui-col-xs-4">
+													<a @tap="report({id:item.id,model:3,type:0})">
+														<span class="mui-icon-extra icon-jubao"></span>举报
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="jump_comment({type:3,id:item.id})">
+														<span class="mui-icon-extra icon-pinglun"></span>评论({{item.reply_num}})
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="fabulous({id:item.id,model:3,type:0,index:index})">
+														<span class="mui-icon-extra icon-zan"></span>赞({{item.like_num}})
+													</a>
+												</div>
+											</div>
+										</li>
+									</ul>
+									<div class="mui-text-center" style="padding: 40px 0;">
+										<button @tap="jump_list({type:3,id:somedata.length != 0?somedata[nowindex].id:''})" class="mui-btn mui-btn-primary">查看更多纠错</button>
+									</div>
+									</template>
+								</div>
+								<div id="item5mobile" class="mui-slider-item mui-control-content">
+									<div class="mui-text-center margin_t30">
+										<button class="issue_btn mui-btn mui-btn-primary mui-btn-outlined" :data-type="somedata.length != 0 ? somedata[nowindex].type:''" :data-id="somedata.length != 0 ? somedata[nowindex].id:''" data-url="issue_offer.html"><span class="mui-icon-extra icon-bianji"></span>发布</button>
+									</div>
+									<div class="nodata loading mui-text-center" v-if="changeLoading == 1">
+										<img src="../img/loading.gif" alt="" />
+										<div class="margin_t20">加载中...</div>
+									</div>
+									<div class="nodata mui-text-center" v-else-if="changeLoading == 2 && offer.length == 0">
+										<img src="../img/nodata.png" alt="" />
+										<div class="margin_t20">暂无悬赏求助~</div>
+									</div>
+									<template v-else>
+									<ul class="mui-table-view offer_list">
+										<li class="mui-table-view-cell wrong_item" v-if="offer.length > 0" v-for="item in offer">
+											<div class="mui-row" @tap="open_offerDetails({title:item.ques_title,id:item.id})">
+												<div class="mui-col-xs-6">
+													<div class="avatar mui-pull-left">
+														<img :src="item.headimg != ''?item.headimg:'../img/avatar.png'" />
+													</div>
+													<div class="info">
+														<div class="name"><b>{{item.mem_nickname}}</b></div>
+														<div class="time">{{item.add_time}}</div>
+													</div>
+												</div>
+												<div class="mui-col-xs-6 mui-text-right">
+													<a class="help_btn"><span class="mui-icon mui-icon-help"></span>帮助他/她</a>
+												</div>
+												<div class="mui-col-xs-12 mui-ellipsis-2 txt">
+													{{item.content}}
+												</div>
+											</div>
+											<div class="album mui-clearfix margin_t20" v-if="item.ques_pics.length != 0">
+												<a v-for="(i,index) in item.ques_pics">
+													<img src="../img/img_opacity.png" :data-preview-src="item.ques_big_pics[index]" :data-preview-group="item.id" :data="item.ques_big_pics[index]" :style="{backgroundImage:'url(' + i + ')'}" alt="" />
+												</a>
+											</div>
+											<div class="tags margin_t30">
+												<span>{{item.ques_category_id}}</span>
+												<span class="price">￥{{item.money}}</span>
+											</div>
+										</li>
+									</ul>
+									<div class="mui-text-center" style="padding: 40px 0;">
+										<button @tap="jump_list({type:4,id:somedata.length != 0?somedata[nowindex].id:''})" class="mui-btn mui-btn-primary">查看更多悬赏求助</button>
+									</div>
+									</template>
+								</div>
+							</div>
+						</div>
+						<!--底部切换结束-->
+					</div>
+				</div>
+			</div>
+			<div class="operate_box">
+				<div class="mui-row mui-text-center">
+					<div class="mui-col-xs-3">
+						<a @tap="prev" :class="is_set == 0?'disabled':''"><span class="mui-icon mui-icon-arrowleft"></span>上一题</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a @tap="submit_answers" :class="is_set == 0?'disabled':''">交卷</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a @tap="openSet()">更多</a>
+					</div>
+					<div class="mui-col-xs-3">
+						<a @tap="next" :class="is_set == 0?'disabled':''">下一题<span class="mui-icon mui-icon-arrowright"></span></a>
+					</div>
+				</div>
+			</div>
+			<div class="edit_btn" v-show="is_set == 1">
+				<a id="issue"><img src="../img/icon_set.png" /></a>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/mui.zoom.js"></script>
+		<script src="../js/mui.previewimage.js"></script>
+		<script type="text/javascript">
+			mui.init();
+
+			var time_set = null;
+			var tab_time = null; //自动切题定时器
+			var show_card = null; // 答题卡窗口
+			var answer = null;
+			var submitTips = null;
+			var activeTips = null;
+			var activation = null;
+			var success_m = plus.audio.createPlayer('../img/music_success.mp3');
+			var error_m = plus.audio.createPlayer('../img/music.mp3');
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					user_key: '',
+					guid: '',
+					type: '',
+					model: '',
+					somedata: [],
+					nowindex: 0,
+					type_title: ['单选题', '多选题', '判断题', '填空题', '问答题'],
+					answer_arr: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'],
+					member_set: {},
+
+					is_none: 0,
+					is_load: false,
+					loading: 0,
+
+					all_score: 0, //总得分
+					list_num: [0, 0, 0, 0, 0], //各题型数量
+
+					times: 0, //累计时间 s
+					my_times: '00:00:00', // s转 时间格式
+
+					a_num: 0, // 已做题数
+					r_num: 0, //正确数
+					e_num: 0, //错误数
+					h_num: 0, //半对数
+					n_num: 0, //未答数
+					rate: '0%', //正确率
+					is_end: false, //是否答完
+
+					try_end_num: 0, //试用题数
+
+					changeID: 0,
+					changeLoading: 0,
+					discuss: [],
+					note: [],
+					wrong: [],
+					offer: [],
+					
+					is_set:1 //是否显示设置
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {
+					// 跳转题号
+					jump_question: function(_index) {
+						// 清除自动切题定时器
+						clearInterval(tab_time);
+						tab_time = null;
+						if (parseInt(_index) > this.try_end_num - 1 && this.try_end_num != 0) {
+							// 试用结束
+							if (activeTips) { // 避免快速多次点击创建多个窗口
+								return;
+							}
+							activeTips = plus.webview.create('answer_active.html', 'answer_active.html', {
+								width: '300px',
+								height: '180px',
+								// top: '200px',
+								// background: 'rgba(0,0,0,.5)',
+								margin: "auto",
+								scrollIndicator: 'none',
+								scalable: false,
+								popGesture: 'none'
+							}, {
+								'id': vm.guid
+							});
+							activeTips.addEventListener("loaded", function() {
+								var self = plus.webview.currentWebview()
+								self.setStyle({
+									mask: 'rgba(0,0,0,0.5)'
+								});
+								// var selfID = plus.webview.currentWebview().id
+								// page.evalJS("showMask('" + selfID + "')")
+								activeTips.show('zoom-fade-out', 100);
+							}, false);
+							// mui.toast('试用结束请先购买');
+							return false
+						}
+						this.nowindex = _index;
+						mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+						vm.discuss = [];
+						vm.note = [];
+						vm.offer = [];
+						vm.wrong = [];
+						// this.show_dabj();
+					},
+					// 上一题
+					prev: function() {
+						mui('.mui-btn').button('reset');
+						if (this.nowindex - 1 < 0 && vm.is_set == 1) {
+							// plus.device.vibrate();
+							mui.toast('已经到第一题了~')
+						} else {
+							var changeTab = document.getElementById("changeTab");
+							mui.trigger(changeTab, 'touchstart');
+// 							$('#sliderSegmentedControl').find('a').removeClass('mui-active').eq(0).addClass('mui-active');
+// 							$('.changeBox').attr('style', 'transform: translate3d(0px, 0px, 0px) translateZ(0px);')
+// 							$('.changeBox').find('div.mui-slider-item').removeClass('mui-active')
+							this.jump_question(this.nowindex - 1)
+						}
+					},
+					// 下一题
+					next: function() {
+						mui('.mui-btn').button('reset');
+						if (this.nowindex + 2 > this.somedata.length) {
+							if (!this.is_view_aues) {
+								this.submit_answers();
+							} else {
+								mui.toast('已经到最后一题了哦~')
+							}
+
+						} else {
+							var changeTab = document.getElementById("changeTab");
+							mui.trigger(changeTab, 'touchstart');
+							this.jump_question(this.nowindex + 1)
+						}
+
+					},
+					submit_answers: function() {
+						// 清除自动切题定时器
+						if (vm.is_end) {
+							mui.toast('您已经提交过了~');
+							return false
+						}
+
+						clearInterval(tab_time);
+						tab_time = null;
+
+						// 统计
+						var _list = vm.somedata;
+
+						// 取消后重新统计
+						vm.a_num = 0; // 已做题数
+						vm.r_num = 0; //正确数
+						vm.e_num = 0; //错误数
+						vm.h_num = 0; //半对数
+						vm.n_num = 0; //未答数
+						vm.rate = '0%';
+
+						for (i = 0; i < _list.length; i++) {
+							if (_list[i].is_answer) {
+								vm.a_num += 1;
+								if (_list[i].my_score == _list[i].ques_score) {
+									vm.r_num += 1
+								}
+								if (_list[i].my_score > 0 && _list[i].my_score < _list[i].ques_score) {
+									vm.h_num += 1
+								}
+								if (_list[i].my_score == 0) {
+									vm.e_num += 1
+								}
+							} else {
+								vm.n_num += 1
+							}
+						}
+						if (vm.a_num == '0') {
+							vm.rate = '0%';
+						} else {
+							vm.rate = ((vm.r_num + vm.h_num * 0.5) * 100 / vm.a_num).toFixed(1) + '%';
+						}
+
+
+						if (vm.n_num > 0) {
+							if (submitTips) { // 避免快速多次点击创建多个窗口
+								return;
+							}
+							submitTips = plus.webview.create('answer_tips.html', 'answer_tips.html', {
+								width: '300px',
+								height: '180px',
+								// top: '200px',
+								// background: 'rgba(0,0,0,.5)',
+								margin: "auto",
+								scrollIndicator: 'none',
+								scalable: false,
+								popGesture: 'none'
+							}, {
+								'num': vm.n_num
+							});
+							submitTips.addEventListener("loaded", function() {
+								var self = plus.webview.currentWebview()
+								self.setStyle({
+									mask: 'rgba(0,0,0,0.5)'
+								});
+								// var selfID = plus.webview.currentWebview().id
+								// page.evalJS("showMask('" + selfID + "')")
+								submitTips.show('zoom-fade-out', 100);
+							}, false);
+
+						}
+
+					},
+					// 判断元素是否在某个数组
+					is_in_arr: function(text, arr) {
+						for (var i = 0; i < arr.length; i++) {
+							if (text == arr[i]) {
+								return true
+							}
+						}
+						return false
+					},
+					// 如果自动切题
+					auto_switch: function(e) {
+
+						if (parseInt(this.member_set.switch_question)) {
+							if (e) {
+								mui(e).button('loading');
+							}
+							var _this = this;
+							var time = 5 //5秒后跳转
+							var i = 0;
+							tab_time = setInterval(function() {
+								i++
+								if (e) {
+									$(e).html((5 - i) + 's后自动切换下一题')
+								}
+								if (i > 5) {
+									_this.next();
+									if (e) {
+										mui(e).button('reset');
+									}
+								}
+							}, 1000)
+						}
+					},
+					time_set: function() {
+						var _this = this;
+						time_set = setInterval(function() {
+							_this.times += 1;
+							var _time = _this.times;
+							var _h = parseInt(_time / 3600);
+							if (_h < 10) {
+								_h = '0' + _h
+							}
+							var _m = parseInt(_time % 3600 / 60);
+							if (_m < 10) {
+								_m = '0' + _m
+							}
+							var _s = parseInt(_time % 3600 % 60);
+							if (_s < 10) {
+								_s = '0' + _s
+							}
+							_this.my_times = _h + ':' + _m + ':' + _s
+
+						}, 1000)
+					},
+					// 单选题
+					single_election: function(_index) {
+
+						// 已经提交不能继续答题
+						if (vm.is_end) {
+							return false
+						}
+
+						var item = this.somedata[this.nowindex];
+						var que_score = parseInt(item.ques_score);
+						if (!item.is_answer) {
+							item.my_answer = _index;
+							// 判断正误
+							if (item.choices[_index].is_answer) {
+								// 正确
+								item.is_right = '1';
+								// 得分
+								item.my_score = que_score;
+								// 总分
+								this.all_score += que_score;
+								// 统计
+								item.i_have_r = parseInt(item.i_have_r) + 1;
+								item.all_r = parseInt(item.all_r) + 1;
+							} else {
+								// 错误
+								item.is_right = '3';
+							}
+							item.i_have_m = parseInt(item.i_have_m) + 1;
+							item.all_m = parseInt(item.all_m) + 1;
+							item.is_answer = true;
+
+							this.submit_detection(item.id, item.is_right, item.my_score, item.my_answer)
+						}
+
+						this.auto_switch();
+					},
+					// 多选选择
+					multiple_selection: function(_index) {
+
+						// 已经提交不能继续答题
+						if (vm.is_end) {
+							return false
+						}
+
+						var item = this.somedata[this.nowindex];
+						if (item.is_answer) {
+							return false
+						}
+
+						var _arr = item.my_answer;
+						if (!this.is_in_arr(_index, _arr)) {
+							_arr.push(_index)
+						} else {
+
+							for (i = 0; i < _arr.length; i++) {
+								if (_arr[i] == _index) {
+									_arr.splice(i, 1);
+									break;
+								}
+							}
+						}
+						item.my_answer = _arr.sort()
+					},
+					// 多选提交
+					submit_multiple: function(e) {
+
+						// 已经提交不能继续答题
+						if (vm.is_end) {
+							return false
+						}
+
+						if (this.somedata[this.nowindex].is_answer) {
+							return false
+						}
+						if (this.somedata[this.nowindex].my_answer.length <= 0) {
+							mui.toast('请至少选择一个选项')
+						} else {
+							// 判断正误
+							var c = this.somedata[this.nowindex].choices;
+							var a = this.somedata[this.nowindex].my_answer;
+							var que_score = parseInt(this.somedata[this.nowindex].ques_score);
+							var score = 0;
+							var s_num = 0;
+							var a_num = 0;
+							for (var i = 0; i < a.length; i++) {
+								if (c[a[i]].is_answer) {
+									score += 0.5;
+									s_num++
+								} else {
+									score -= 100
+								}
+							}
+
+							for (var i = 0; i < c.length; i++) {
+								if (c[i].is_answer) {
+									this.somedata[this.nowindex].answers.push(i)
+								}
+							}
+							var item = this.somedata[this.nowindex];
+							// 判断正误
+							// 如果 有错误，则为错
+							if (score < 0) {
+								this.somedata[this.nowindex].is_right = '3';
+								item.my_score = 0;
+							} else {
+								// 如果全部正确
+								if (s_num == this.somedata[this.nowindex].answers.length) {
+									score = que_score;
+									this.somedata[this.nowindex].is_right = '1';
+									item.i_have_r = parseInt(item.i_have_r) + 1;
+									item.all_r = parseInt(item.all_r) + 1;
+								} else {
+									this.somedata[this.nowindex].is_right = '2';
+								}
+								item.my_score = score;
+								this.all_score += score;
+							}
+
+							item.i_have_m = parseInt(item.i_have_m) + 1;
+							item.all_m = parseInt(item.all_m) + 1;
+							item.is_answer = true;
+							this.submit_detection(item.id, item.is_right, item.my_score, a)
+							this.auto_switch(e.currentTarget);
+							// console.log(this.somedata[this.nowindex])
+						}
+					},
+					// 提交正确错误
+					submit_detection: function(_id, is_right, score, answer) {
+
+						var data = {}
+						data.id = _id
+						data.is_right = is_right
+						data.score = score
+						data.studyset_model = vm.model
+						data.knowpoint_id = vm.guid
+						data.user_key = vm.user_key
+						data.my_answer = answer
+						// data.from_type = 
+
+						// 播放音频
+						if (vm.member_set.sound_hints == 1) {
+							if (is_right == 1 || is_right == 2) {
+								// 全对/半对
+								success_m.play()
+							} else if (is_right == 3) {
+								// 错误
+								error_m.play()
+							}
+						}
+
+						// 设置答案
+						mui.ajax(server + 'Api/V1/Topic/set_answer', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// 								console.log(JSON.stringify(data))
+								// 								if (data.status == 0) {
+								// 									mui.toast(data.msg);
+								// 								}
+							},
+							error: function(xhr, type, errorThrown) {
+								// console.log(xhr.responseText)
+								//异常处理；
+								mui.toast('网络异常');
+							}
+						});
+					},
+					// 简答提交答案
+					submit_short: function(e) {
+						var item = this.somedata[this.nowindex];
+						var _this = e.currentTarget;
+						if (!item.is_answer) {
+							if (item.my_answer == "") {
+								mui.toast('请输入答案');
+								return false
+							}
+							item.is_answer = true;
+							$('textarea').blur()
+							mui(_this).button('loading');
+						}
+					},
+					// 简答提交分数
+					real_answer: function() {
+
+						// 已经提交不能继续答题
+						if (vm.is_end) {
+							return false
+						}
+
+						var item = this.somedata[this.nowindex];
+						if (item.my_score == "") {
+							mui.toast("请输入分数");
+							return false
+						}
+						var score = 0;
+						if (item.my_score == '0') {
+							item.is_right = '3';
+						} else {
+							if (item.my_score == item.ques_score) {
+								item.is_right = '1';
+								score = item.ques_score
+							} else {
+								item.is_right = '2';
+								score = item.my_score
+							}
+						}
+
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+
+						item.my_score = score;
+						this.all_score += parseInt(score);
+
+
+						this.submit_detection(item.id, item.is_right, item.my_score, item.my_answer)
+						this.auto_switch();
+					},
+					// 编辑笔记
+					edit_note: function() {
+						this.somedata[this.nowindex].is_edit_note = !this.somedata[this.nowindex].is_edit_note;
+					},
+					submit_note: function(_id) {
+						if (this.somedata[this.nowindex].note == "") {
+							mui.toast("请输入笔记内容");
+						} else {
+							var state = app.getState();
+							var data = {}
+							data.user_key = state.user_key;
+							data.topic_id = this.somedata[this.nowindex].id;
+							data.content = this.somedata[this.nowindex].note;
+							// data.answer_id = 
+							// 设置答案
+							mui.ajax(server + 'Api/V1/Topic/set_answer', {
+								data: data,
+								dataType: 'json', //服务器返回json格式数据
+								type: 'get', //HTTP请求类型
+								timeout: 10000, //超时时间设置为10秒；              
+								success: function(data) {
+									mui.toast('提交成功');
+									this.somedata[this.nowindex].is_edit_note = false;
+									// this.somedata[this.nowindex].note = $('.js_note_content').val()
+								},
+								error: function(xhr, type, errorThrown) {
+									// console.log(xhr.responseText)
+									//异常处理；
+									mui.toast('网络异常');
+								}
+							});
+						}
+					},
+					// 单多选 算出 正确答案
+					fun_right: function(_arr) {
+						var _n_arr = [];
+						for (i = 0; i < _arr.length; i++) {
+							if (_arr[i].is_answer) {
+								_n_arr.push(i)
+							}
+						}
+						return _n_arr;
+					},
+					// 重新加载题目后重置
+					re_set_all: function() {
+						var _list = vm.somedata;
+					
+						// 如果是看题模式
+						if (parseInt(vm.member_set.view_aues) || vm.is_set == 0) {
+							// 逐个把题目答案算出。
+							// console.log(_list.length)
+							for (var i = 0; i < _list.length; i++) {
+								var _type = _list[i].type;
+								if (_type == '0' || _type == '2') {
+									vm.show_ans_dx(i)
+								}
+								if (_type == '1') {
+									vm.show_ans_dxs(i)
+								}
+								if (_type == '3' || _type == '4') {
+									vm.show_ans_tk(i)
+								}
+							}
+						} else {
+							for (var i = 0; i < _list.length; i++) {
+								if (!_list[i].my_answer || _list[i].my_answer.length == 0) {
+									_list[i].is_answer = false;
+								}
+							}
+						}
+					},
+					// 看题模式 单选答案 及判断答案
+					show_ans_dx: function(_i) {
+						var item = this.somedata[_i];
+						var m_ans = null;
+						for (j = 0; j < item.choices.length; j++) {
+							if (item.choices[j].is_answer) {
+								m_ans = j;
+								break;
+							}
+						}
+
+						// console.log(item.is_answer)
+						if (item.is_answer != true) {
+							item.my_answer = null;
+							item.is_right = '3';
+							item.is_answer = true;
+						}
+
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					// 看题模式 多选答案
+					show_ans_dxs: function(_i) {
+						var item = this.somedata[_i];
+						var m_ans = [];
+						for (j = 0; j < item.choices.length; j++) {
+							if (item.choices[j].is_answer) {
+								m_ans.push(j);
+							}
+						}
+
+						// console.log(_i)
+						if (item.is_answer != true) {
+							// console.log(JSON.stringify(item))
+							item.my_answer = [];
+							item.answers = m_ans;
+							item.is_right = '3';
+							item.is_answer = true;
+						}
+
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					// 看题模式 填空答案
+					show_ans_tk: function(_i) {
+						var item = this.somedata[_i];
+						if (item.is_answer != true) {
+							var m_ans = item.answer;
+							item.is_right = '3';
+							item.is_answer = true;
+						}
+
+						item.i_have_m = parseInt(item.i_have_m) + 1;
+						item.all_m = parseInt(item.all_m) + 1;
+					},
+					show_card: function() {
+						var _this = this;
+						//保存数据到本地
+						// plus.storage.removeItem('answers_list');
+						var answers_list = {
+							all_score: _this.all_score,
+							list: _this.somedata
+						}
+						var titleNView = { //详情页原生导航配置
+							backgroundColor: '#FFFFFF', //导航栏背景色
+							titleText: '答题卡', //导航栏标题
+							titleColor: '#333333', //文字颜色
+							autoBackButton: true, //自动绘制返回箭头
+							splitLine: { //底部分割线
+								color: '#f2f2f2'
+							}
+						}
+						// plus.storage.setItem('answers_list', JSON.stringify(answers_list));
+						mui.openWindow({
+							url: 'card_win.html',
+							id: 'card_win.html',
+							styles: {
+								statusbar: {
+									background: '#FFFFFF'
+								},
+								titleNView: titleNView,
+								popGesture: 'close',
+								bounce: 'vertical'
+							},
+							extras: {
+								answers_list: answers_list
+							},
+							show: {
+								autoShow: true,
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+					},
+					// 收藏
+					love_this: function() {
+						var data = {}
+						data.user_key = vm.user_key;
+						data.topic_id = vm.somedata[vm.nowindex].id;
+						// console.log(JSON.stringify(data))
+						mui.ajax(server + 'Api/V1/UserAnswer/add_favorite', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data));
+								if (data.status == 1) {
+									vm.somedata[vm.nowindex].is_love = data.info
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								// console.log(xhr.responseText)
+								//异常处理；
+								mui.toast('网络异常');
+							}
+						});
+					}
+				}
+			});
+
+			var easy_set = null;
+
+			mui.plusReady(function() {
+				// mui('#pullrefresh').scroll();
+				var self = plus.webview.currentWebview()
+				self.addEventListener('maskClick', function() {
+					if (easy_set) {
+						self.setStyle({
+							mask: 'none'
+						});
+
+						easy_set.hide('slide-out-bottom')
+						easy_set = null;
+					}
+				}, false);
+				
+				// 综合发布
+				mui('body').on('tap','.issue_btn',function(){
+					var url = this.getAttribute('data-url');
+					var _id = this.getAttribute('data-id');
+					var _type = this.getAttribute('data-type');
+					mui.openWindow({
+						url: url,
+						id: url,
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close',
+							// bounce: 'vertical'
+						},
+						extras: {
+							guid: _id,
+							type:_type
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+					
+				})
+
+				// 打开设置
+				mui('body').on('tap', '#issue', function() {
+					mui.openWindow({
+						url: 'answer_set.html',
+						id: 'answer_set.html',
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close',
+							titleNView: { //详情页原生导航配置
+								backgroundColor: '#FFFFFF', //导航栏背景色
+								titleText: '设置', //导航栏标题
+								titleColor: '#333333', //文字颜色
+								autoBackButton: true, //自动绘制返回箭头
+								splitLine: { //底部分割线
+									color: '#f2f2f2'
+								}
+							},
+							// bounce: 'vertical'
+						},
+						extras: {
+							set: vm.member_set
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+				})
+
+				getData()
+				
+				mui('#pullrefresh').scroll()
+				
+			})
+
+			// 获取答题数据
+			function getData() {
+				var self = plus.webview.currentWebview()
+				var state = app.getState()
+				var data = {};
+
+				/* type题目类型 1 练习  3 专项练习  5 练习错题  6 练习所有错题  7 练习题目公共 8 获取单个题目*/
+				vm.type = self.type
+				// model 1顺序练习 2随机练习
+				vm.model = self.model
+
+				if (typeof(state.user_key) != 'undefined') {
+					vm.user_key = state.user_key
+					data.user_key = state.user_key
+				}
+
+				// plus.nativeUI.showWaiting('加载题目中')
+				vm.loading = 1
+				switch (vm.type) {
+					case 1:
+						// 练习
+						data.knowpoint_id = self.guid
+						data.studyset_model = self.model
+						data.subject_category_id = state.subject_id
+						data.is_begin = self.begin
+						mui.ajax(server + 'Api/V1/Topic/practice', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data.info));
+								vm.loading = 0
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								if (data.status == 1) {
+									vm.guid = data.info.knowpoint_info.id;
+									// console.log(typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null)
+									if (typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null) {
+										vm.member_set = data.info.member_set;
+									} else {
+										vm.member_set = JSON.parse(plus.storage.getItem('member_set'));
+									}
+									vm.somedata = data.info.question_list;
+									vm.is_load = true;
+									vm.is_none = 0;
+									// console.log(data.info.test_num)
+									vm.try_end_num = data.info.test_num
+
+									if (!self.begin) {
+										vm.nowindex = data.info.learn_id;
+									}
+
+									vm.re_set_all();
+									vm.time_set();
+								} else {
+									vm.is_none = 1
+									// mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								// console.log(xhr.responseText)
+								//异常处理；
+								vm.loading = 0
+								mui.toast('网络异常');
+							}
+						});
+						break;
+					case 3:
+						// 专项练习
+						data.sele_type = self.guid
+						data.studyset_model = self.model
+						data.subject_category_id = state.subject_id
+						data.is_skip = self.is_skip
+						data.is_begin = self.begin
+						data.random_type = self.random_type
+						mui.ajax(server + 'Api/V1/Topic/practice', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data));
+								vm.loading = 0
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								if (data.status == 1) {
+									vm.guid = data.info.knowpoint_info.id;
+									// console.log(typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null)
+									if (typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null) {
+										vm.member_set = data.info.member_set;
+									} else {
+										vm.member_set = JSON.parse(plus.storage.getItem('member_set'));
+									}
+									vm.somedata = data.info.question_list;
+									vm.is_load = true;
+									vm.is_none = 0;
+									// console.log(data.info.test_num)
+									vm.try_end_num = data.info.test_num
+									
+									if (!self.begin) {
+										vm.nowindex = data.info.learn_id;
+									}
+									
+									vm.re_set_all();
+									vm.time_set();
+								} else {
+									vm.is_none = 1
+									// mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								// console.log(xhr.responseText)
+								//异常处理；
+								vm.loading = 0
+								mui.toast('网络异常');
+							}
+						});
+						break;
+					case 5:
+						// 练习错题
+						break;
+					case 6:
+						// 练习所有错题
+						break;
+					case 7:
+						// 练习题目公共
+						break;
+					case 8:
+						// 获取单个题目查看详情
+						data.id = self.guid
+						mui.ajax(server + 'Api/V1/Topic/topic_detail', {
+							data: data,
+							dataType: 'json', //服务器返回json格式数据
+							type: 'get', //HTTP请求类型
+							timeout: 10000, //超时时间设置为10秒；              
+							success: function(data) {
+								// console.log(JSON.stringify(data));
+								vm.loading = 0
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								if (data.status == 1) {
+									// vm.guid = data.info.knowpoint_info.id;
+									// console.log(typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null)
+									if (typeof(state.user_key) != 'undefined' || plus.storage.getItem('member_set') == null) {
+										vm.member_set = data.info.member_set;
+									} else {
+										vm.member_set = JSON.parse(plus.storage.getItem('member_set'));
+									}
+									vm.is_set = self.set;
+									vm.somedata = data.info.question_list;
+									vm.is_load = true;
+									vm.is_none = 0;
+									// console.log(data.info.test_num)
+									
+									vm.re_set_all();
+									vm.time_set();
+								} else {
+									vm.is_none = 1
+									// mui.toast(data.msg)
+								}
+							},
+							error: function(xhr, type, errorThrown) {
+								// console.log(xhr.responseText)
+								//异常处理；
+								vm.loading = 0
+								mui.toast('网络异常');
+							}
+						});
+						break;
+				}
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				getPageData()
+			}
+
+			//获取分页数据
+			function getPageData() {
+				// 				setTimeout(function() {
+				// 					mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+				// 				}, 1000)
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.p = vm.page
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + '', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//		            	console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.list.length < 20) {
+								// mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							} else {
+								// mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							}
+
+							for (var item of data.info.list) {
+								vm.somedata.push(item)
+							}
+							vm.page++
+						} else {
+							// mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理；
+						// mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '视频详情', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			// 打开视频详情
+			function open_details(item) {
+				//更改详情页原生导航条信息和按钮信息
+				mui.openWindow({
+					url: 'video_details.html',
+					id: 'video_details.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			// 确认交卷
+			function submitAnswer() {
+
+				if (submitTips) {
+					submitTips.hide('zoom-fade-in')
+					submitTips = null;
+				}
+
+				vm.member_set.view_aues = 1
+
+				vm.re_set_all()
+
+				vm.is_end = true;
+				clearInterval(time_set);
+
+				var total_num = {}
+				total_num.all_score = vm.all_score
+				total_num.my_times = vm.my_times
+				total_num.a_num = vm.a_num // 已做题数
+				total_num.r_num = vm.r_num //正确数
+				total_num.e_num = vm.e_num //错误数
+				total_num.h_num = vm.h_num //半对数
+				total_num.n_num = vm.n_num //未答数
+				total_num.rate = vm.rate;
+
+				if (answer) { // 避免快速多次点击创建多个窗口
+					return;
+				}
+				answer = plus.webview.create('answer_total.html', 'answer_total.html', {
+					width: '300px',
+					height: '400px',
+					// top: '200px',
+					// background: 'rgba(0,0,0,.5)',
+					margin: "auto",
+					scrollIndicator: 'none',
+					scalable: false,
+					popGesture: 'none'
+				}, total_num);
+				answer.addEventListener("loaded", function() {
+					var self = plus.webview.currentWebview()
+					self.setStyle({
+						mask: 'rgba(0,0,0,0.5)'
+					});
+					// var selfID = plus.webview.currentWebview().id
+					// page.evalJS("showMask('" + selfID + "')")
+					answer.show('zoom-fade-out', 100);
+				}, false);
+			}
+
+			// 激活层
+			function activeLayer() {
+
+				if (activeTips) {
+					activeTips.hide('zoom-fade-in')
+					activeTips = null;
+				}
+
+				if (activation) { // 避免快速多次点击创建多个窗口
+					return;
+				}
+				activation = plus.webview.create('answer_activation.html', 'answer_activation.html', {
+					width: '300px',
+					height: '180px',
+					transition: {
+						duration: '100'
+					},
+					// top: '200px',
+					// background: 'rgba(0,0,0,.5)',
+					margin: "auto",
+					scrollIndicator: 'none',
+					scalable: false,
+					popGesture: 'none'
+				});
+				activation.addEventListener("loaded", function() {
+					var self = plus.webview.currentWebview()
+					self.setStyle({
+						mask: 'rgba(0,0,0,0.5)'
+					});
+					activation.show('zoom-fade-out', 100);
+				}, false);
+			}
+
+			// 隐藏层
+			function hideMask() {
+				var self = plus.webview.currentWebview();
+				self.setStyle({
+					mask: 'none'
+				});
+
+				if (answer) {
+					answer.hide('zoom-fade-in')
+					answer = null;
+				}
+
+				if (submitTips) {
+					submitTips.hide('zoom-fade-in')
+					submitTips = null;
+				}
+
+				if (activeTips) {
+					activeTips.hide('zoom-fade-in')
+					activeTips = null;
+				}
+
+				if (activation) {
+					activation.hide('zoom-fade-in')
+					activation = null;
+				}
+
+				if (easy_set) {
+					easy_set.hide('slide-out-bottom')
+					easy_set = null
+				}
+			}
+
+			// 打开简易设置页面
+			function openSet() {
+				var self = plus.webview.currentWebview()
+				//预加简易设置
+				if (easy_set) { // 避免快速多次点击创建多个窗口
+					return;
+				}
+				easy_set = mui.preload({
+					url: 'easy_set.html',
+					id: 'easy_set.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						// "width": '96%',
+						"height": '300px',
+						// "top": '60%',
+						"bottom": '0',
+						// "margin":'auto',
+						"background": 'transparent'
+					},
+					extras: {
+						set: vm.member_set
+					}
+				});
+				self.setStyle({
+					mask: 'rgba(0,0,0,0.5)'
+				});
+				easy_set.show("slide-in-bottom", 150);
+			}
+
+			// 改变设置
+			function changeSet(setValue) {
+				vm.member_set = JSON.parse(setValue);
+				if (!vm.user_key) {
+					plus.storage.setItem('member_set', setValue);
+				}
+				// console.log(JSON.stringify(vm.member_set))
+				vm.re_set_all()
+			}
+
+			(function($) {
+				var html = '';
+				var item2 = document.getElementById('item2mobile');
+				var item3 = document.getElementById('item3mobile');
+				var item4 = document.getElementById('item4mobile');
+				var item5 = document.getElementById('item5mobile');
+				document.getElementById('slider').addEventListener('slide', function(e) {
+					if (e.detail.slideNumber === 1) {
+						// 获取讨论列表
+						vm.changeID = 1;
+						if (vm.discuss.length == 0) getDiscuss();
+
+					} else if (e.detail.slideNumber === 2) {
+						// 获取笔记列表
+						vm.changeID = 2;
+						if (vm.note.length == 0) getNote();
+
+					} else if (e.detail.slideNumber === 3) {
+						// 获取纠错列表
+						vm.changeID = 3;
+						if (vm.wrong.length == 0) getWrong();
+
+					} else if (e.detail.slideNumber === 4) {
+						// 获取纠错列表
+						vm.changeID = 4;
+						if (vm.offer.length == 0) getOffer();
+					}
+				});
+			})(mui);
+
+			// 获取讨论列表
+			function getDiscuss() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.topic_id = vm.somedata[vm.nowindex].id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Discuss/index', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.discuss = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 0
+								vm.discuss = data.info
+							} else {
+								// mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.changeLoading = 0
+								vm.discuss = data.info
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取笔记列表
+			function getNote() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.topic_id = vm.somedata[vm.nowindex].id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Note/index', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.note = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 0
+								vm.note = data.info
+							} else {
+								// mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.changeLoading = 0
+								vm.note = data.info
+							}
+						} else {
+							vm.changeLoading = 2
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取纠错列表
+			function getWrong() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.topic_id = vm.somedata[vm.nowindex].id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Correct/index', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.wrong = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 0
+								vm.wrong = data.info
+							} else {
+								// mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.changeLoading = 0
+								vm.wrong = data.info
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取悬赏列表
+			function getOffer() {
+				var state = app.getState();
+				var data = {}
+				// data.user_key = state.user_key;
+				data.topic_id = vm.somedata[vm.nowindex].id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Reward/topic_reward', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.offer = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								// mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.changeLoading = 0
+								vm.offer = data.info
+							} else {
+								// mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.changeLoading = 0
+								vm.offer = data.info
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			function jump_list(item){
+				// console.log(JSON.stringify(item))
+				mui.openWindow({
+					url: 'more.html',
+					id: 'more.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+					},
+					extras: {
+						type: item.type,
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+			
+			// 跳转评论
+			function jump_comment(item){
+				// console.log(JSON.stringify(item))
+				mui.openWindow({
+					url: 'comment.html',
+					id: 'comment.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+					},
+					extras: {
+						type: item.type,
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			//监听切题
+			window.addEventListener('jump_question', function(event) {
+				var _index = event.detail.index;
+				vm.jump_question(_index)
+			});
+
+			// 数字输入框
+			$(document).on('keyup', 'input[data-type="number"]', function(e) {
+				var e = e || event;
+				$(this).val($(this).val().replace(/\D/gi, ""));
+				if ($(this).attr('data-max') && $(this).val() > parseInt($(this).attr('data-max'))) {
+					vm.somedata[vm.nowindex].my_score = $(this).attr('data-max');
+				}
+
+				if ($(this).attr('data-min')) {
+					// console.log(parseInt($(this).val()))
+					if ($(this).val() == '' || parseInt($(this).val()) < $(this).attr('data-min')) {
+						$(this).val($(this).attr('data-min'))
+					}
+				}
+
+			})
+			
+			// 举报
+			function report(item){
+				var url = 'Api/V1/Accusation/correct'
+				if(item.model == 1){
+					url = 'Api/V1/Accusation/discuss'
+				}else if(item.model == 2){
+					url = 'Api/V1/Accusation/note'
+				}
+				
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.type = item.type
+				data.id = item.id
+				
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						if (data.status == 1) {
+							mui.toast(data.msg)
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 点赞
+			function fabulous(item){
+				var url
+				if(item.model == 1){
+					url = 'Api/V1/Discuss/discuss_like'
+				}else if(item.model == 2){
+					url = 'Api/V1/Note/note_like'
+				}else if(item.model == 3){
+					url = 'Api/V1/Correct/correct_like'
+				}
+				
+				
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.type = item.type
+				data.id = item.id
+				
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							if(data.info == 1){
+								if(item.model == 1)vm.discuss[item.index].like_num++
+								if(item.model == 2)vm.note[item.index].like_num++
+								if(item.model == 3)vm.wrong[item.index].like_num++
+							}else{
+								if(item.model == 1)vm.discuss[item.index].like_num--
+								if(item.model == 2)vm.note[item.index].like_num--
+								if(item.model == 3)vm.wrong[item.index].like_num--
+							}
+							
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			/**
+			 * 打开详情
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function open_offerDetails(item) {
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: 'offer_details.html',
+					id: 'offer_details.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView,
+						bounce: 'vertical'
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

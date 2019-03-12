@@ -1,0 +1,17 @@
+/*安卓适配下拉strat*/
+/*.mui-pull-top-pocket{
+    top: 38px !important;
+}*/
+/*安卓适配end*/
+.operate_btn{ padding: .3rem .2rem; background: #fff;}
+.operate_btn a{ padding-top: 5px;}
+.operate_btn button{ margin-right:.2rem;}
+			
+.wrong_item{ font-size: .3rem;}
+.wrong_info span{ margin-right: .3rem; font-size: .24rem; color: #999;}
+.wrong_numb{font-size: .24rem; color: #ffa200;}
+
+.wrong_info .pp_numb{ color: #ffa200;}
+
+.message_list .mui-badge{ position: relative; top: -3px; margin-right: 5px; padding: 3px; width: 1px; height: 1px; background: #ff0000;}
+.message_list .mui-badge.active{ background: #fff!important;}
