@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>充值</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			h4{ padding: 10px 15px 5px 15px;}
+			.input-box{ padding: 15px 0; background: #fff;}
+			.input-box input{ margin: 0; padding: 0 15px; border: none; height: .4rem; line-height: .4rem;}
+			
+			.type-box{ background: #fff;}
+			.type-box .icon-weixin{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #41b035;}
+			.type-box .icon-zhifubao{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #00a0ee;}
+			.type-box .mui-input-row label{ padding: 6px 0;}
+			
+			.mui-checkbox input[type=checkbox], .mui-radio input[type=radio]{ top: 4px; right: 0; width: 24px; height: 22px;}
+			.mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before{ font-size: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<h4>充值金额</h4>
+			<div class="input-box">
+				<input type="text" placeholder="输入充值金额" v-model="money" />
+			</div>
+			<h4 class="margin_t20">充值方式</h4>
+			<div class="type-box">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<div class="mui-input-row mui-radio">
+							<label><span class="mui-icon-extra icon-weixin"></span>微信支付</label>
+							<input name="pay_type" type="radio" value="2" v-model="type">
+						</div>
+					</li>
+					<li class="mui-table-view-cell">
+						<div class="mui-input-row mui-radio">
+							<label><span class="mui-icon-extra icon-zhifubao"></span>支付宝支付</label>
+							<input name="pay_type" type="radio" value="1" v-model="type">
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="btn-content">
+			<button class="js_submit mui-btn mui-btn-block mui-btn-primary" data-loading-text="提交中">确定</button>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					money: '',
+					type:''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+			
+			mui(document.body).on('tap', '.js_submit', function(e) {
+				var _this = this;
+				mui(_this).button('loading');
+				
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.pay_type = vm.type;
+				data.money = vm.money;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/recharge', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							mui.toast(data.msg);
+							var cashPage = plus.webview.getWebviewById('wallet.html')
+							cashPage.evalJS("getData('list1',1)");
+						} else {
+							mui.toast(data.msg);
+						}
+						mui(_this).button('reset');
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						// vm.abnormal = 0;
+						mui(_this).button('reset');
+						mui.toast('网络异常');
+					}
+				});
+				
+			});
+		</script>
+	</body>
+
+</html>

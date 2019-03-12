@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>关于我们</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			/* .about{ margin-top: 3rem!important;} */
+			.about span{ color: #999;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<ul class="mui-table-view about">
+				<li class="mui-table-view-cell">
+					<a class="">
+						<span class="mui-pull-right">{{somedata.cp_qq}}</span>
+						QQ号码
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="">
+						<span class="mui-pull-right">{{somedata.cp_mobile}}</span>
+						联系电话
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="">
+						<span class="mui-pull-right">{{somedata.app_version}}</span>
+						软件版本
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view about margin_t20 mui-hidden">
+				<li class="mui-table-view-cell">
+					<a id="js_clear">
+						<span class="mui-pull-right js_size">正在计算..</span>
+						清除缓存
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a @tap='setalis()'>
+						设置推送(测试推送使用)
+					</a>
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/jpush.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: ''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			function setalis() {
+				window.plus.Push.setAlias('han')
+			}
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				self.setStyle({
+					bounce: 'vertical'
+				})
+
+				getData()
+
+				showCache();
+
+				// 				plus.cache.calculate(function(size){
+				// 					console.log(size)
+				// 				});
+
+				/*点击清除缓存*/
+				document.getElementById('js_clear').addEventListener('tap', function() {
+					if (mui.os.ios) {
+						var btnArray = [{
+							title: "确定",
+							style: "destructive"
+						}];
+						plus.nativeUI.actionSheet({
+							title: "确定清除缓存？",
+							cancel: "取消",
+							buttons: btnArray
+						}, function(event) {
+							var index = event.index;
+							switch (index) {
+								case 1:
+									plus.nativeUI.showWaiting('清除中...');
+									clearCache();
+									//							plus.cache.clear(function(){
+									//								mui.toast('清除成功')
+									//								plus.nativeUI.closeWaiting();
+									//								getCache()
+									//							})
+									break;
+							}
+						});
+						return;
+					}
+					var btnArray = [{
+						title: "清除缓存"
+					}];
+					plus.nativeUI.actionSheet({
+						cancel: "取消",
+						buttons: btnArray
+					}, function(event) {
+						var index = event.index;
+						switch (index) {
+							case 1:
+								plus.nativeUI.showWaiting('清除中...');
+								clearCache();
+								break;
+						}
+					});
+				}, false);
+
+			})
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/UserCenter/about_us', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//以下是读取指定目录下子目录以及文件的大小的方法
+			function showCache() {
+				plus.io.resolveLocalFileSystemURL("_doc/", function(entry) { //通过URL参数获取目录对象或文件对象
+					var fileSize = 0;
+					var directoryReader = entry.createReader();
+					directoryReader.readEntries(function(entries) { //获取当前目录中的所有文件和子目录
+						for (var i = 0; i < entries.length; i++) {
+							if (entries[i].isFile) {
+								entries[i].file(function(file) {
+									fileSize += file.size;
+									//	                        console.log(JSON.stringify(file))
+								}, function(e) {
+									mui.toast(e.message);
+								});
+							} else {
+								entries[i].getMetadata(function(metadata) {
+									fileSize += metadata.size; //1字节=0.0009766kb
+									//	                        console.log(JSON.stringify(metadata))
+								}, function() {
+									mui.toast(e.message);
+								});
+							}
+						}
+					}, function(e) {
+						mui.toast('文件读取失败');
+					});
+					setTimeout(function() {
+						//	        	console.log(fileSize)
+						if (fileSize == 0) {
+							fileSizeString = "0B";
+						} else if (fileSize < 1024) {
+							fileSizeString = fileSize.toFixed(2) + "B";
+						} else if (fileSize < 1048576) {
+							fileSizeString = (fileSize / 1024).toFixed(2) + "KB";
+						} else if (fileSize < 1073741824) {
+							//	                console.log("Mb"+fileSize);
+							fileSizeString = (fileSize / 1048576).toFixed(2) + "MB";
+							//	                console.log("/ after"+fileSizeString);
+						} else {
+							fileSizeString = (fileSize / 1073741824).toFixed(2) + "GB";
+						}
+						$('.js_size').text(fileSizeString);
+					}, 500);
+				}, function(e) {
+					mui.toast('文件路径读取失败');
+				});
+			}
+
+			//以下是清除缓存在指定目录中文件的方法
+			function clearCache() {
+				plus.io.resolveLocalFileSystemURL('_doc/', function(entry) {
+					entry.removeRecursively(function(entry) { //递归删除其下的所有文件及子目录
+						mui.toast("缓存清理完成");
+						plus.nativeUI.closeWaiting();
+					}, function(e) {
+						mui.toast(e.message);
+					});
+					setTimeout(function() {
+						showCache();
+					}, 500);
+				}, function(e) {
+					mui.toast('文件路径读取失败');
+				});
+			}
+		</script>
+	</body>
+
+</html>

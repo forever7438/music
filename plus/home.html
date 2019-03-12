@@ -1,0 +1,1067 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>wemusic</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			.content{ /* padding: 0 .2rem; */ background: #fff;}
+			.home_tab{ line-height: .9rem; border-bottom:1px solid #f2f2f2}
+			.home_tab span{ font-size: .3rem;}
+			.home_tab i{ font-size: 16px;}
+			.time{ font-size: .3rem; color: #ffa200;}
+			.search_box{ padding: .2rem 0;}
+			.search_box .icon-paihang{ display: inline-block; padding-left: .2rem; line-height: 34px;}
+			
+			.mui-search .mui-placeholder{ text-align: left; padding: 0 .2rem; font-size: 14px;}
+			.mui-search .mui-placeholder .mui-icon{ color: #999;}
+			input[type=search]{ background: #f0f0f0; margin-bottom: 0;}
+			
+			.ad_box{ position: relative;}
+			.ad_box img{ width: 100%; height: 1.8rem;}
+			.ad_box span{ position: absolute; top: .1rem; right: .1rem; opacity: .7;}
+			
+			.sub_nav {display: flex; justify-content:space-around;flex-direction:row; flex-wrap: wrap;}
+			.sub_nav a{ display: inline-block; position: relative; z-index: 2;max-height: 153px;max-width: 187px;}
+			.sub_nav a:active{ opacity: .8;}
+			.sub_nav img{ width: 100%;}
+			
+			.message{ margin: .2rem -.2rem .1rem -.2rem; padding: 0 .2rem; border-top:10px solid #f9f9f9; border-bottom:10px solid #f9f9f9; height: 65px; line-height: 45px; overflow: hidden;}
+			.message span{ display: inline-block; line-height: 45px;}
+			.message .icon-tongzhi{ color: #008bf7;}
+			.message .message_box{ position: relative; height: 45px; margin:0 34px;}
+			.message ul{ position: absolute; top: 0; left: 0; right: 0;}
+			
+			.progress{ margin: 0 -.2rem; padding: 0 .2rem .1rem .2rem; border-bottom:10px solid #f9f9f9;}
+			.progress .mui-segmented-control.mui-scroll-wrapper{ padding: 0 0 .2rem 0; height: 1.2rem;}
+			.progress .mui-segmented-control.mui-scroll-wrapper .mui-scroll{ height: 1rem;}
+			.progress .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active{ color: #fff; border: none; background: -webkit-linear-gradient(left, #15c5f3 , #20abf8); background: linear-gradient(to right, #15c5f3 , #20abf8);}
+			.progress .mui-segmented-control.mui-scroll-wrapper .mui-control-item{ margin-right: .1rem; display: inline-block; padding: .2rem 0; width: 1.5rem; height: 1rem; background: -webkit-linear-gradient(left, #15c5f3 , #20abf8); background: linear-gradient(to right, #15c5f3 , #20abf8); border-radius: .06rem; color: #fff; line-height: .3rem; font-size: .24rem;}
+			.progress a b{ font-size: .34rem; color: #fff;}
+			
+			.practice .mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0 10px; font-size: .28rem; color: #999;}
+			.practice .mui-control-item.mui-active{ position: relative; color: #333!important; font-weight: 700;}
+			.practice .mui-control-item.mui-active:before{ content: ''; position: absolute; bottom: 0; left: 50%; width: .4rem; margin-left: -.2rem; height: 2px; background: #008bf7;}
+			.practice.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item{ border-top-color: #f2f2f2; border-bottom-color: #fff;}
+			.practice .mui-table-view:before,.mui-table-view:after,.mui-table-view-cell:after{background-color:#f2f2f2}
+			
+			.practice li{ font-size: .24rem; color: #999;}
+			.practice .title{ font-size: .3rem; color: #333;}
+			.practice .right{ display: block; margin-bottom: 2px; color: #ffa200; font-size: .3rem;}
+			.practice .people{ display: block; margin-bottom: 2px; color: #fe8864; font-size: .3rem;}
+			.practice .loding_txt{ color: #008bf7;}
+			
+			.practice_btn{ padding: .4rem 0;}
+			
+			.mui-control-content {
+				background-color: white;
+				min-height:300px;
+			}
+			.mui-control-content .mui-loading {
+				margin: 100px 0;
+			}
+			
+			.search_input{ position: relative; display: block;}
+			.search_input input{ padding-left: 30px; text-align: left; font-size: .28rem;}
+			.search_input:before{ content: "\e466"; position: absolute; font-size: .4rem; top: 7px; left: 5px; color: #999;}
+			.mui-slider-group .nodata{ padding: .3rem 0;}
+			
+			.special_list li{ margin: .2rem 0;}
+			.special_list a{ border-radius: 3px; border:1px solid #ddd; font-size: .28rem;}
+			.special_list .mui-selected a{ border:1px solid #0083EB; color: #0083EB!important;}
+			.special_list.mui-table-view-radio .mui-table-view-cell>a:not(.mui-btn){ margin-right:-15px;}
+			.special_list.mui-table-view-radio .mui-table-view-cell{ padding-right: 15px;}
+			.special_list .mui-table-view-cell:after{ display: none;}
+			
+			.random_list{ color: #333;}
+			.random_list .mui-table-view-cell a.mui-active{ background: #fff;}
+			.random_list .mui-numbox{ height: 20px; border:none; background: #fff; padding: 0 30px; width: 90px;}
+			.random_list .mui-numbox [class*=btn-numbox], .random_list .mui-numbox [class*=numbox-btn]{ top: 0px; border-radius: 50%; width: 20px; height: 20px; background: #ffa200; color: #fff; font-size: 14px;}
+			.random_list .mui-numbox .mui-input-numbox, .random_list .mui-numbox .mui-numbox-input{ border: none!important;}
+			
+			.practice_btn{ margin: 0 -.2rem;}
+			.practice_btn .mui-col-xs-6,.practice_btn .mui-col-xs-12{ padding: 0 .22rem;}
+			.home_radio label{ padding-left: 30px;}
+			.home_radio.mui-checkbox input[type=checkbox]{ width: 24px; height: 22px; top: 6px; left: 0; right: auto;}
+			.home_radio.mui-checkbox input[type=checkbox]:before{ font-size: 24px;}
+			
+			.subject_title{ display: inline-block; max-width: 2.8rem;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<header class="mui-bar mui-bar-nav">
+				<h1 class="mui-title">选课</h1>
+			</header>
+			<!--下拉刷新容器-->
+			<div id="refreshContainer" class="mui-content mui-scroll-wrapper" v-cloak v-show="abnormal == 1">
+				<div class="mui-scroll">
+					<div class="content">
+		<!-- 				<div class="home_tab mui-row">
+							<div class="mui-col-xs-12 mui-text-center">
+								<b>选课</b>
+							</div>
+						</div> -->
+						<div class="sub_nav mui-text-center js_sub_nav mui-col-xs-12">
+							<a class="mui-col-xs-6" data-href="problem_record.html">
+								<img src="../img/img_lxy/钢琴.png" alt="钢琴" />
+								<!-- <div>Eehu</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="mokao.html">
+								<img src="../img/img_lxy/声乐.png" alt="声乐" />
+								<!-- <div>Drums</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="data.html">
+								<img src="../img/img_lxy/吉他.png" alt="吉他" />
+								<!-- <div>Guzheng</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="exam.html">
+								<img src="../img/img_lxy/古筝.png" alt="古筝" />
+								<!-- <div>Piano</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/琵琶.png" alt="琵琶" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/架子鼓.png" alt="架子鼓" />
+								<!-- <div>Guitar</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/电子琴.png" alt="电子琴" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/电吉他.png" alt="电吉他" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/贝斯.png" alt="贝斯" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/大提琴.png" alt="大提琴" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/小提琴.png" alt="小提琴" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/长笛.png" alt="长笛" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/音乐制作.png" alt="音乐制作" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/作曲.png" alt="作曲" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/音乐启蒙.png" alt="音乐启蒙" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/乐理.png" alt="乐理" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/音乐治疗.png" alt="音乐治疗" />
+								<!-- <div>Vacal</div> -->
+							</a>
+							<a class="mui-col-xs-6" data-href="activation.html">
+								<img src="../img/img_lxy/敬请期待.png" alt="敬请期待" />
+								<!-- <div>Vacal</div> -->
+							</a>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+			<div class="abnormal mui-text-center" v-cloak v-show="abnormal == 0">
+				<div>
+					<img src="../img/wifi.png" alt="" />
+				</div>
+				<div class="margin_t40">
+					网络异常，请检查网络设置
+				</div>
+				<button id="resetBtn" class="mui-btn mui-btn-primary">点击重试</button>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#refreshContainer",
+					down: {
+						height: 50,
+						auto: false,
+						contentdown: "下拉可以刷新",
+						contentover: "释放立即刷新",
+						contentrefresh: "正在刷新...",
+						callback: pulldownRefresh
+					},
+					//			    up: {
+					//					contentrefresh: '正在加载...',
+					//					contentnomore: '没有更多数据了~',
+					//					callback: pullupRefresh
+					//				}
+				}
+			});
+			var msg_time, t;
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					subject: {
+						pid: '',
+						id: '',
+						title: ''
+					},
+					mokao: '',
+					banner: '',
+					mess_list: '',
+					learn_rate: '',
+					knowpoint: '',
+					ad: 1,
+					abnormal: 1,
+					isLogin: 0,
+
+					// 底部切换数据
+					changeLoading: 0,
+					specialID: 0,
+					specialLearn: 0,
+					specialCheck: false,
+					randomCheck: false,
+					moni: [],
+					zhenti: [],
+					changeBox5: [],
+					changeBox6: [],
+					sele_type: {}
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+					mui('.mui-numbox').numbox()
+				}
+			});
+
+			var class_list, activation = null;
+			var state;
+			mui.plusReady(function() {
+
+				var self = plus.webview.currentWebview()
+
+				//获取登录信息
+				state = app.getState();
+				
+				vm.subject.pid = state.subject_pid || '7'
+				vm.subject.id = state.subject_id || '15'
+				vm.subject.title = state.subject_title || '默认科目'
+
+				//判断是否登录
+				if (typeof(state.user_key) != 'undefined') {
+					vm.isLogin = 1;
+				} else {
+					vm.isLogin = 0;
+				}
+
+				// 清空错题筛选
+				localStorage.setItem('$errorNum', 0);
+
+				//监听刷新页面
+				document.addEventListener('updateData', function() {
+					state = app.getState();
+					if (typeof(state.user_key) != 'undefined' && vm.isLogin == 0) {
+						vm.isLogin = 1;
+						vm.subject.pid = state.subject_pid
+						vm.subject.id = state.subject_id
+						vm.subject.title = state.subject_title
+						getData()
+					}
+				});
+
+				//获取首页信息
+				getData()
+
+				//预加分类
+				class_list = mui.preload({
+					url: 'change_class.html',
+					title: 'change_class.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '40%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('body').on('tap', '#changeClass', function() {
+					mui.fire(class_list, 'updataClass', {
+						guid: vm.subject.pid,
+						title: vm.subject.title
+					});
+
+					var mainPage = plus.webview.getLaunchWebview();
+					var selfID = plus.webview.currentWebview().id
+					mainPage.evalJS("showMask('" + selfID + "')")
+					//					self.setStyle({mask:'rgba(0,0,0,0.5)'});
+					class_list.show("slide-in-bottom", 200);
+				})
+
+				mui('body').on('tap', '#closeAD', function() {
+					vm.ad = 0
+				})
+
+				// 切换更多
+				mui('body').on('tap', '.js_more', function() {
+					var url = this.getAttribute('data-url');
+					var title = this.getAttribute('data-title');
+					mui.openWindow({
+						url: url,
+						id: url,
+						preload: true,
+						extras: {
+							title: title
+						},
+						show: {
+
+						},
+						styles: {
+							popGesture: 'close',
+							statusbar: {
+								background: "#ffffff"
+							}
+						},
+						waiting: {
+							autoShow: true
+						}
+					});
+				})
+
+				// 随机组卷
+				mui('body').on('tap', '.js_random', function() {
+					var _input = $('.random_list').find('input')
+					vm.sele_type = {};
+					_input.each(function(e) {
+						// var item = {}
+						// item[_input[e].getAttribute('data-id')] = _input[e].value
+						vm.sele_type[_input[e].getAttribute('data-id')] = _input[e].value;
+					})
+					// console.log(JSON.stringify(vm.sele_type))
+
+					var state = app.getState();
+					var data = {}
+					if (typeof(state.user_key) != 'undefined') {
+						data.user_key = state.user_key;
+					}
+					data.subject_category_id = state.subject_id;
+					data.sele_type = JSON.stringify(vm.sele_type);
+					// console.log(JSON.stringify(data))
+					mui.ajax(server + 'Api/V1/Topic/random', {
+						data: data,
+						dataType: 'json', //服务器返回json格式数据
+						type: 'post', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；              
+						success: function(data) {
+							// console.log(JSON.stringify(data))
+							if (data.status == 1) {
+								var item = {}
+								item.id = data.info
+								item.title = '随机组卷'
+								item.type = 4
+								item.model = 6
+								item.is_skip = vm.randomCheck?'1':'0'
+								openSim(item);
+							} else {
+								mui.toast(data.msg)
+							}
+
+						},
+						error: function(xhr, type, errorThrown) {
+							// console.log(JSON.stringify(xhr.responseText))
+							//异常处理；
+							mui.toast('网络异常');
+						}
+					});
+
+				})
+
+			
+				mui('body').on('tap', '.js_practice button', function() {
+					var type = this.getAttribute('data-type');
+					var item = {}
+					if (vm.specialID == 0) {
+						mui.toast('请选择专项题目')
+						return;
+					}
+					item.id = vm.specialID
+					item.child = 0
+					item.learn = vm.specialLearn
+					item.type = 3
+					item.model = 3
+					item.is_skip = vm.specialCheck ? '1' : '0';
+					item.random_type = type
+					goExercises(item);
+				})
+
+				mui('body').on('tap', '.js_sub_nav a', function() {
+					var target = this.getAttribute('data-href');
+
+					if (vm.isLogin == 0) {
+
+						mui.openWindow({
+							url: 'login.html',
+							id: 'login',
+							preload: true,
+							extras: {
+								prev: './plus/home.html',
+								type: './plus/home.html'
+							},
+							show: {
+								aniShow: 'zoom-fade-out'
+							},
+							styles: {
+								popGesture: 'hide',
+								statusbar: {
+									background: "#ffffff"
+								}
+							},
+							waiting: {
+								autoShow: true
+							}
+						});
+
+						return false
+					}
+
+					if (target == 'wrong') {
+						var mainPage = plus.webview.getLaunchWebview();
+						mui.fire(mainPage, 'mainShow', {
+							id: './plus/wrong.html'
+						});
+						return;
+					}
+
+					if (target == 'activation.html') {
+						if (activation) { // 避免快速多次点击创建多个窗口
+							return;
+						}
+						activation = plus.webview.create(target, target, {
+							width: '80%',
+							height: '180px',
+							transition: {
+								duration: '100'
+							},
+							// top: '200px',
+							// background: 'rgba(0,0,0,.5)',
+							margin: "auto",
+							scrollIndicator: 'none',
+							scalable: false,
+							popGesture: 'none'
+						});
+						activation.addEventListener("loaded", function() {
+							var mainPage = plus.webview.getLaunchWebview();
+							var selfID = plus.webview.currentWebview().id
+							mainPage.evalJS("showMask()")
+							activation.show('zoom-fade-out', 100);
+						}, false);
+						return
+					}
+					mui.openWindow({
+						url: target,
+						id: target,
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: true,
+						}
+					})
+				})
+
+				//重新加载数据
+				mui('body').on('tap', '#resetBtn', function() {
+					getData();
+				})
+
+				//				self.addEventListener('maskClick', function(){
+				//					self.setStyle({mask:'none'});
+				//					class_list.hide('slide-out-bottom');
+				//				},false);
+			})
+
+			function hideLayer() {
+				state = app.getState();
+				vm.subject.pid = state.subject_pid || '7'
+				vm.subject.id = state.subject_id || '15'
+				vm.subject.title = state.subject_title || '默认科目'
+
+				if (class_list) {
+					class_list.hide('slide-out-bottom');
+				}
+
+				if (activation) {
+					activation.hide('zoom-fade-in')
+					activation = null;
+				}
+			}
+
+ 			//下拉刷新业务实现
+			function pulldownRefresh() {
+				vm.ad = 1;
+				getData();
+				
+				getSubject(2);
+				getSubject(1);
+				getSpecial();
+				getRandom();
+			}
+// 
+			//上拉加载业务实现
+			//			function pullupRefresh(){
+			//				setTimeout(function(){
+			//					mui('#refreshContainer').pullRefresh().endPullupToRefresh(true);
+			//				},1000)
+			//			}
+
+			//获取首页信息
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				if (typeof(state.user_key) != 'undefined') {
+					data.user_key = state.user_key;
+				}
+				data.subject = state.subject_id;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Home/index', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.mokao = data.info.mokao
+							vm.banner = data.info.banner
+							vm.mess_list = data.info.mess_list
+							vm.learn_rate = data.info.learn_rate
+							vm.knowpoint = data.info.knowpoint
+						} else {
+							mui.toast(data.msg)
+						}
+						mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+						mui('#refreshContainer').pullRefresh().refresh(true);
+						vm.abnormal = 1
+
+						window.clearInterval(msg_time);
+						window.clearInterval(t);
+						//初始化倒计时
+						countDown();
+						//初始化消息滚动
+						msg_time = setInterval('autoScroll()', 3500);
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(JSON.stringify(xhr.responseText))
+						//异常处理；
+						vm.abnormal = 0;
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			//打开信息详情
+			/**
+			 * 打开详情
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function open_msg(item) {
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: 'notice_details.html',
+					id: 'notice_details.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView,
+						bounce: 'vertical'
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			/**
+			 * 打开排行
+			 * 
+			 * @param {Object} item 当前点击的对象
+			 */
+			function openTop() {
+				mui.openWindow({
+					url: 'home_top.html',
+					id: 'home_top.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			(function($) {
+				var html = '测试';
+				var item2 = document.getElementById('item2mobile');
+				var item3 = document.getElementById('item3mobile');
+				var item4 = document.getElementById('item4mobile');
+				var item5 = document.getElementById('item5mobile');
+				var item6 = document.getElementById('item6mobile');
+// 				document.getElementById('slider').addEventListener('slide', function(e) {
+// 					if (e.detail.slideNumber === 2) {
+// 						if (vm.moni.length == 0) getSubject(2);
+// 					} else if (e.detail.slideNumber === 3) {
+// 						if (vm.zhenti.length == 0) getSubject(1);
+// 					} else if (e.detail.slideNumber === 4) {
+// 						if (vm.changeBox5.length == 0) getSpecial();
+// 					} else if (e.detail.slideNumber === 5) {
+// 						if (vm.changeBox6.length == 0) getRandom();
+// 					}
+// 				});
+			})(mui);
+
+			// 获取模拟列表
+			function getSubject(type) {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.subject = state.subject_id;
+				data.type = type;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Home/moexam_list', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (type == 2) {
+							vm.moni = [];
+						} else {
+							vm.zhenti = [];
+						}
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								vm.changeLoading = 0
+								if (type == 2) {
+									vm.moni = data.info;
+								} else {
+									vm.zhenti = data.info;
+								}
+							} else {
+								vm.changeLoading = 0
+								if (type == 2) {
+									vm.moni = data.info;
+								} else {
+									vm.zhenti = data.info;
+								}
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取专项练习
+			function getSpecial() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.subject_category_id = state.subject_id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Question/special_practice', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.changeBox5 = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								vm.changeLoading = 0
+								vm.changeBox5 = data.info;
+							} else {
+								vm.changeLoading = 0
+								vm.changeBox5 = data.info;
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+			// 获取随机组卷
+			function getRandom() {
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key;
+				data.subject_category_id = state.subject_id;
+				// console.log(JSON.stringify(data))
+				vm.changeLoading = 1
+				mui.ajax(server + 'Api/V1/Question/test_paper', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						vm.changeBox6 = [];
+						// vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								vm.changeLoading = 2
+							} else if (data.info.length < 20) {
+								vm.changeLoading = 0
+								vm.changeBox6 = data.info;
+							} else {
+								vm.changeLoading = 0
+								vm.changeBox6 = data.info;
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							vm.changeLoading = 2
+							mui.toast(data.msg)
+						}
+						mui('.mui-numbox').numbox()
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						vm.changeLoading = 0
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//消息滚动
+			function autoScroll() {
+				if ($(".js_message").find('li').length <= 1) return;
+				$(".js_message").animate({
+					top: "-35px"
+				}, 500, function() {
+					$(this).css({
+						top: "0px"
+					}).find("li").first().appendTo(this);
+				})
+			}
+
+			//倒计时
+			function countDown() {
+				var time_x = vm.mokao != '' ? vm.mokao.start_time : 0;
+				if (time_x == 0) {
+					$('.time').html("考试未开始");
+					return;
+				}
+				if (time_x > 0) {
+					var now_time = 0;
+					updata_time()
+					t = setInterval(function() {
+						now_time++;
+						updata_time()
+					}, 1000);
+
+					function updata_time() {
+						var time_d = time_x - now_time; //更新时间差
+						var d = parseInt(time_d / 3600 / 24);
+						var h = parseInt(time_d / 3600 % 24);
+						// var h = parseInt(time_d / 3600); // 小时
+						var m = parseInt(time_d % 3600 / 60); //分
+						var s = parseInt(time_d % 3600 % 60); //秒
+						if (d <= 9) d = '0' + d;
+						if (h <= 9) h = '0' + h;
+						if (m <= 9) m = '0' + m;
+						if (s <= 9) s = '0' + s;
+						$('.time').html('考试倒计时 ' + d + '天 ' + h + ':' + m + ':' + s);
+						if (time_d == 0) {
+							window.clearInterval(t);
+							$('.time').html("考试倒计时结束");
+						}
+					}
+				}
+
+			}
+
+
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+
+			var actionTips
+			// 去练习
+			function goExercises(item) {
+				var is_child = item.child;
+				var is_learn = item.learn;
+
+				if (is_child == 1) {
+					// 如果有子分类跳转列表
+					mui.openWindow({
+						url: "exercises.html",
+						id: "exercises.html",
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						extras: {
+							guid: item.id,
+							title: item.title,
+							model: item.model
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+					return;
+				}
+
+				if (is_learn == 1) {
+
+					if (actionTips) { // 避免快速多次点击创建多个窗口
+						return;
+					}
+					actionTips = plus.webview.create('actionTips.html', 'actionTips.html', {
+						width: '300px',
+						height: '180px',
+						// top: '200px',
+						// background: 'rgba(0,0,0,.5)',
+						margin: "auto",
+						scrollIndicator: 'none',
+						scalable: false,
+						popGesture: 'none',
+					}, {
+						'item': item
+					});
+					actionTips.addEventListener("loaded", function() {
+						// var self = plus.webview.currentWebview()
+						// 						self.setStyle({
+						// 							mask: 'rgba(0,0,0,0.5)'
+						// 						});
+						var page = plus.webview.currentWebview().opener()
+						page.evalJS("showMask()")
+						actionTips.show('zoom-fade-out', 100);
+					}, false);
+
+					// 					plus.nativeUI.confirm("是否继续学习？", function(e) {
+					// 						console.log("Close confirm: " + e.index);
+					// 						if (e.index == 0) {
+					// 							openAnswer(item, 0)
+					// 						} else {
+					// 							openAnswer(item, 1)
+					// 						}
+					// 					}, {
+					// 						"title": "提示",
+					// 						"buttons": ["继续学习", "重新学习"]
+					// 					});
+				} else {
+					openAnswer(item)
+				}
+
+			}
+
+			function showMask() {
+				var parentPage = plus.webview.getLaunchWebview()
+				parentPage.evalJS("showMask()")
+			}
+
+			function hideMask() {
+				if (actionTips) {
+					var parentPage = plus.webview.currentWebview().opener()
+					parentPage.evalJS("hideMask()")
+					actionTips.hide('zoom-fade-in')
+					actionTips = null;
+				}
+			}
+
+			// 跳转练习答题
+			function openAnswer(item, begin) {
+				if (typeof(item) != 'object') {
+					item = JSON.parse(item)
+				}
+				// console.log(JSON.stringify(item))
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: "answer_new.html",
+					id: "answer_new.html",
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView,
+					},
+					extras: {
+						type: item.type,
+						guid: item.id,
+						model: item.model,
+						begin: begin,
+						is_skip: item.is_skip,
+						random_type: item.random_type
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: true,
+					}
+				})
+			}
+
+			// 跳转模拟答题
+			function openSim(item) {
+				if (typeof(item) != 'object') {
+					item = JSON.parse(item)
+				}
+				// console.log(JSON.stringify(item))
+				//更改详情页原生导航条信息和按钮信息
+				titleNView.titleText = item.title;
+				mui.openWindow({
+					url: "answer_sim.html",
+					id: "answer_sim.html",
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						titleNView: titleNView,
+					},
+					extras: {
+						type: item.type,
+						guid: item.id,
+						model: item.model,
+						is_skip:item.is_skip
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: true,
+					}
+				})
+			}
+
+			//点击搜索
+			function searchFocus(e) {
+				// document.activeElement.blur();
+				e.blur()
+				mui.openWindow({
+					url: 'search.html',
+					id: 'search',
+					preload: true,
+					show: {
+						aniShow: 'zoom-fade-out'
+					},
+					styles: {
+						popGesture: 'close',
+						statusbar:{
+							background:"#ffffff"
+						}
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+				var webview = plus.webview.create('search.html', 'search', {
+					background: '#fff',
+					backgroundColorTop:'#fff'
+				});
+				setTimeout(function() {
+					webview.show("fade-in", 300);
+				}, 200)
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>排行列表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style type="text/css">
+			.my_top {
+				padding: 0 .3rem;
+				margin-bottom: .3rem;
+				height: 1rem;
+				line-height: 1rem;
+				background: #fff;
+				font-weight: 700;
+				font-size: .34rem;
+			}
+
+			.my_top span {
+				color: #ffa200;
+			}
+
+			.mui-table-view-cell.mui-active {
+				background: #fff ! !important;
+			}
+
+			.top_title {
+				padding: 0 .3rem;
+				background: #fff;
+				line-height: 1rem;
+			}
+
+			.top_list span {
+				color: #fe8864;
+			}
+
+			/*兼容iOS*/
+			.mui-scroll-wrapper {
+				bottom: 50px;
+			}
+
+			/*安卓兼容*/
+			/*body{ padding-bottom: 50px;}*/
+
+			.del-box {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				height: 50px;
+				line-height: 50px;
+			}
+
+			.del-box button {
+				padding: 0;
+				margin: 0;
+				border: 1px solid #008BF7;
+				border-radius: 0;
+				line-height: 50px;
+				font-size: .3rem;
+				font-weight: 700;
+			}
+
+			/* .del-box .btn-del {
+				border: 1px solid #fff;
+				border-top: 1px solid #f2f2f2;
+			} */
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<template v-if="nodata == 0">
+						<div class="my_top">我的排名：<span>{{myRank}} ({{title}})</span></div>
+						<div class="mui-row top_title">
+							<div class="mui-col-xs-2"><b>名次</b></div>
+							<div class="mui-col-xs-4"><b>昵称</b></div>
+							<div class="mui-col-xs-4"><b>手机号</b></div>
+							<div class="mui-col-xs-2"><b>{{type == 1?'答题数':'正确率'}}</b></div>
+						</div>
+						<ul class="mui-table-view top_list">
+							<li class="mui-table-view-cell" v-for="item in somedata">
+								<div class="mui-row">
+									<div class="mui-col-xs-2">{{item.rownum}}</div>
+									<div class="mui-col-xs-4">{{item.mem_nickname}}</div>
+									<div class="mui-col-xs-4">{{item.mem_mobile}}</div>
+									<div class="mui-col-xs-2"><span>{{type == 1?item.count:item.right_rate}}</span></div>
+								</div>
+							</li>
+						</ul>
+					</template>
+					<template v-else>
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无数据~</div>
+						</div>
+					</template>
+				</div>
+			</div>
+			<div class="del-box">
+				<div class="mui-row">
+					<div class="mui-col-xs-12">
+						<button class="mui-btn mui-btn-block mui-btn-primary btn-del js_share">分享</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh",
+					down: {
+						height: 50,
+						auto: false,
+						contentdown: "下拉可以刷新",
+						contentover: "释放立即刷新",
+						contentrefresh: "正在刷新...",
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						contentnomore: '没有更多数据了~',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			var share_detail
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					title: '',
+					type: '',
+					myRank: '',
+					somedata: '',
+					page: 2,
+					nodata: 0,
+					is_active: 0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				//预加分享
+				share_detail = mui.preload({
+					url: 'share.html',
+					id: 'share.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '60%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('body').on('tap', '.js_share', function() {
+					/* mui.fire(share_detail, 'updataShare', {
+							share_url: vm.share_url,
+							title:vm.title
+					}); */
+					self.setStyle({
+						mask: 'rgba(0,0,0,0.5)'
+					});
+					share_detail.show("slide-in-bottom", 300);
+				})
+
+				self.addEventListener('maskClick', function() {
+					self.setStyle({
+						mask: 'none'
+					});
+					share_detail.hide('slide-out-bottom');
+					//plus.webview.getWebviewById('spec').hide();
+				}, false);
+
+				getData()
+			})
+
+			//下拉刷新业务实现
+			function pulldownRefresh() {
+				getData()
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				getPageData()
+			}
+
+			//获取数据
+			function getData() {
+				var self = plus.webview.getWebviewById('home_top_more.html');
+				var state = app.getState();
+				var data = {};
+
+				vm.type = self.type;
+
+				data.subject = state.subject_id
+				data.type = self.selected;
+				data.order = self.type;
+				if (state.user_key) {
+					data.user_key = state.user_key;
+				}
+				data.p = 1
+				mui.ajax(server + 'Api/V1/Home/get_rank', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						vm.somedata = [];
+						vm.page = 2;
+						if (data.status == 1) {
+							vm.myRank = data.info.me_rank;
+							vm.title = data.msg;
+							if (data.info.list.length == 0) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 1
+							} else if (data.info.list.length < 20) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 0
+								vm.somedata = data.info.list;
+							} else {
+								mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.nodata = 0
+								vm.somedata = data.info.list;
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//获取分页数据
+			function getPageData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.mokao_id = vm.mokao_id;
+				data.p = vm.page
+				//console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/SimulationTest/rank', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.length < 20) {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							} else {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							}
+
+							for (var item of data.info.list) {
+								vm.somedata.push(item)
+							}
+							vm.page++
+						} else {
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//		            	console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			function openList(item) {
+				if (item.child == 1) {
+					mui.openWindow({
+						url: "class_child.html",
+						id: "class_child.html",
+						styles: {
+							statusbar: {
+								background: '#FFFFFF'
+							},
+							popGesture: 'close'
+						},
+						extras: {
+							guid: item.id
+						},
+						show: {
+							autoShow: true,
+						},
+						waiting: {
+							autoShow: true,
+						}
+					})
+				} else {
+					setClass(item)
+					//					console.log('没有下级，直接设置')
+				}
+			}
+
+			//设置科目
+			function setClass(item) {
+				var state = app.getState();
+				state.subject_pid = item.pid
+				state.subject_id = item.id
+				state.subject_title = item.title
+				app.setState(state)
+
+				//更新首页数据
+				var homePage = plus.webview.getWebviewById('./plus/home.html');
+				homePage.evalJS('getData()')
+
+				//关闭切换分类
+				var mainPage = plus.webview.getLaunchWebview();
+				mainPage.evalJS('hideMask()')
+				homePage.evalJS("hideLayer()")
+
+				mui.back();
+			}
+		</script>
+	</body>
+
+</html>

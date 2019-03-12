@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			body{  background: #fff; }
+			.set_jy .ques_card{ padding-bottom: 60px;}
+			.mui-content{ background: #fff; }
+			/*练习模式*/
+			.ques_div{ position: relative; }
+			.ques_div .op_btn{ width: 40px; height: 26px; margin-left: 20px; cursor: pointer; text-align: right; line-height: 20px; position: relative;}
+			.ques_div .op_btn:hover .arr{ transform: rotate(180deg); -webkit-transform: rotate(180deg); }
+			.ques_div .op_down{ display: none; position: absolute; right: 0px; top: 26px; width: 150px; box-shadow: 0 3px 5px rgba(0,0,0,0.05); background: #fff; z-index: 20}
+			.ques_div .op_down a{ display: block; line-height: 34px; padding:0 10px; color: #333; text-align: left;}
+			.ques_div .op_down a img{ width: 20px; height: 20px; float: left; margin-top: 7px; margin-right: 10px;}
+			.ques_div .op_down a img.img1{ display: none }
+			.ques_div .op_down a img.img2{ display: block }
+			.ques_div .op_down a:hover{ background: #008bf7; color: #fff }
+			.ques_div .op_btn:hover .op_down{ display: block; }
+			.ques_div .op_down a:hover img.img1{ display: block }
+			.ques_div .op_down a:hover img.img2{ display: none }
+			.ques_div .t{ overflow: hidden; font-size: 14px; }
+			.ques_div .t p{ display: inline; color: #333}
+
+			/*单选*/
+			.ch_ques{ padding-top: 10px; }
+			.ch_ques .c_item{ line-height: 36px; color: #333; display: block; font-size: 14px; }
+			.ch_ques .c_item .radio_d{ position: relative; width: 20px; height: 20px; text-align: center; font-size: 14px; font-weight: normal; color: #999; line-height: 18px; border-radius: 50%; border: 1px solid #999; float: left; margin-right: 10px; margin-top: 8px;}
+			
+			.ch_ques .c_item.select{ color: #008bf7 }
+			.ch_ques .c_item.select .radio_d{ border-color:#008bf7; color:#fff; background: #008bf7 }
+			
+
+			.ch_ques .c_item.error{ color: #ff4f4f }
+			.ch_ques .c_item.error .radio_d{ border-color:#ff4f4f; color:#fff; background: #ff4f4f }
+
+			.ch_ques .c_item.success{ color: #00a245 }
+			.ch_ques .c_item.success .radio_d{ border-color:#00a245;color:#fff; background: #00a245}
+			/*多选*/
+			.chs_ques .c_item .radio_d{ border-radius: 2px; }
+			/*.chs_ques .c_item .radio_d{ border: none; border-radius: 0; background: url(../img/sele3.png); }
+			.chs_ques .c_item.select .radio_d{ border-radius: 0; background: url(../img/sele4.png); }
+			.chs_ques .c_item.error .radio_d{ border-radius: 0; background: url(../img/sele2.png); }
+			.chs_ques .c_item.success .radio_d{ border-radius: 0; background: url(../img/sele1.png); }*/
+
+			.ques_div .video_btn{ position: absolute; right: 0px; bottom: 20px; color:#333;}
+			.ques_div .video_btn img{ position: relative; top: -1px; margin-right: 5px; }
+			.q_btns .my_btn.normal_btn{ padding: 0 20px; margin-right: 10px; }
+
+			body .answer_d .status_img{ position: relative; top: -5px; margin-left: 5px; width: 0.44rem!important; }
+			.answer_d .i_box{ line-height: 24px; }
+			.it .box{ width: 25%; float: left; text-align: center; }
+			.it .box .tt{ display: inline-block; }
+			.it .box img{ margin-left: 10px; }
+			.change_btns .btns img{ position: relative; top: -1px; margin: 0 5px; }
+			.change_btns .btns:hover{ color: #008bf7  }
+			.ques_d_right{ width:262px; float: right; min-height: 100px; margin-left: 20px;  }
+			.ques_d_left{ overflow: hidden; padding-bottom: 60px;}
+
+			.ques_d_right .set_box_div .box{ width: auto; float: none; padding: 0 5px; font-size: 12px; }
+			.ques_card{ padding: 0 0.2rem; }
+			.ques_card .tt{ line-height: 0.74rem; font-weight: bold; font-size: 0.28rem; color: #333 }
+			.ques_card .i_box{ display: block; width:0.7rem; height: 0.7rem; float: left; margin:0.1rem 0.2rem 0.1rem 0; border: 1px solid #dddddd;  text-align: center; line-height:0.66rem; font-size:0.28rem; color: #333}
+			.ques_card .i_box.status1{ border-color:#00a245; color: #00a245}
+			.ques_card .i_box.status3{ border-color:#ff4f4f; color: #ff4f4f}
+			.ques_card .i_box.status2{ border-color:#1dcdff; color: #1dcdff}
+			.ques_card .i_box.status4{ border-color:#ffa200; color: #ffa200}
+
+			.color_info{ padding: 10px 10px; position: fixed; left: 0; bottom: 0; width: 100%; border-top: 1px solid #eee; z-index: 20; background: #fff; }
+			.color_info .item_b{/* width: 25%; float: left; */ line-height:0.5rem; font-size: 0.30rem;}
+			.color_info .item_b div{ display: inline-block; }
+			.color_info .item_b .c{ position: relative; top: -2px; margin-left: .1rem; width: 0.5rem; height: 0.5rem; vertical-align: middle; }
+			.color_info .item_b .c.c1{ background:#00a245  }
+			.color_info .item_b .c.c2{ background:#ff4f4f  }
+			.color_info .item_b .c.c3{ background:#1dcdff  }
+			.color_info .item_b .c.c4{ background:#fff; border: 1px solid #ddd  }
+			.color_info .item_b .c.c5{ background:#ffa200  }
+			/* .color_info .item_b .t{ text-align: right; } */
+
+			.s_input_s{border:1px solid #ddd; height: 28px!important; border-radius: 4px; width:60px!important; padding: 0!important; margin-right: 5px; padding-left: 5px!important; }
+
+			.answer_d .text{ overflow: hidden; }
+
+			.paper_re{ padding: 0 40px; padding-top: 20px; }
+			.paper_re .bo{ width: 16.66%; float: left; line-height: 24px;}
+
+			.change_btns{position: fixed;
+			    left: 220px;
+			    right: 300px;
+			    bottom: 50px;}
+
+
+			.title_btns a{ color: #333; font-size: 0.28rem; font-weight: normal; }
+			.title_btns a span{ font-size: 0.36rem; margin-right: 5px; }
+			.title_btns a span.active{ color:#FE8864  }
+
+			.margin_t10{ margin-top: 0.10rem; }
+			.margin_t20{ margin-top: 0.20rem; }
+			.margin_t30{ margin-top: 0.30rem; }
+			.margin_t40{ margin-top: 0.40rem; }
+			.margin_t80{ margin-top: 0.80rem; }
+			.margin_b10{ margin-bottom: 0.10rem; }
+			.margin_b20{ margin-bottom: 0.20rem; }
+			.margin_b30{ margin-bottom: 0.30rem; }
+			.margin_b40{ margin-bottom: 0.40rem; }
+			.margin_l10{ margin-left: 0.10rem; }
+			.margin_l20{ margin-left: 0.20rem; }
+			.margin_l30{ margin-left: 0.30rem; }
+			.margin_l40{ margin-left: 0.40rem; }
+			.margin_r10{ margin-right: 0.10rem; }
+			.margin_r20{ margin-right: 0.20rem; }
+			.margin_r30{ margin-right: 0.30rem; }
+			.margin_r40{ margin-right: 0.40rem; }
+			.margin_lr10{ margin-right: 0.10rem; margin-left: 0.10rem; }
+			.margin_lr20{ margin-right: 0.20rem; margin-left: 0.20rem;}
+			.margin_lr30{ margin-right: 0.30rem; margin-left: 0.30rem;}
+			.margin_lr40{ margin-right: 0.40rem; margin-left: 0.40rem;}
+			.margin_tb10{ margin-top: 0.10rem; margin-bottom: 0.10rem; }
+			.margin_tb20{ margin-top: 0.20rem; margin-bottom: 0.20rem; }
+			.margin_tb30{ margin-top: 0.30rem; margin-bottom: 0.30rem; }
+			.margin_tb40{ margin-top: 0.40rem; margin-bottom: 0.40rem; }
+			/*内边距*/
+			.pad_t5{ padding-top: 0.05rem; }
+			.pad_t10{ padding-top: 0.10rem; }
+			.pad_t20{ padding-top: 0.20rem; }
+			.pad_t30{ padding-top: 0.30rem; }
+			.pad_t40{ padding-top: 0.40rem; }
+
+			.pad_b10{ padding-bottom: 0.10rem; }
+			.pad_b15{ padding-bottom: 0.15rem; }
+			.pad_b20{ padding-bottom: 0.20rem; }
+			.pad_b30{ padding-bottom: 0.30rem; }
+			.pad_b40{ padding-bottom: 0.40rem; }
+
+			.pad_l10{ padding-left: 0.10rem; }
+			.pad_l20{ padding-left: 0.20rem; }
+			.pad_l30{ padding-left: 0.30rem; }
+			.pad_l40{ padding-left: 0.40rem; }
+
+			.pad_r10{ padding-right: 0.10rem; }
+			.pad_r20{ padding-right: 0.20rem; }
+			.pad_r30{ padding-right: 0.30rem; }
+			.pad_r40{ padding-right: 0.40rem; }
+
+			.pad_lr10{ padding-right: 0.10rem; padding-left: 0.10rem; }
+			.pad_lr20{ padding-right: 0.20rem; padding-left: 0.20rem; }
+			.pad_lr30{ padding-right: 0.30rem; padding-left: 0.30rem; }
+			.pad_lr40{ padding-right: 0.40rem; padding-left: 0.40rem; }
+
+			.pad_tb10{ padding-top: 0.10rem; padding-bottom: 0.10rem; }
+			.pad_tb20{ padding-top: 0.20rem; padding-bottom: 0.20rem; }
+			.pad_tb30{ padding-top: 0.30rem; padding-bottom: 0.30rem; }
+			.pad_tb40{ padding-top: 0.40rem; padding-bottom: 0.40rem; }
+			
+			.blank_textarea{height: 140px; padding: 5px; border-color: #DEDEDE; background: #F8F8F8; color:#333; font-size: 14px;}
+			
+			body .color_yellow{ color: #ffa200 }
+			body .color_yellow2{ color: #fcff00 }
+			body .color_yellow3{ color: #fe8864 }
+			body .color_blue{color: #008BF7;}
+			body .color_green{ color:#00a245 }
+			body .color_999{ color: #999;}
+
+			body .wd_confirm{ background: #fe8864; height: 28px; padding: 0; border-color:#fe8864  }
+
+			body .tk_input{ border: none; border-bottom:1px solid #ddd;  border-radius: 0; padding: 0; font-size: 14px; }
+
+		</style>
+	</head>
+
+	<body>
+		
+	<!-- 	<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">答题卡</h1>
+		</header> -->
+
+		<div class="mui-content" id="app">
+			<div>
+				<div class="mui-scroll" v-cloak>
+					<div class="bg_fff pad_lr20 pad_tb20" v-if="!is_view_aues">
+				<span class="color_yellow3">当前题目得分：{{all_score}}</span>
+			</div>
+			<div class="set_jy active" style="margin-left: 0; width: 100%">
+				<!-- <div class="title mui-clearfix"><img src="__IMG__/arr4.png" class="mui-pull-right" alt="">答题卡 <span class="color_999 f12">{{now_index+1}}/{{list.length}}</span></div> -->
+				<div class="card_down">
+					<div class="ques_card">
+						<template v-for="(item2,index2) in list_num" v-if="item2>0">
+							<div class="tt f12">
+								{{type_title[index2]}} <span class="pad_l10">（
+								 <template v-if="index2=='0'">每题1分，</template>
+								<template v-if="index2=='1'">每题2分，</template>
+								共{{item2}}题）</span>
+							</div>
+							<div class="mui-clearfix" style="margin-right: -0.2rem;">
+								<template v-for="(item,index) in list" v-if="item.type==index2">
+									<!-- error h_success -->
+									<a href="javascript:;" v-on:tap="tab_ques(index)" class="i_box" v-bind:class="item.is_answer?'status'+item.is_right:''">{{index+1}}</a>
+								</template>
+							</div>
+						</template>
+					</div>
+					<div class="color_info mui-row mui-text-center">
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>正确</div>
+								<div class="c c1"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>错误</div>
+								<div class="c c2"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>半对</div>
+								<div class="c c3"></div>
+							</div>
+						</div>
+						<div class="mui-col-xs-3">
+							<div class="item_b">
+								<div>未做</div>
+								<div class="c c4"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+				</div>
+			</div>
+		</div>
+	
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/common.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+// 				pullRefresh: {
+// 					container: "#pullrefresh",
+// 					up: {
+// 						contentrefresh: '正在加载...',
+// 						contentnomore: '没有更多数据了~',
+// 						callback: pullupRefresh
+// 					}
+// 				}
+			});
+
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					is_load:false,
+					w_arr:['A','B','C','D','E','F','G','H','I','J','K'],
+					now_index:0, //当前第几题
+					
+					list:[],
+					all_score:0, //总得分
+					list_num:[0,0,0,0,0],//各题型数量
+					type_title:['单选题','多选题','判断题','填空题','问答题'],
+					// set_full:false, //全屏
+					times:0,
+					my_times:'00:00:00',
+					a_num:0,
+					r_num:0,
+					e_num:0,
+					h_num:0,
+					n_num:0,
+					rate:'0%',
+					is_end:false,
+
+
+					// 个人中心配置
+					is_show_tip:false, // 是否显示提示开关
+					is_auto_tab:false, //是否自动切题
+					is_animate:false,//是否显示动画
+					
+					is_view_aues:false, //看题模式
+					is_skip_do:false,//是否跳过已做
+					is_only_video:false, //只显示视频
+
+					try_end_num:20, //试用题数
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods:{
+					// 加载之后才显示 页面
+					after_load:function(){
+						var _l=[0,0,0,0,0];
+						for(var i=0;i<this.list.length;i++){
+							_l[parseInt(this.list[i].type)]+=1
+						}
+						this.list_num=_l;
+					},
+					// 跳转题号
+					tab_ques:function(_index){
+						//通知答题页面 切题
+						var p_page= plus.webview.currentWebview().opener();
+						mui.fire(p_page,'jump_question',{
+						    index:_index
+						});
+						mui.back();
+					},
+					
+					time_set:function(){
+						var _this=this;
+						time_set=setInterval(function(){
+							_this.times+=1;
+							var _time=_this.times;
+							var _h=parseInt(_time/3600);
+							if(_h<10){
+								_h='0'+_h
+							}
+							var _m=parseInt(_time%3600/60);
+							if(_m<10){
+								_m='0'+_m
+							}
+							var _s=parseInt(_time%3600%60);
+							if(_s<10){
+								_s='0'+_s
+							}
+							_this.my_times=_h+':'+_m+':'+_s
+
+						},1000)
+					},
+
+					// show_dabj:function(){
+					// 	mui.toast('显示tab第一个--答案');
+
+					// },
+					show_card:function(){
+						if(show_card){
+							show_card.close();
+						}
+						show_card=plus.webview.create('card_win.html','card_win.html',{scrollIndicator:'none',background:'transparent',scalable:false,popGesture:'none',height:'100%',bottom:0},{});
+						
+						_sele.setStyle({mask:'rgba(0,0,0,0.4)'});
+						show_card.show('pop-in');
+					}
+
+				}
+			});
+
+			// app.after_load();
+			// app.time_set();
+			mui.plusReady(function() {
+				mui('.mui-scroll-wrapper').scroll();
+				getData();
+			})
+			
+			function getData(){
+				//获取本地 数据
+				var self = plus.webview.currentWebview()
+				// console.log(JSON.stringify(self.answers_list))
+				var datas = self.answers_list
+				
+				vm.all_score = datas.all_score;
+				vm.list = datas.list;
+				//计算各题型数量
+				vm.after_load();
+				//开启计时
+				vm.time_set();
+			}
+
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,391 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>悬赏筛选</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/mui.picker.min.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			.buy_content{ margin-bottom: 70px; background: #fff;}
+			.buy_content .title{ padding: 0 .3rem; line-height: 1rem; font-size: .34rem; font-weight: 700;}
+			
+			.buy_box{ position: fixed; z-index: 999; left: 0; bottom: 0; width: 100%; height: 50px; background: #fff; font-size: .24rem;}
+			.buy_box .mui-btn{ border-radius: 0;}
+			.buy_box span{ margin-top: 2px;}
+			
+			.total{ line-height: 50px; font-weight: 700; color: #FFA200; font-size: .28rem;}
+			
+			.mui-table-view-cell:after{ left: 0;}
+			
+			.video_name,.video_txt{ color: #999;}
+			.video_txt{ padding: 0 .3rem;}
+			.select{ padding-right: .4rem; color: #008bf7;}
+			
+			.type-box{ background: #fff;}
+			.type-box .icon-weixin{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #41b035;}
+			.type-box .icon-zhifubao{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #00a0ee;}
+			.type-box .icon-youneigou{ font-size: 26 px; vertical-align: middle; margin-right: 10px; color: #ff2a00;}
+			.type-box .mui-input-row label{ padding: 6px 0;}
+			
+			.data_select{ color: #999;}
+			.buy_content input{ margin: 0; text-align: center; border: none;}
+			.buy_content .data_input{ border:none; position: relative; top: -2px; height: 21px; width: 1.8rem; padding: 0 .1rem; display: inline-block; vertical-align: middle; font-size: .28rem; color: #333;}
+			.screen-btn div{ padding: 0 .3rem;}
+			
+			.mui-checkbox input[type=checkbox], .mui-radio input[type=radio]{ top: 4px; right: 0; width: 24px; height: 22px;}
+			.mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before{ font-size: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">筛选</h1>
+		</header>
+		<div id="app" v-cloak class="mui-content">
+			<div class="buy_content">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a id="showTimePicker" class="mui-navigate-right">
+							<span id="timeResult" class="select mui-pull-right">{{typeText}}</span>
+							分类
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							<span class="select data_select mui-pull-right">
+								<button id='beginDate' :data-options='beginOption' class="data_input">{{beginDate}}</button>
+								至
+								<button id='endDate' :data-options='endOption' class="data_input">{{endDate}}</button>
+							</span>
+							时间区间
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a id="showRight" class="mui-navigate-right">
+							<span id="rightResult" class="select mui-pull-right">{{rightText}}</span>
+							是否解决
+						</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<input type="text" placeholder="输入关键字搜索" v-model="keyword">
+					</li>
+					<li class="mui-table-view-cell">
+						<input type="text" placeholder="输入题号搜索" v-model="subject_num">
+					</li>
+				</ul>
+				<div class="mui-row screen-btn mui-text-center margin_t40">
+					<div class="mui-col-xs-6">
+						<button class="mui-btn mui-btn-block mui-btn-primary js_reset">重置</button>
+					</div>
+					<div class="mui-col-xs-6">
+						<button class="mui-btn mui-btn-block mui-btn-primary mui-btn-outlined js_screen">确定</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					
+					selectType:'',
+					typeText: '全部',
+					
+					beginDate: '开始日期',
+					endDate: '结束日期',
+					
+					selectRight:'',
+					rightText:'全部',
+					rightData:[{'value':'','text':'全部'},{'value':0,'text':'否'},{'value':1,'text':'是'}],
+					
+					keyword:'',
+					subject_num:'',
+					
+					beginOption:'',
+					endOption:''
+					
+				},
+				mounted: function() {
+					
+				},
+				methods:{
+// 					getbeginDate: function(){
+// 						var date = new Date()
+// 						var minYear = (date.getFullYear() - 2);
+// 						vm.beginOption = 	'{"type":"date","beginDate":'+ new Date(minYear,5) +',"endDate":'+ new Date((date.getFullYear()),5) +'}'
+// 						console.log(vm.beginOption)
+// 					},
+// 					getendDate: function(){
+// 						var date = new Date()
+// 						vm.endOption = 	'{"type":"date","beginDate":'+ new Date((date.getFullYear() - 2),5) +',"endDate":'+ new Date((date.getFullYear()),5) +'}'
+// 					}
+				},
+				updated: function() {
+
+				}
+			})
+
+
+
+			mui.plusReady(function() {
+				
+				// vm.getbeginDate()
+				// vm.getendDate()
+				
+				var self = plus.webview.currentWebview()
+				vm.selectType = self.data.selectType
+				vm.typeText = self.data.typeText
+				if(self.data.beginDate == '' || self.data.endDate == ''){
+					vm.beginDate = '开始日期'
+					vm.endDate = '结束日期'
+				}else{
+					vm.beginDate = self.data.beginDate
+					vm.endDate = self.data.endDate
+				}
+				vm.selectRight = self.data.selectRight
+				vm.rightText = self.data.rightText
+				vm.keyword = self.data.keyword
+				vm.subject_num = self.data.subject_num
+				
+				getType()
+				
+				//普通示例
+				var rightPicker = new mui.PopPicker();
+				rightPicker.setData(vm.rightData);
+				var showRightButton = document.getElementById('showRight');
+				var rightResult = document.getElementById('rightResult');
+				showRightButton.addEventListener('tap', function(event) {
+					document.activeElement.blur();
+					rightPicker.show(function(items) {
+						// rightResult.innerText = items[0].text;
+						vm.selectRight = items[0].value;
+						vm.rightText = items[0].text;
+						//返回 false 可以阻止选择框的关闭
+						//return false;
+					});
+				}, false);
+				
+// 				// 开始时间
+// 				var beginDate = document.getElementById("beginDate")
+// 				beginDate.addEventListener('tap', function() {
+// 					var dDate = new Date();
+// 					dDate.setFullYear(2014, 7, 16);
+// 					var minDate = new Date();
+// 					minDate.setFullYear(2010, 0, 1);
+// 					var maxDate = new Date();
+// 					maxDate.setFullYear(2016, 11, 31);
+// 					plus.nativeUI.pickDate(function(e) {
+// 						var d = e.date;
+// 						vm.beginDate = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+// 						// beginDate.innerText = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+// 					}, function(e) {
+// 						// beginDate.innerText = "选择日期";
+// 					}, {
+// 						title: "请选择日期",
+// 						date: dDate,
+// 						minDate: minDate,
+// 						maxDate: maxDate
+// 					});
+// 				})
+// 				
+// 				// 结束时间
+// 				var endDate = document.getElementById("endDate")
+// 				endDate.addEventListener('tap', function() {
+// 					var dDate = new Date();
+// 					dDate.setFullYear(2014, 7, 16);
+// 					var minDate = new Date();
+// 					minDate.setFullYear(2010, 0, 1);
+// 					var maxDate = new Date();
+// 					maxDate.setFullYear(2016, 11, 31);
+// 					plus.nativeUI.pickDate(function(e) {
+// 						var d = e.date;
+// 						vm.endDate = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+// 						// endDate.innerText = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+// 					}, function(e) {
+// 						// endDate.innerText = "选择日期";
+// 					}, {
+// 						title: "请选择日期",
+// 						date: dDate,
+// 						minDate: minDate,
+// 						maxDate: maxDate
+// 					});
+// 				})
+				
+				// 重置
+				mui('body').on('tap','.js_reset',function(){
+					document.activeElement.blur();
+					vm.selectType = 0;
+					vm.typeText = '全部';
+					
+					vm.beginDate = '开始日期';
+					vm.endDate = '结束日期';
+					
+					vm.selectRight = '';
+					vm.rightText = '全部';
+					
+					vm.keyword = '';
+					vm.subject_num = '';
+				})
+				
+				// 筛选
+				mui('body').on('tap','.js_screen',function(){
+					document.activeElement.blur();
+					var data = {}
+					data.selectType = vm.selectType
+					data.typeText = vm.typeText
+					data.beginDate = vm.beginDate
+					data.endDate = vm.endDate
+					data.selectRight = vm.selectRight
+					data.rightText = vm.rightText
+					data.keyword = vm.keyword
+					data.subject_num = vm.subject_num
+					
+					var parentPage = plus.webview.currentWebview().opener()
+					parentPage.evalJS("resetData('" + JSON.stringify(data) + "')")
+					mui.back()
+				})
+			})
+
+			// 获取时长
+			function getType() {
+				mui.ajax(server + 'Api/V1/Reward/search_class', {
+					dataType: 'json', //服务器返回json格式数据
+					type: 'GET', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							//普通示例
+							var timePicker = new mui.PopPicker();
+							data.info.unshift({text:'全部',value:''})
+							timePicker.setData(data.info);
+							var showTimePickerButton = document.getElementById('showTimePicker');
+							var timeResult = document.getElementById('timeResult');
+							showTimePickerButton.addEventListener('tap', function(event) {
+								document.activeElement.blur();
+								timePicker.show(function(items) {
+									// timeResult.innerText = items[0].text;
+									vm.selectType = items[0].value;
+									vm.typeText = items[0].text;
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+
+						} else {
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			(function($) {
+				$.init();
+				var btns = $('.data_input');
+				btns.each(function(i, btn) {
+					btn.addEventListener('tap', function() {
+						var _self = this;
+						if(_self.picker) {
+							_self.picker.show(function (rs) {
+								var id = _self.getAttribute('id');
+								
+								var date = new Date()
+								var _default = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+								if(id == 'beginDate' && vm.beginDate == '开始日期'){
+									_default = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+								}
+								
+								if(id == 'beginDate' && vm.beginDate != '开始日期'){
+									_default = vm.beginDate
+								}
+								
+								if(id == 'endDate' && vm.endDate != '结束日期'){
+									_default = vm.beginDate
+								}
+								console.log(_default)
+								vm[id] = rs.text;
+								_self.picker.dispose();
+								_self.picker = null;
+							});
+						} else {
+							// var optionsJson = this.getAttribute('data-options') || '{}';
+							// var options = JSON.parse(optionsJson);
+							var id = _self.getAttribute('id');
+							var date = new Date()
+							var _default = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+							if(id == 'beginDate' && vm.beginDate == '开始日期'){
+								_default = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+							}
+							
+							if(id == 'beginDate' && vm.beginDate != '开始日期'){
+								_default = vm.beginDate
+							}
+							
+							if(id == 'endDate' && vm.endDate != '结束日期'){
+								_default = vm.endDate
+							}
+							/*
+							 * 首次显示时实例化组件
+							 * 示例为了简洁，将 options 放在了按钮的 dom 上
+							 * 也可以直接通过代码声明 optinos 用于实例化 DtPicker
+							 */
+							_self.picker = new $.DtPicker({
+								"type":"date",
+								"beginDate":new Date((date.getFullYear()-2),date.getMonth(),date.getDate()),
+								"endDate":new Date((date.getFullYear()),date.getMonth(),date.getDate()),
+								"value":_default
+								});
+							_self.picker.show(function(rs) {
+								/*
+								 * rs.value 拼合后的 value
+								 * rs.text 拼合后的 text
+								 * rs.y 年，可以通过 rs.y.vaue 和 rs.y.text 获取值和文本
+								 * rs.m 月，用法同年
+								 * rs.d 日，用法同年
+								 * rs.h 时，用法同年
+								 * rs.i 分（minutes 的第二个字母），用法同年
+								 */
+								vm[id] = rs.text;
+								// result.innerText = '选择结果: ' + rs.text;
+								/* 
+								 * 返回 false 可以阻止选择框的关闭
+								 * return false;
+								 */
+								/*
+								 * 释放组件资源，释放后将将不能再操作组件
+								 * 通常情况下，不需要示放组件，new DtPicker(options) 后，可以一直使用。
+								 * 当前示例，因为内容较多，如不进行资原释放，在某些设备上会较慢。
+								 * 所以每次用完便立即调用 dispose 进行释放，下次用时再创建新实例。
+								 */
+								_self.picker.dispose();
+								_self.picker = null;
+							});
+						}
+						
+					}, false);
+				});
+			})(mui);
+		</script>
+	</body>
+
+</html>

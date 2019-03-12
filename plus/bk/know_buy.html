@@ -1,0 +1,394 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>知识购买</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/mui.picker.css" rel="stylesheet" />
+		<link href="../css/mui.poppicker.css" rel="stylesheet" />
+		<style>
+			.buy_content{ margin-bottom: 70px;}
+			.buy_content .title{ padding: .4rem .3rem .2rem .3rem; font-size: .34rem; font-weight: 700;}
+			
+			.buy_box{ position: fixed; z-index: 999; left: 0; bottom: 0; width: 100%; height: 50px; background: #fff; font-size: .24rem;}
+			.buy_box .mui-btn{ border-radius: 0;}
+			.buy_box span{ margin-top: 2px;}
+			
+			.total{ line-height: 50px; font-weight: 700; color: #FFA200; font-size: .28rem;}
+			
+			.mui-table-view-cell:after{ left: 0;}
+			
+			.video_name,.video_txt{ color: #999;}
+			.video_txt{ padding: 0 .3rem;}
+			.select{ padding-right: .4rem; color: #008bf7;}
+			
+			.type-box{ background: #fff;}
+			.type-box .icon-weixin{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #41b035;}
+			.type-box .icon-zhifubao{ font-size: 21px; vertical-align: middle; margin-right: 10px; color: #00a0ee;}
+			.type-box .icon-applepay{ font-size: 19px; vertical-align: middle; margin-right: 10px; color: #000;}
+			.type-box .mui-input-row label{ padding: 6px 0;}
+			
+			.mui-checkbox input[type=checkbox], .mui-radio input[type=radio]{ top: 4px; right: 0; width: 24px; height: 22px;}
+			.mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before{ font-size: 24px;}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">知识购买</h1>
+		</header>
+		<div id="app" v-cloak class="mui-content">
+			<div class="buy_content">
+				<div class="title">购买信息</div>
+				<div>
+					<ul class="mui-table-view">
+						<li class="mui-table-view-cell">
+							购买科目
+							<span class="video_name mui-pull-right">{{somedata.title}}</span>
+						</li>
+						<li class="mui-table-view-cell">
+							<a id="showTimePicker" class="mui-navigate-right">
+								<span id="timeResult" class="select mui-pull-right">{{timeText}}</span>
+								时长
+							</a>
+						</li>
+						<li class="mui-table-view-cell">
+							<a class="mui-navigate-right">
+								<span class="select mui-pull-right">科目</span>
+								类型
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div v-show="showMeal">
+					<div class="title">套餐信息</div>
+					<div>
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell">
+								<a id="showMealPicker" class="mui-navigate-right">
+									<span id="mealResult" class="select mui-pull-right">{{mealText}}</span>
+									选择套餐
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div v-show="content">
+						<div class="title">套餐简介</div>
+						<div class="video_txt">{{content}}</div>
+					</div>
+				</div>
+				<div class="title">支付方式</div>
+				<div class="type-box">
+					<ul class="mui-table-view">
+						<!-- <li class="mui-table-view-cell">
+							<div class="mui-input-row mui-radio">
+								<label><span class="mui-icon-extra icon-youneigou"></span>余额支付</label>
+								<input name="pay_type" type="radio" value="4" v-model="type">
+							</div>
+						</li> -->
+						<li class="mui-table-view-cell" v-show="payType">
+							<div class="mui-input-row mui-radio">
+								<label><span class="mui-icon-extra icon-weixin"></span>微信支付</label>
+								<input name="pay_type" type="radio" value="2" v-model="type">
+							</div>
+						</li>
+						<li class="mui-table-view-cell" v-show="payType">
+							<div class="mui-input-row mui-radio">
+								<label><span class="mui-icon-extra icon-zhifubao"></span>支付宝支付</label>
+								<input name="pay_type" type="radio" value="1" v-model="type">
+							</div>
+						</li>
+						<li class="mui-table-view-cell" v-show="!payType">
+							<div class="mui-input-row mui-radio">
+								<label><span class="mui-icon-extra icon-applepay"></span>Apple Pay支付</label>
+								<input name="pay_type" type="radio" value="3" v-model="type">
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="buy_box mui-text-center">
+				<div class="mui-row">
+					<div class="mui-col-xs-5">
+						<div class="total js_total">价格：￥{{somedata.price}}</div>
+					</div>
+					<div class="mui-col-xs-7">
+						<a class="js_buy mui-btn mui-btn-block mui-btn-primary">立即购买</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/mui.picker.js"></script>
+		<script src="../js/mui.poppicker.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: '',
+					selectTime: '0',
+					timeText: '请选择',
+					selectMeal: '0',
+					mealText: '请选择',
+					showMeal: false,
+					content: '',
+					type: '',
+					payType:0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+
+
+			mui.plusReady(function() {
+				getData()
+
+				// getTime()
+
+				// getMeal()
+				
+				getPayType()
+
+				// 立即购买
+				mui('body').on('tap', '.js_buy', function() {
+					var self = plus.webview.currentWebview();
+					var state = app.getState();
+					var data = {}
+					data.time_id = vm.selectTime
+					data.package_id = vm.selectMeal
+					data.user_key = state.user_key
+					data.video_id = self.guid
+					data.type = vm.type
+					// console.log(JSON.stringify(data))
+					mui.ajax(server + 'Api/V1/Video/creat_order_video', {
+						data: data,
+						dataType: 'json', //服务器返回json格式数据
+						type: 'POST', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；              
+						success: function(data) {
+							// console.log(JSON.stringify(data))
+							if (data.status == 1) {
+								// vm.somedata = data.info
+								mui.toast(data.msg)
+							} else {
+								mui.toast(data.msg)
+							}
+
+						},
+						error: function(xhr, type, errorThrown) {
+							console.log(xhr.responseText)
+							//异常处理；
+							mui.toast('网络异常');
+						}
+					});
+				})
+
+			})
+
+			// 获取信息
+			function getData() {
+				var state = app.getState();
+				var self = plus.webview.currentWebview()
+				var data = {}
+				// data.user_key = state.user_key
+				data.subject = state.subject_id || '15'
+				mui.ajax(server + 'Api/V1/Subject/pay_subject_page', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'POST', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info.subject_info
+							
+							//时长
+							var timePicker = new mui.PopPicker();
+							// data.info.unshift({text:'请选择',value:'0'})
+							timePicker.setData(data.info.time_list);
+							var showTimePickerButton = document.getElementById('showTimePicker');
+							var timeResult = document.getElementById('timeResult');
+							showTimePickerButton.addEventListener('tap', function(event) {
+								timePicker.show(function(items) {
+									// timeResult.innerText = items[0].text;
+									vm.selectTime = items[0].value;
+									vm.timeText = items[0].text;
+							
+									vm.selectMeal = '0';
+									vm.mealText = '请选择';
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+							
+							//套餐
+							if (!data.info.packge_info) {
+								vm.showMeal = false
+								return false
+							}
+							vm.showMeal = true
+							
+							var mealPicker = new mui.PopPicker();
+							// data.info.unshift({text:'请选择',value:'0'})
+							mealPicker.setData(data.info.packge_info);
+							var showMealPickerButton = document.getElementById('showMealPicker');
+							var mealResult = document.getElementById('mealResult');
+							showMealPickerButton.addEventListener('tap', function(event) {
+								mealPicker.show(function(items) {
+									// mealResult.innerText = items[0].text;
+									vm.selectMeal = items[0].value;
+									vm.content = items[0].content;
+									vm.mealText = items[0].text;
+							
+									vm.selectTime = '0';
+									vm.timeText = '请选择';
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+							
+						} else {
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取时长
+			function getTime() {
+				mui.ajax(server + 'Api/V1/Video/get_package_mouth', {
+					dataType: 'json', //服务器返回json格式数据
+					type: 'GET', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							//普通示例
+							var timePicker = new mui.PopPicker();
+							// data.info.unshift({text:'请选择',value:'0'})
+							timePicker.setData(data.info);
+							var showTimePickerButton = document.getElementById('showTimePicker');
+							var timeResult = document.getElementById('timeResult');
+							showTimePickerButton.addEventListener('tap', function(event) {
+								timePicker.show(function(items) {
+									// timeResult.innerText = items[0].text;
+									vm.selectTime = items[0].value;
+									vm.timeText = items[0].text;
+
+									vm.selectMeal = '0';
+									vm.mealText = '请选择';
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+
+						} else {
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取套餐
+			function getMeal() {
+				var self = plus.webview.currentWebview()
+				var data = {}
+				data.video_id = self.guid
+				mui.ajax(server + 'Api/V1/Video/get_package', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'POST', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								vm.showMeal = false
+								return false
+							}
+							vm.showMeal = true
+							//普通示例
+							var mealPicker = new mui.PopPicker();
+							// data.info.unshift({text:'请选择',value:'0'})
+							mealPicker.setData(data.info);
+							var showMealPickerButton = document.getElementById('showMealPicker');
+							var mealResult = document.getElementById('mealResult');
+							showMealPickerButton.addEventListener('tap', function(event) {
+								mealPicker.show(function(items) {
+									// mealResult.innerText = items[0].text;
+									vm.selectMeal = items[0].value;
+									vm.content = items[0].content;
+									vm.mealText = items[0].text;
+
+									vm.selectTime = '0';
+									vm.timeText = '请选择';
+									//返回 false 可以阻止选择框的关闭
+									//return false;
+								});
+							}, false);
+
+						} else {
+							mui.toast(data.msg)
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 获取模式
+			function getPayType() {
+				mui.ajax(server + 'Api/V1/Config/get_pay_type', {
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.payType = data.info
+						} else {
+							vm.payType = data.info
+						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

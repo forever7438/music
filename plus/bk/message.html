@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的消息</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/wrong.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.slider_nav{ background: #fff; border-bottom: 1px solid #f2f2f2;}
+			.mui-segmented-control.mui-scroll-wrapper .mui-control-item{ padding: 0 12px;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item{ color: #999999; font-size: .28rem;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active{ position: relative; color: #333; font-size: .28rem; font-weight: 700;}
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active:before{ content: ''; position: absolute; left: 50%; bottom: 0; width: .4rem; height: 2px; margin-left: -.2rem; background: #008BF7;}
+			
+			.screen{ position: relative; line-height: 38px; color: #999; font-size: .24rem;}
+			.screen:before{ content: ''; position: absolute; left: 0; top: 50%; margin-top: -10px; height: 20px; width: 1px; background: #ddd;}
+			.screen span{ display: inline-block; vertical-align: middle; font-size: 18px; color: #444;}
+			.screen:active,.screen:active span{ color: #008BF7;}
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div class="mui-row slider_nav">
+					<div class="mui-col-xs-10">
+						<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+							<div class="mui-scroll">
+								<a class="mui-control-item mui-active" href="#item1mobile" data-wid="msg-1.html">
+									全部
+								</a>
+								<a class="mui-control-item" href="#item2mobile" data-wid="msg-2.html">
+									系统推送
+								</a>
+								<a class="mui-control-item" href="#item3mobile" data-wid="msg-3.html">
+									回复
+								</a>
+								<a class="mui-control-item" href="#item4mobile" data-wid="msg-4.html">
+									纠错
+								</a>
+								<a class="mui-control-item" href="#item5mobile" data-wid="msg-5.html">
+									悬赏
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="mui-text-center mui-col-xs-2">
+						<div id="open_set" class="screen">
+							推送设置
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/mokaoGroup.js"></script>
+		<script>
+			var titleNView = { //详情页原生导航配置
+				backgroundColor: '#FFFFFF', //导航栏背景色
+				titleText: '', //导航栏标题
+				titleColor: '#333333', //文字颜色
+				autoBackButton: true, //自动绘制返回箭头
+				splitLine: { //底部分割线
+					color: '#f2f2f2'
+				}
+			}
+			
+			mui.init();
+			
+			mui.plusReady(function() {
+				var currentId=plus.webview.currentWebview().id;
+				var group = new webviewGroup(currentId, {
+					items: [{
+						id: "msg-1.html",
+						url: "msg-1.html",
+						extras: {}
+					}, {
+						id: "msg-2.html",
+						url: "msg-2.html",
+						extras: {}
+					}, {
+						id: "msg-3.html",
+						url: "msg-3.html",
+						extras: {}
+					}, {
+						id: "msg-4.html",
+						url: "msg-4.html",
+						extras: {}
+					}, {
+						id: "msg-5.html",
+						url: "msg-5.html",
+						extras: {}
+					}],
+					onChange: function(obj) {
+						var c = document.querySelector(".mui-control-item.mui-active");
+						if(c) {
+							c.classList.remove("mui-active");
+						}
+						document.querySelector(".mui-scroll .mui-control-item:nth-child(" + (parseInt(obj.index) + 1) + ")").classList.add("mui-active");
+					}
+				});
+				mui(".mui-scroll").on("tap", ".mui-control-item", function(e) {
+					var wid = this.getAttribute("data-wid");
+					group.switchTab(wid);
+				});
+
+			});
+//			mui.back = function() {
+//				var _self = plus.webview.currentWebview();
+//				_self.close("auto");
+//			}
+			mui('body').on('tap','#open_set',function(){
+				titleNView.titleText = '我的设置';
+				mui.openWindow({
+				    url:'set.html',
+				    id:'set.html',
+				    styles:{
+				      statusbar:{
+				      	background:'#FFFFFF'
+				      },
+				      popGesture: 'close',
+				      titleNView: titleNView,
+				      bounce: 'vertical'
+				    },
+				    show:{
+				      autoShow:true,
+				    },
+				    waiting:{
+				      autoShow:false,
+				    }
+				})
+			})
+		</script>
+		<!--<script type="text/javascript">
+			mui.init({
+			  pullRefresh : {
+			    container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      height:50,//可选,默认50.触发下拉刷新拖动距离,
+			      auto: true,//可选,默认false.首次加载自动下拉刷新一次
+			      contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+			      callback :pulldownRefresh //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    },
+			    up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}
+			  }
+			});
+			
+			
+			function pulldownRefresh(){
+				setTimeout(function(){
+					mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+				},2000)
+				
+			}
+			
+			function pullupRefresh(){
+				setTimeout(function(){
+					mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+				},2000)
+			}
+		</script>-->
+	</body>
+
+</html>

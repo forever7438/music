@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>错题</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/wrong.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.slider_nav {
+				background: #fff;
+				border-bottom: 1px solid #f2f2f2;
+			}
+
+			.mui-segmented-control.mui-scroll-wrapper .mui-control-item {
+				padding: 0 12px;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+				color: #999999;
+				font-size: .28rem;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+				position: relative;
+				color: #333;
+				font-size: .28rem;
+				font-weight: 700;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active:before {
+				content: '';
+				position: absolute;
+				left: 50%;
+				bottom: 0;
+				width: .4rem;
+				height: 2px;
+				margin-left: -.2rem;
+				background: #008BF7;
+			}
+
+			.screen {
+				position: relative;
+				line-height: 38px;
+			}
+
+			.screen:before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 50%;
+				margin-top: -10px;
+				height: 20px;
+				width: 1px;
+				background: #ddd;
+			}
+
+			.screen span {
+				display: inline-block;
+				vertical-align: middle;
+				font-size: 18px;
+				color: #444;
+			}
+
+			.screen:active,
+			.screen:active span {
+				color: #008BF7;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--<header class="mui-bar mui-bar-nav">
+		    <h1 class="mui-title">错题</h1>
+		</header>-->
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div class="mui-row slider_nav">
+					<div class="mui-col-xs-10">
+						<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+							<div class="mui-scroll">
+								<a class="mui-control-item mui-active" href="#item1mobile" data-wid="wrong-1.html">
+									所有错题
+								</a>
+								<a class="mui-control-item" href="#item2mobile" data-wid="wrong-2.html">
+									章节
+								</a>
+								<a class="mui-control-item" href="#item3mobile" data-wid="wrong-3.html">
+									试卷
+								</a>
+								<a class="mui-control-item" href="#item4mobile" data-wid="wrong-4.html">
+									收藏
+								</a>
+								<a class="mui-control-item" href="#item5mobile" data-wid="wrong-5.html">
+									记忆
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="mui-text-center mui-col-xs-2">
+						<div id="screen" class="screen">
+							筛选<span class="mui-icon-extra icon-shaixuan"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/webviewGroup.js"></script>
+		<script>
+			mui.init();
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					isLogin: 0,
+					error_num:0,
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			var state;
+			var screen;
+			mui.plusReady(function() {
+
+				state = app.getState();
+				//获取
+				if (vm.isLogin != 0) {
+					// 					vm.subject.pid = state.subject_pid
+					// 					vm.subject.id = state.subject_id
+					// 					vm.subject.title = state.subject_title
+					// 					getData()
+				}
+				
+				var self = plus.webview.currentWebview()
+				// 监听隐藏
+				self.addEventListener('hide',function(){
+					localStorage.setItem('$errorNum', 0);
+					// console.log('页面隐藏了')
+				})
+
+				//预加筛选
+				screen = mui.preload({
+					url: 'screen.html',
+					id: 'screen.html',
+					styles: {
+						"render": "always",
+						"popGesture": "hide",
+						"top": '60%',
+						"bottom": '0',
+						"background": 'transparent'
+					}
+				});
+
+				mui('body').on('tap', '#screen', function() {
+
+					var mainPage = plus.webview.getLaunchWebview();
+					var selfID = plus.webview.currentWebview().id
+					mainPage.evalJS("showMask('" + selfID + "')")
+					//					self.setStyle({mask:'rgba(0,0,0,0.5)'});
+					screen.show("slide-in-bottom", 200);
+				})
+
+				//监听刷新页面
+				document.addEventListener('updateData', function() {
+					state = app.getState();
+					if (typeof(state.user_key) != 'undefined' && vm.isLogin == 0) {
+						vm.isLogin = 1;
+						var currentId = plus.webview.currentWebview().id;
+						var group = new webviewGroup(currentId, {
+							items: [{
+								id: "wrong-1.html",
+								url: "wrong-1.html",
+								extras: {}
+							}, {
+								id: "wrong-2.html",
+								url: "wrong-2.html",
+								extras: {}
+							}, {
+								id: "wrong-3.html",
+								url: "wrong-3.html",
+								extras: {}
+							}, {
+								id: "wrong-4.html",
+								url: "wrong-4.html",
+								extras: {}
+							}, {
+								id: "wrong-5.html",
+								url: "wrong-5.html",
+								extras: {}
+							}],
+							onChange: function(obj) {
+								var c = document.querySelector(".mui-control-item.mui-active");
+								if (c) {
+									c.classList.remove("mui-active");
+								}
+								document.querySelector(".mui-scroll .mui-control-item:nth-child(" + (parseInt(obj.index) + 1) + ")").classList
+									.add("mui-active");
+							}
+						});
+						mui(".mui-scroll").on("tap", ".mui-control-item", function(e) {
+							var wid = this.getAttribute("data-wid");
+							group.switchTab(wid);
+						});
+					}
+				});
+
+
+			});
+			
+			function hideLayer() {
+				if(screen){
+					screen.hide('slide-out-bottom');
+				}
+			}
+			//			mui.back = function() {
+			//				var _self = plus.webview.currentWebview();
+			//				_self.close("auto");
+			//			}
+		</script>
+		<!--<script type="text/javascript">
+			mui.init({
+			  pullRefresh : {
+			    container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      height:50,//可选,默认50.触发下拉刷新拖动距离,
+			      auto: true,//可选,默认false.首次加载自动下拉刷新一次
+			      contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+			      callback :pulldownRefresh //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    },
+			    up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}
+			  }
+			});
+			
+			
+			function pulldownRefresh(){
+				setTimeout(function(){
+					mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+				},2000)
+				
+			}
+			
+			function pullupRefresh(){
+				setTimeout(function(){
+					mui('#refreshContainer').pullRefresh().endPullupToRefresh();
+				},2000)
+			}
+		</script>-->
+	</body>
+
+</html>

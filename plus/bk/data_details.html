@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>资料详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<style>
+			.mui-content{ padding: 15px; background: #fff;}
+			.title{ margin: 0; font-size: .44rem; font-weight: 700; line-height: .5rem;}
+			.time{ color: #999;}
+			
+			.ad_box{ position: relative;}
+			.ad_box img{ width: 100%; height: 1.8rem;}
+			.ad_box span{ position: absolute; top: .1rem; right: .1rem; opacity: .7;}
+			
+			.buy_box{ position: fixed; left: 0; bottom: 0; width: 100%; height: 50px; background: #fff; font-size: .24rem;}
+			.buy_box .mui-btn{ border-radius: 0;}
+			.buy_box span{ margin-top: 2px;}
+			
+			.content{ min-height: 4rem; font-size: .32rem;}
+			.download_box { line-height: 1rem;}
+			.download_box span{width: 1.2rem;}
+			.download_box .txt{ margin-left: 1.4rem;}
+			.download_box .mui-col-xs-8{ padding: 0 .2rem; background: #f8f8f8; border:1px solid #f2f2f2; border-radius:3px 0 0 3px}
+			.download_box .mui-btn{ border-radius: 0 3px 3px 0;}
+		</style>
+	</head>
+
+	<body>
+		<div v-cloak id="app" class="mui-content">
+			<h3 class="title">{{somedata.course_name}}</h3>
+			<div class="time">{{somedata.add_time}}</div>
+			<!-- <div class="ad_box margin_t30">
+				<span class="mui-icon mui-icon-clear"></span>
+				<img src="../img/ad.png" />
+			</div> -->
+			<div class="content margin_t20" v-html="somedata.content">
+
+			</div>
+			<div class="download_box" v-if="somedata.buy == 1">
+				<div class="mui-row">
+					<div class="mui-col-xs-8">
+						<span class="mui-pull-left">下载地址</span>
+						<div id="copyUrl" class="txt mui-ellipsis">{{somedata.download_url}}</div>
+					</div>
+					<div class="mui-col-xs-4">
+						<a @tap="copyFun('copyUrl')" class="mui-btn mui-btn-block mui-btn-primary">复制</a>
+					</div>
+				</div>
+				<div class="mui-row margin_t30">
+					<div class="mui-col-xs-8">
+						<span class="mui-pull-left">提取码</span>
+						<div id="copyCode" class="txt mui-ellipsis">{{somedata.download_url}}</div>
+					</div>
+					<div class="mui-col-xs-4">
+						<a @tap="copyFun('copyCode')" class="mui-btn mui-btn-block mui-btn-primary">复制</a>
+					</div>
+				</div>
+			</div>
+			<div class="buy_box mui-text-center" v-else>
+				<div class="mui-row">
+					<div class="mui-col-xs-3">
+						<a @tap="openTaobao()">
+							<span class="mui-icon-extra icon-taobao"></span>
+							<div>淘宝</div>
+						</a>
+					</div>
+					<!-- <div class="mui-col-xs-2">
+						<a>
+							<span class="mui-icon-extra icon-liwu"></span>
+							<div>试用</div>
+						</a>
+					</div> -->
+					<div class="mui-col-xs-9">
+						<a onclick="pay(ids[0])" class="mui-btn mui-btn-block mui-btn-primary">购买</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					course_id: '',
+					somedata: '',
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				vm.course_id = self.guid;
+				getData()
+			})
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {};
+				data.user_key = state.user_key;
+				data.course_id = vm.course_id;
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + 'Api/V1/Course/course_details', {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							vm.somedata = data.info;
+						} else {
+							mui.toast(data.msg)
+						}
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 打开淘宝
+			function openTaobao() {
+				plus.runtime.openURL(vm.somedata.tb_link);
+			}
+
+			// 复制链接
+			function copyFun(type) {
+				var copyTxt = document.getElementById(type).innerText;
+				switch (plus.os.name) {
+					case 'iOS':
+						//获取剪切板
+						var UIPasteboard = plus.ios.importClass("UIPasteboard");
+						var generalPasteboard = UIPasteboard.generalPasteboard();
+						// 设置/获取文本内容
+						generalPasteboard.setValueforPasteboardType(copyTxt, "public.utf8-plain-text");
+						var value = generalPasteboard.valueForPasteboardType("public.utf8-plain-text");
+						break;
+					case 'Android':
+						var Context = plus.android.importClass("android.content.Context");
+						var main = plus.android.runtimeMainActivity();
+						var clip = main.getSystemService(Context.CLIPBOARD_SERVICE);
+						plus.android.invoke(clip, "setText", copyTxt);
+						break;
+				}
+				if (type == 'copyUrl') {
+					mui.toast("复制下载地址成功");
+				} else {
+					mui.toast("复制提取码成功");
+				}
+
+			}
+
+			var iap = null;
+			var ids = ['donation', 'donation6']; //应用内购项目
+			function plusReady() {
+				// 获取支付通道
+				plus.payment.getChannels(function(channels) {
+					// console.log(JSON.stringify(channels));
+					for (var i in channels) {
+						var channel = channels[i];
+						console.log(JSON.stringify(channel));
+						if (channel.id === 'appleiap') {
+							iap = channel;
+						}
+					}
+					requestOrder();
+				}, function(e) {
+					console.log("获取支付通道失败：" + e.message);
+				});
+			}
+
+			document.addEventListener('plusready', plusReady, false);
+			// 获取订单
+			function requestOrder() {
+				plus.nativeUI.showWaiting('检测支付环境...');
+				iap.requestOrder(ids, function(e) {
+					plus.nativeUI.closeWaiting();
+					console.log('requestOrder success: ' + JSON.stringify(e));
+				}, function(e) {
+					console.log('requestOrder failed: ' + JSON.stringify(e));
+					plus.nativeUI.closeWaiting();
+					plus.nativeUI.confirm("错误信息：" + JSON.stringify(e), function(e) {
+						if (e.index == 0) {
+							requestOrder();
+						} else {
+							back();
+						}
+					}, '重新请求支付', ['确定', '取消']);
+				});
+			}
+			// 支付
+			function pay(id) {
+				plus.nativeUI.showWaiting('', {
+					style: "black",
+					background: "rgba(0,0,0,0)"
+				});
+				plus.payment.request(iap, {
+					productid: id
+				}, function(result) {
+					plus.nativeUI.closeWaiting();
+					//alert('成功：'+JSON.stringify(result));
+					plus.nativeUI.alert("支付成功：感谢你的支持，我们会继续努力完善产品。", function() {
+						back();
+					}, "捐赠");
+				}, function(e) {
+					plus.nativeUI.closeWaiting();
+					plus.nativeUI.alert("错误信息：" + e.message, null, "支付失败：" + e.code);
+				});
+			}
+			// 获取已购买商品（非消耗性商品和订阅商品）
+			function restoreComplateRequest() {
+				plus.nativeUI.showWaiting('', {
+					style: "black",
+					background: "rgba(0,0,0,0)"
+				});
+				iap.restoreComplateRequest({}, function(results) {
+					plus.nativeUI.closeWaiting();
+					alert(results.length);
+					for (var i in results) {
+						alert('restoreComplateRequest[' + i + ']: ' + JSON.stringify(results[i]));
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

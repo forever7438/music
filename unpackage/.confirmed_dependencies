@@ -1,0 +1,160 @@
+{
+	"index.html": {
+		"resources": [
+			"plus/home.html",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"plus/home.html",
+			"plus/member.html",
+			"plus/guide.html",
+			"plus/wrong.html",
+			"plus/offer.html",
+			"plus/video.html"
+		]
+	},
+	"plus/wrong.html": {
+		"resources": [
+			"plus/wrong-1.html",
+			"plus/wrong-2.html"
+		],
+		"refer": [
+			"plus/wrong-1.html",
+			"plus/wrong-2.html",
+			"plus/wrong-3.html",
+			"plus/wrong-4.html",
+			"plus/wrong-5.html"
+		]
+	},
+	"plus/video.html": {
+		"resources": [
+			"plus/video-1.html"
+		],
+		"refer": [
+			"plus/video-1.html",
+			"plus/video-2.html",
+			"plus/video-3.html",
+			"plus/video-4.html"
+		]
+	},
+	"plus/member.html": {
+		"refer": [
+			"plus/message.html",
+			"plus/member_info.html",
+			"plus/correction.html",
+			"plus/notes.html",
+			"plus/favorite.html",
+			"plus/download.html",
+			"plus/code.html",
+			"plus/wallet.html",
+			"plus/my_offer.html",
+			"plus/help.html",
+			"plus/feedback.html",
+			"plus/about.html",
+			"plus/schedule.html",
+			"plus/test.html",
+			"plus/score.html",
+			"plus/practice.html",
+			"plus/set.html",
+			"plus/spread.html",
+			"plus/demo.html"
+		],
+		"resources": []
+	},
+	"plus/member_info.html": {
+		"refer": [
+			"plus/cropper.html",
+			"plus/edit_phone.html",
+			"plus/edit_password.html"
+		],
+		"resources": []
+	},
+	"plus/message.html": {
+		"resources": [
+			"plus/msg-1.html"
+		],
+		"refer": [
+			"plus/msg-3.html",
+			"plus/set.html",
+			"plus/msg-2.html",
+			"plus/msg-1.html"
+		]
+	},
+	"plus/set.html": {
+		"refer": [
+			"plus/delete_all.html",
+			"plus/set_wrong.html",
+			"plus/remember.html"
+		],
+		"resources": []
+	},
+	"plus/code.html": {
+		"refer": [
+			"plus/code_details.html"
+		],
+		"resources": []
+	},
+	"plus/wallet.html": {
+		"refer": [
+			"plus/withdraw_cash.html",
+			"plus/recharge.html"
+		],
+		"resources": []
+	},
+	"plus/help.html": {
+		"refer": [
+			"plus/help_list.html"
+		],
+		"resources": []
+	},
+	"plus/help_list.html": {
+		"refer": [
+			"plus/help_details.html"
+		],
+		"resources": []
+	},
+	"plus/home.html": {
+		"resources": [
+			"plus/wrong.html"
+		],
+		"refer": [
+			"plus/member.html",
+			"plus/wrong.html",
+			"plus/offer.html",
+			"plus/change_class.html",
+			"plus/video.html",
+			"plus/problem_record.html"
+		]
+	},
+	"plus/schedule.html": {
+		"resources": [
+			"plus/schedule-1.html"
+		],
+		"refer": [
+			"plus/schedule-1.html",
+			"plus/schedule-2.html"
+		]
+	},
+	"plus/score.html": {
+		"refer": [
+			"plus/share.html"
+		],
+		"resources": []
+	},
+	"plus/test.html": {
+		"resources": [
+			"plus/test_list.html"
+		],
+		"refer": [
+			"plus/test_list.html"
+		]
+	},
+	"plus/problem_record.html": {
+		"resources": [
+			"plus/problem-1.html"
+		],
+		"refer": [
+			"plus/problem-1.html"
+		]
+	}
+}

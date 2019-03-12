@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>激活提示</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			html,body{ background: #ffffff}
+			.mui-content{ background: #ffffff}
+			.title{ position: relative; font-weight: 700; line-height: 60px; font-size: 17px; color: #333;}
+			.title .mui-icon{ position: absolute; right: 0; top: 0; color: #ccc; font-size: 42px; font-weight: 700;}
+			.title .mui-icon:active{ color: #008BF7;}
+			
+			
+			.mui-btn{ padding: 8px 0px; font-size: .3rem;}
+			
+			.total_box{ padding: .4rem .6rem;}
+			
+			.tips_btn{ padding: .3rem .2rem;}
+			.tips_btn div{ padding: 0 .16rem;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" class="mui-content">
+			<div class="title mui-text-center">
+				<span>提示</span>
+				<a @tap="hideLayer()" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+			</div>
+			<div class="tips_box mui-text-center">
+				<div>知识点试用结束，请前往购买或激活</div>
+				<div class="mui-text-center mui-row margin_t40 tips_btn">
+					<div class="mui-col-xs-4">
+						<button @tap="activeLayer()" class="mui-btn mui-btn-block mui-btn-primary">激活</button>
+					</div>
+					<div class="mui-col-xs-4">
+						<button @tap="openBuy({id:vm.guid})" class="mui-btn mui-btn-block mui-btn-primary mui-btn-outlined">购买注册</button>
+					</div>
+					<div class="mui-col-xs-4">
+						<button @tap="hideLayer()" class="mui-btn mui-btn-block mui-btn-primary mui-btn-outlined">继续试用</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					guid: ''
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview()
+				vm.guid = self.guid;
+			})
+			
+			function openBuy(item){
+				mui.openWindow({
+					url: 'know_buy.html',
+					id: 'know_buy.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+						bounce: 'vertical'
+					},
+					extras: {
+						guid: item.id
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+
+			// 隐藏
+			function hideLayer() {
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("hideMask()")
+			}
+
+			// 激活层
+			function activeLayer() {
+				var homePage = plus.webview.currentWebview().opener()
+				homePage.evalJS("activeLayer()")
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,351 @@
+{
+    "@platforms" : [ "android", "iPhone" ],
+    "id" : "H524C12F4",
+    "name" : "wemusic",
+    "version" : {
+        "name" : "1.0.0",
+        "code" : "83"
+    },
+    "description" : "",
+    "icons" : {
+        "72" : "icon.png"
+    },
+    "launch_path" : "index.html",
+    "developer" : {
+        "name" : "qihan",
+        "email" : "qihan@cnsunrun.com",
+        "url" : "http://www.cnsunrun.com"
+    },
+    "permissions" : {
+        "Cache" : {
+            "description" : "管理应用缓存"
+        },
+        "Console" : {
+            "description" : "跟踪调试输出日志"
+        },
+        "Contacts" : {
+            "description" : "访问系统联系人信息"
+        },
+        "Events" : {
+            "description" : "应用扩展事件"
+        },
+        "Messaging" : {
+            "description" : "访问通讯能力"
+        },
+        "Maps" : {
+            "description" : "管理地图插件"
+        },
+        "Speech" : {
+            "description" : "管理语音识别插件"
+        },
+        "Push" : {
+            "description" : "极光推送插件"
+        }
+    },
+    "plus" : {
+        "statusbar" : {
+            "immersed" : true,
+            "style" : "dark"
+        },
+        "launchwebview" : {
+            "statusbar" : {
+                "background" : "#ffffff"
+            }
+        },
+        "safearea" : {
+            "background" : "#FFFFFF",
+            "bottom" : {
+                "offset" : "auto"
+            }
+        },
+        "splashscreen" : {
+            "autoclose" : false,
+            "waiting" : false
+        },
+        "runmode" : "normal",
+        "signature" : "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",
+        "distribute" : {
+            "apple" : {
+                "appid" : "",
+                "mobileprovision" : "",
+                "password" : "",
+                "p12" : "",
+                "devices" : "iphone",
+                "frameworks" : []
+            },
+            "google" : {
+                "packagename" : "",
+                "keystore" : "",
+                "password" : "",
+                "aliasname" : "",
+                "permissions" : [
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"com.android.launcher.permission.UNINSTALL_SHORTCUT\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.RECORD_AUDIO\"/>",
+                    "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
+                    "<uses-permission android:name=\"com.android.launcher.permission.INSTALL_SHORTCUT\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-permission android:name=\"android.permission.CALL_PHONE\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
+                ]
+            },
+            "orientation" : [ "portrait-primary" ],
+            "icons" : {
+                "ios" : {
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png"
+                    },
+                    "prerendered" : true,
+                    "iphone" : {
+                        "normal" : "",
+                        "retina" : "",
+                        "spotlight-normal" : "",
+                        "spotlight-retina" : "",
+                        "settings-normal" : "",
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png"
+                    },
+                    "appstore" : ""
+                },
+                "android" : {
+                    "mdpi" : "unpackage/res/icons/48x48.png",
+                    "ldpi" : "unpackage/res/icons/48x48.png",
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                }
+            },
+            "splashscreen" : {
+                "ios" : {
+                    "iphone" : {
+                        "default" : "",
+                        "retina35" : "",
+                        "retina40" : ""
+                    }
+                },
+                "android" : {
+                    "mdpi" : "",
+                    "ldpi" : "",
+                    "hdpi" : "",
+                    "xhdpi" : "",
+                    "xxhdpi" : ""
+                }
+            },
+            "plugins" : {
+                "speech" : {
+                    "ifly" : {}
+                }
+            }
+        }
+    },
+    "fullscreen" : true,
+    "dependencies" : {
+        "pages" : {
+            "index.html" : {
+                "resources" : [ "plus/home.html", "plus/member.html", "fonts/mui.ttf" ],
+                "refer" : [
+                    "plus/guide.html",
+                    "plus/wrong.html",
+                    "plus/offer.html",
+                    "plus/video.html"
+                ],
+                "priority" : 0
+            },
+            "plus/wrong.html" : {
+                "resources" : [ "plus/wrong-1.html" ],
+                "refer" : [
+                    "plus/wrong-2.html",
+                    "plus/wrong-3.html",
+                    "plus/wrong-4.html",
+                    "plus/wrong-5.html"
+                ],
+                "priority" : 0
+            },
+            "plus/video.html" : {
+                "resources" : [ "plus/video-1.html" ],
+                "refer" : [ "plus/video-2.html", "plus/video-3.html", "plus/video-4.html" ],
+                "priority" : 0
+            },
+            "plus/member.html" : {
+                "resources" : [],
+                "refer" : [
+                    "plus/message.html",
+                    "plus/member_info.html",
+                    "plus/correction.html",
+                    "plus/notes.html",
+                    "plus/favorite.html",
+                    "plus/download.html",
+                    "plus/code.html",
+                    "plus/wallet.html",
+                    "plus/my_offer.html",
+                    "plus/help.html",
+                    "plus/feedback.html",
+                    "plus/about.html",
+                    "plus/test.html",
+                    "plus/score.html",
+                    "plus/practice.html",
+                    "plus/schedule.html",
+                    "plus/set.html",
+                    "plus/spread.html",
+                    "plus/demo.html"
+                ],
+                "priority" : 0
+            },
+            "plus/member_info.html" : {
+                "resources" : [],
+                "refer" : [
+                    "plus/cropper.html",
+                    "plus/edit_phone.html",
+                    "plus/edit_password.html"
+                ],
+                "priority" : 0
+            },
+            "plus/message.html" : {
+                "resources" : [ "plus/msg-1.html" ],
+                "refer" : [ "plus/msg-3.html", "plus/set.html", "plus/msg-2.html" ],
+                "priority" : 0
+            },
+            "plus/set.html" : {
+                "resources" : [],
+                "refer" : [ "plus/delete_all.html", "plus/set_wrong.html", "plus/remember.html" ],
+                "priority" : 0
+            },
+            "plus/code.html" : {
+                "resources" : [],
+                "refer" : [ "plus/code_details.html" ],
+                "priority" : 0
+            },
+            "plus/wallet.html" : {
+                "resources" : [],
+                "refer" : [ "plus/withdraw_cash.html", "plus/recharge.html" ],
+                "priority" : 0
+            },
+            "plus/help.html" : {
+                "resources" : [],
+                "refer" : [ "plus/help_list.html" ],
+                "priority" : 0
+            },
+            "plus/help_list.html" : {
+                "resources" : [],
+                "refer" : [ "plus/help_details.html" ],
+                "priority" : 0
+            },
+            "plus/home.html" : {
+                "resources" : [ "plus/wrong.html" ],
+                "refer" : [
+                    "plus/member.html",
+                    "plus/offer.html",
+                    "plus/change_class.html",
+                    "plus/video.html",
+                    "plus/problem_record.html"
+                ],
+                "priority" : 0
+            },
+            "plus/score.html" : {
+                "resources" : [],
+                "refer" : [ "plus/share.html" ],
+                "priority" : 0
+            },
+            "plus/schedule.html" : {
+                "resources" : [ "plus/schedule-1.html" ],
+                "refer" : [ "plus/schedule-2.html" ],
+                "priority" : 0
+            },
+            "plus/test.html" : {
+                "resources" : [ "plus/test_list.html" ],
+                "refer" : [],
+                "priority" : 0
+            },
+            "plus/problem_record.html" : {
+                "resources" : [ "plus/problem-1.html" ],
+                "refer" : [],
+                "priority" : 0
+            }
+        },
+        "idle" : {
+            "resources" : [
+                "img/icon_main1@2x.png",
+                "img/icon_wrong_h.png",
+                "img/icon_main3@3x.png",
+                "img/icon_member3@3x.png",
+                "img/sort-asc.png",
+                "img/icon_home_h.png",
+                "img/icon_member3@2x.png",
+                "img/1.png",
+                "img/guide_3.png",
+                "css/iconfont.css",
+                "img/icon_member2@3x.png",
+                "img/icon_offer.png",
+                "img/icon_offer_h.png",
+                "fonts/iconfont.ttf",
+                "js/mui.js",
+                "img/icon_main3@2x.png",
+                "img/icon_main5@2x.png",
+                "img/2.png",
+                "css/wrong.css",
+                "img/icon_main4@2x.png",
+                "js/app.js",
+                "img/icon_home.png",
+                "css/main.css",
+                "img/icon_edit.png",
+                "img/icon_member4@2x.png",
+                "css/mui.css",
+                "img/icon_video.png",
+                "img/icon_main4@3x.png",
+                "js/zepto.min.js",
+                "img/icon_member.png",
+                "img/icon_wrong.png",
+                "img/icon_main2@3x.png",
+                "img/icon_member1@3x.png",
+                "img/icon_main2@2x.png",
+                "js/vue.min.js",
+                "img/icon_main5@3x.png",
+                "img/icon_member_h.png",
+                "img/guide_1.png",
+                "js/vue.js",
+                "js/mui.min.js",
+                "img/ad.png",
+                "js/webviewGroup.js",
+                "img/icon_member4@3x.png",
+                "img/sort-desc.png",
+                "img/icon_member1@2x.png",
+                "img/icon_member2@2x.png",
+                "img/guide_2.png",
+                "img/icon_main1@3x.png",
+                "css/mui.min.css",
+                "img/icon_video_h.png"
+            ]
+        }
+    }
+}

@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>错题筛选</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+			/* html, body { position: relative; height: 100%; background: transparent; } */
+		.mui-bar-nav~.mui-content { position: absolute; left: 0; bottom: 0; width: 100%;}
+		/* #app { position: absolute; z-index: 1; width: 100%; height: 100%; overflow: hidden; background: #fff; opacity: 1; } */
+		/* .mui-bar-nav .mui-icon { padding-top: 13px; color: #fff; } */
+		
+		.mui-scroll-wrapper{ top: 44px; background: #fff;}
+		
+		.mui-bar-nav{font-size: 0.34rem; font-weight: 400; background: #f8f8f8;}
+		.share_box .active{ color: #0083EB!important;}
+	  </style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">筛选错误次数</h1>
+		</header>
+		<div id="app" class="mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div class="mui-content">
+					<div class="share_box">
+						<ul class="mui-table-view mui-text-center">
+							<li class="mui-table-view-cell">
+								<a @tap="seError(0)" :class="error_num == 0?'active':''">
+									全部
+								</a>
+							</li>
+							<li @tap="seError(2)" class="mui-table-view-cell" :class="error_num == 2?'active':''">
+								<a>
+									错两次以上
+								</a>
+							</li>
+							<li @tap="seError(4)" class="mui-table-view-cell" :class="error_num == 4?'active':''">
+								<a>
+									错四次以上
+								</a>
+							</li>
+							<li @tap="seError(6)" class="mui-table-view-cell" :class="error_num == 6?'active':''">
+								<a>
+									错六次以上
+								</a>
+							</li>
+							<li @tap="seError(8)" class="mui-table-view-cell" :class="error_num == 8?'active':''">
+								<a>
+									错八次以上
+								</a>
+							</li>
+							<li @tap="seError(10)" class="mui-table-view-cell" :class="error_num == 10?'active':''">
+								<a>
+									错十次以上
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					share_url: '',
+					title: '',
+					error_num:0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				},
+				methods: {}
+			})
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				
+				self.addEventListener('show',function(){
+					vm.error_num =  localStorage.getItem('$errorNum') || "0";
+				})
+
+				mui('.mui-scroll-wrapper').scroll({
+					deceleration: 0.0005 //flick 减速系数，系数越大，滚动速度越慢，滚动距离越小，默认值0.0006
+				});
+
+			})
+			
+			function seError(num){
+				vm.error_num = num;
+				var mainPage = plus.webview.getLaunchWebview();
+				mainPage.evalJS("hideMask()")
+				
+				// 设置缓存
+				localStorage.setItem('$errorNum', num);
+				
+				var wrong1 = plus.webview.getWebviewById('wrong-1.html');
+				wrong1.evalJS("getData()")
+				
+				var wrong2 = plus.webview.getWebviewById('wrong-2.html');
+				if(wrong2)wrong2.evalJS("getData()")
+				
+				var wrong3 = plus.webview.getWebviewById('wrong-3.html');
+				if(wrong3)wrong3.evalJS("getData()")
+				
+				var wrong4 = plus.webview.getWebviewById('wrong-4.html');
+				if(wrong4)wrong4.evalJS("getData()")
+				
+				var wrong5 = plus.webview.getWebviewById('wrong-5.html');
+				if(wrong5)wrong5.evalJS("getData()")
+				
+				mui.back()
+			}
+		</script>
+	</body>
+
+</html>

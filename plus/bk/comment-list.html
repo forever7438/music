@@ -1,0 +1,508 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>评论列表</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/iconfont.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<link href="../css/wrong.css" rel="stylesheet" />
+		<style>
+			/*兼容iOS*/
+			.mui-scroll-wrapper{ bottom: 50px;}
+			
+			/*安卓兼容*/
+			/*body{ padding-bottom: 50px;}*/
+			
+			.message_list span{ color: #999;}
+			
+			.mui-checkbox.mui-left label, .mui-radio.mui-left label{ padding: 0; transform: translateX(.7rem); transition: .1s;}
+			.mui-checkbox.mui-left input[type=checkbox], .mui-radio.mui-left input[type=radio]{ top: 50%; left: 0; right: auto; transform: translateY(-50%);}
+			.mui-checkbox input[type=checkbox]:before, .mui-radio input[type=radio]:before{ font-size: 24px;}
+			
+			.active .mui-checkbox.mui-left label, .mui-radio.mui-left label{ padding: 0; transform: translateX(0);}
+			.active .mui-checkbox input[type=checkbox], .active .mui-radio input[type=radio]{ display: none;}
+			
+			.wrong_item .numb{ color: #FFA200;}
+			
+			.offer_list .avatar img{ width: .8rem!important; height: .8rem!important; border-radius: 50%;}
+			.offer_list .info{ margin-left: 1rem; font-size: .3rem;}
+			.offer_list .info .name{ vertical-align: bottom; line-height: .8rem;}
+			.offer_list .info .time{ font-size: .24rem; color: #999; line-height: .3rem;}
+			.offer_list .help_btn{ line-height: .8rem; color: #008BF7;}
+			.offer_list .help_btn span{ font-size: 20px; margin-right: .1rem;}
+			.offer_list .txt{ margin-left: 1rem; font-size: .3rem;}
+			.offer_list .total{ margin-left: 1rem; background: #f8f8f8; padding: 5px 0; font-size: .24rem;}
+			.offer_list .total span{ margin:0 5px 0 10px; color: #30a1f8;}
+			.offer_list .album a{ float: left; margin: 5px 0; width: 2rem; height: 2rem; margin-left: .3rem;}
+			.offer_list .album a:nth-child(3n+1){ margin-left: 0;}
+			.offer_list .album img{ width: 2rem; width: 2rem; background-size:cover; background-position:center center;}
+			.offer_list .tags span{ display: inline-block; margin-left: .2rem; padding: 0 .4rem; border:1px solid #ffa200; height: .5rem; line-height: .5rem; color: #FFA200; border-radius: .25rem;}
+			.offer_list .tags span:first-child{margin-left: 0;}
+			.offer_list .tags .price{ color: #fe8864; border-color: #fe8864;}
+			.offer_list .nodata{ padding: .3rem 0;}
+			
+			.offer_list .mui-table-view-cell.mui-active{ background: #fff;}
+			
+			.changeOperat{ margin-left: 1rem; padding: .2rem 0 0 0; border-top:1px solid #f8f8f8; font-size: .24rem;}
+			.changeOperat .time{ color: #999;}
+			.changeOperat span{ position: relative; top: -1px; margin-right: .1rem; vertical-align: middle; font-size: .28rem;}
+			
+			.offer_list li:last-child{ border-bottom:1px solid #f8f8f8}
+			
+			.del-box{ position: fixed; bottom: 0; left: 0; right: 0; height: 50px; line-height: 50px; background: #fff;}
+			.del-box span{ vertical-align: middle;}
+			.del-box button{ border-radius: 0;}
+		</style>
+	</head>
+
+	<body>
+		<div id="app">
+			<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<template v-if="nodata == 0">
+						<form class="js_form">
+							<ul class="mui-table-view offer_list">
+								<li class="mui-table-view-cell wrong_item" v-if="somedata.length > 0" v-for="(item,index) in somedata">
+									<div class="mui-row">
+										<div class="mui-col-xs-12">
+											<div class="avatar mui-pull-left">
+												<img :src="item.mem_headimg != ''?item.mem_headimg:'../img/avatar.png'" />
+											</div>
+											<div class="info">
+												<div class="name"><b>{{item.mem_nickname}}</b></div>
+											</div>
+										</div>
+										<div class="mui-col-xs-12 mui-ellipsis-2 txt">
+											{{item.content}}
+										</div>
+										<div class="mui-col-xs-12 total margin_t20">
+											<template v-if="item.reply_num != 0"><span>{{item.reply_nickname}}</span> 等人</template><span @tap="jump_reply({id:item.id,type:type})">共{{item.reply_num}}条回复></span>
+										</div>
+									</div>
+									<div class="mui-row changeOperat">
+										<div class="mui-col-xs-5">
+											<div class="time">{{item.add_time}}</div>
+										</div>
+										<div class="mui-col-xs-7">
+											<div class="mui-row mui-text-right">
+												<div class="mui-col-xs-4">
+													<a @tap="report({id:item.id,model:type,type:1})">
+														<span class="mui-icon-extra icon-jubao"></span>举报
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="jump_comment({type:2,id:item.id,key:type})">
+														<span class="mui-icon-extra icon-pinglun"></span>评论
+													</a>
+												</div>
+												<div class="mui-col-xs-4">
+													<a @tap="fabulous({id:item.id,model:type,type:1,index:index})">
+														<span class="mui-icon-extra icon-zan"></span>赞({{item.like_num}})
+													</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</form>
+					</template>
+					<template v-else>
+						<div class="nodata mui-text-center">
+							<img src="../img/nodata.png" alt="" />
+							<div class="margin_t20">暂无数据~</div>
+						</div>
+					</template>
+				</div>
+			</div>
+			<div class="del-box">
+				<!-- <div class="mui-row">
+					<div class="mui-col-xs-12">
+						<button class="mui-btn mui-btn-block mui-btn-primary">评论</button>
+					</div>
+				</div> -->
+				<div class="mui-row mui-text-center">
+					<div class="mui-col-xs-4">
+						<a @tap="report({id:guid,model:type,type:0})">
+							<span class="mui-icon-extra icon-jubao"></span>举报
+						</a>
+					</div>
+					<div class="mui-col-xs-4">
+						<a @tap="jump_comment({type:1,id:guid,key:type})">
+							<span class="mui-icon-extra icon-pinglun"></span>评论({{reply}})
+						</a>
+					</div>
+					<div class="mui-col-xs-4">
+						<a @tap="dianzan({id:guid,model:type,type:0})">
+							<span class="mui-icon-extra icon-zan"></span>赞({{like}})
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/zepto.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#pullrefresh",
+					down: {
+						height: 50,
+						auto: false,
+						contentdown: "下拉可以刷新",
+						contentover: "释放立即刷新",
+						contentrefresh: "正在刷新...",
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						contentnomore: '没有更多数据了~',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			var vm = new Vue({
+				el: "#app",
+				data: {
+					somedata: [],
+					type: 1,
+					page: 2,
+					nodata: 0,
+					type: '',
+					guid: '',
+					reply: 0,
+					like: 0
+				},
+				mounted: function() {
+
+				},
+				updated: function() {
+
+				}
+			});
+
+			mui.plusReady(function() {
+				var parentPage = plus.webview.currentWebview().opener()
+				vm.type = parentPage.type;
+				vm.guid = parentPage.guid;
+				vm.reply = parentPage.reply;
+				vm.like = parentPage.like;
+				getData()
+			})
+
+			//下拉刷新业务实现
+			function pulldownRefresh() {
+				getData()
+			}
+
+			//上拉加载业务实现
+			function pullupRefresh() {
+				getPageData()
+			}
+
+			//获取数据
+			function getData() {
+				var state = app.getState();
+				var data = {}
+				var url
+				data.user_key = state.user_key;
+				data.note_id = vm.guid;
+				switch (vm.type) {
+					case 1:
+						url = 'Api/V1/Discuss/discuss_com_list'
+						break;
+					case 2:
+						url = 'Api/V1/Note/note_comment_list'
+						break;
+					case 3:
+						url = 'Api/V1/Correct/correct_comment_list'
+						break;
+				}
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data))
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						vm.somedata = [];
+						vm.page = 2;
+						if (data.status == 1) {
+							if (data.info.length == 0) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 1
+							} else if (data.info.length < 20) {
+								mui('#pullrefresh').pullRefresh().disablePullupToRefresh();
+								vm.nodata = 0
+								vm.somedata = data.info
+							} else {
+								mui('#pullrefresh').pullRefresh().refresh(true);
+								vm.nodata = 0
+								vm.somedata = data.info
+							}
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			//获取分页数据
+			function getPageData() {
+				var state = app.getState();
+				var data = {}
+				var url
+				data.user_key = state.user_key;
+				data.p = vm.page
+
+				switch (vm.type) {
+					case 1:
+						url = 'Api/V1/Discuss/index'
+						break;
+					case 2:
+						url = 'Api/V1/Note/index'
+						break;
+					case 3:
+						url = 'Api/V1/Correct/index'
+						break;
+					case 4:
+						url = 'Api/V1/Reward/topic_reward'
+						break;
+				}
+
+				// console.log(JSON.stringify(data))
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						//		            	console.log(JSON.stringify(data))
+						if (data.status == 1) {
+							if (data.info.length < 20) {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(true);
+							} else {
+								mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							}
+
+							for (var item of data.info) {
+								vm.somedata.push(item)
+							}
+							vm.page++
+						} else {
+							mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						//console.log(xhr.responseText)
+						//异常处理；
+						mui('#pullrefresh').pullRefresh().endPullupToRefresh(false);
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 举报
+			function report(item) {
+				var url = 'Api/V1/Accusation/correct'
+				if (item.model == 1) {
+					url = 'Api/V1/Accusation/discuss'
+				} else if (item.model == 2) {
+					url = 'Api/V1/Accusation/note'
+				}
+
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.type = item.type
+				data.id = item.id
+
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						if (data.status == 1) {
+							mui.toast(data.msg)
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 点赞
+			function fabulous(item) {
+				var url
+				if (item.model == 1) {
+					url = 'Api/V1/Discuss/discuss_like'
+				} else if (item.model == 2) {
+					url = 'Api/V1/Note/note_like'
+				} else if (item.model == 3) {
+					url = 'Api/V1/Correct/correct_like'
+				}
+
+
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.type = item.type
+				data.id = item.id
+
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							if (data.info == 1) {
+								vm.somedata[item.index].like_num++
+							} else {
+								vm.somedata[item.index].like_num--
+							}
+
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+
+			// 点赞
+			function dianzan(item) {
+				var url
+				if (item.model == 1) {
+					url = 'Api/V1/Discuss/discuss_like'
+				} else if (item.model == 2) {
+					url = 'Api/V1/Note/note_like'
+				} else if (item.model == 3) {
+					url = 'Api/V1/Correct/correct_like'
+				}
+
+
+				var state = app.getState();
+				var data = {}
+				data.user_key = state.user_key
+				data.type = item.type
+				data.id = item.id
+
+				mui.ajax(server + url, {
+					data: data,
+					dataType: 'json', //服务器返回json格式数据
+					type: 'get', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；              
+					success: function(data) {
+						// console.log(JSON.stringify(data));
+						if (data.status == 1) {
+							if (data.info == 1) {
+								vm.like++
+							} else {
+								vm.like--
+							}
+
+							var page = plus.webview.getWebviewById('answer_new.html')
+							page.evalJS("backResh('" + vm.type + "')");
+						} else {
+							//mui('#pullrefresh').pullRefresh().endPulldownToRefresh();
+							mui.toast(data.msg)
+						}
+						// mui.previewImage();
+					},
+					error: function(xhr, type, errorThrown) {
+						// console.log(xhr.responseText)
+						//异常处理；
+						mui.toast('网络异常');
+					}
+				});
+			}
+			
+			// 跳转回复
+			function jump_reply(item) {
+				// console.log(JSON.stringify(item))
+				mui.openWindow({
+					url: 'reply.html',
+					id: 'reply.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+					},
+					extras: {
+						type: item.type,
+						guid: item.id,
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+			
+
+			// 跳转评论
+			function jump_comment(item) {
+				// console.log(JSON.stringify(item))
+				mui.openWindow({
+					url: 'reply_discuss.html',
+					id: 'reply_discuss.html',
+					styles: {
+						statusbar: {
+							background: '#FFFFFF'
+						},
+						popGesture: 'close',
+					},
+					extras: {
+						type: item.type,
+						guid: item.id,
+						key: item.key
+					},
+					show: {
+						autoShow: true,
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>
